@@ -6,7 +6,12 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.14.1",
+    "mapbox": "^1.0.0-beta6",
+    "mongodb": "^2.2.24",
+    "mongoose": "^4.8.4"
+  },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
