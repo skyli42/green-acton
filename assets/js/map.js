@@ -12,8 +12,8 @@ var map = new mapboxgl.Map({
 map.on('click', function(e) {
         // set bbox as 5px reactangle area around clicked point
         var bbox = [[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]];
-        var features = map.queryRenderedFeatures(bbox, {layers:['acton-streets']});
-		console.log(features);
+        var features = map.queryRenderedFeatures(bbox, {layers:['acton-segments']});
+	console.log(features);
         // Run through the selected features and set a filter
         // to match features with unique FIPS codes to activate
         // the `counties-highlighted` layer.
