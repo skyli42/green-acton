@@ -23,19 +23,16 @@ io.on('connection', function(socket){
 		console.log("clicked");
 		io.emit("click")
 	})
+	socket.on('sendInfo', function(data){
+		console.log(data.emailAddress);
+		console.log(data.featureIds);
+	});
 })
 
 server.listen(app.listen(process.env.PORT || 3000, function() {
 	var host = server.address().address;
 	var port = server.address().port;
 }));
-
-io.sockets.on('connection', function(socket){
-	socket.on('sendInfo', function(data){
-		console.log(data.emailAddress);
-		console.log(data.ids);
-	});
-});
 
 
 // client.readFeature('000d146ae23ead63062756703852513a', 'ciyhnerdx05c92wl4wogi3hdg', function (err, feature) {

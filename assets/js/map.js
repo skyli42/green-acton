@@ -16,7 +16,7 @@ var map = new mapboxgl.Map({
         maxBounds: [[-71.5, 42.429], [-71.375, 42.54]],
 });
 
-var curIds = [];
+var curFeatureIds = [];
 
 map.on('click', function(e) {
         // set bbox as 5px reactangle area around clicked point
@@ -25,10 +25,10 @@ map.on('click', function(e) {
         
         //socket.emit('sendFeatures', {features});
         for (var i = 0; i < features.length; i++){
-                curIds.push(features[i].id);
+                curFeatureIds.push(features[i].id);
         }
 
-	console.log(features);
+	//console.log(features);
 
         // Run through the selected features and set a filter
         // to match features with unique FIPS codes to activate
@@ -42,6 +42,6 @@ map.on('click', function(e) {
 });
 
 $('#form').submit(function(event){
-        socket.emit('sendInfo', {emailAddress: $('#emailInput').val(), ids: curIds});
+        socket.emit('sendInfo', {emailAddress: $('#emailInput').val(), featureIds: curFeatureIds});
         event.preventDefault();
 })
