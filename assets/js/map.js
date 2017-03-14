@@ -41,7 +41,19 @@ map.on('click', function(e) {
         // map.setFilter("counties-highlighted", filter);
 });
 
-$('#form').submit(function(event){
-        socket.emit('sendInfo', {emailAddress: $('#emailInput').val(), featureIds: curFeatureIds});
+$('#form').submit(function(event){  
+        var input = $('#emailInput').val();
+        if (isValidEmail(input)) {
+                 socket.emit('sendInfo', {emailAddress: input, featureIds: curFeatureIds});        
+        }
+        else {
+                alert("invalid email address");
+        }
         event.preventDefault();
 })
+
+function isValidEmail(emailAddress)   
+{ 
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(emailAddress);
+}  
