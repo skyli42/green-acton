@@ -28,14 +28,18 @@ io.on('connection', function(socket){
 server.listen(app.listen(process.env.PORT || 3000, function() {
 	var host = server.address().address;
 	var port = server.address().port;
-	console.log('Listening at http://%s:%s', host, port);
 }));
+
+io.sockets.on('connection', function(socket){
+	socket.on('sendInfo', function(data){
+		console.log(data.emailAddress);
+		console.log(data.ids);
+	});
+});
+
+
 // client.readFeature('000d146ae23ead63062756703852513a', 'ciyhnerdx05c92wl4wogi3hdg', function (err, feature) {
 //     if (err) console.log(err);
 //     // console.log(feature);
 // });
 var url = process.env.MONGOLAB_URL; //environment variable
-
-// MongoClient.connect(url, function (err, db) {
-//     if (err) throw err
-// })
