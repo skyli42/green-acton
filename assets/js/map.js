@@ -42,12 +42,24 @@ map.on('click', function(e) {
 });
 
 $('#form').submit(function(event){  
-        var input = $('#emailInput').val();
-        if (isValidEmail(input)) {
-                 socket.emit('sendInfo', {emailAddress: input, featureIds: curFeatureIds});        
+        var nameInput = $('#nameInput').val();
+        var emailInput = $('#emailInput').val();
+        
+        if (nameInput == "") {
+                $('#invalidEmail').empty();
+                $('#submitted').empty();
+                $('#invalidName').html("Please enter a name.");
+        }
+        else if (!isValidEmail(emailInput)) {
+                $('#invalidName').empty();
+                $('#submitted').empty();
+                $('#invalidEmail').html("invalid email address");    
         }
         else {
-                alert("invalid email address");
+                socket.emit('sendInfo', {name: nameInput, emailAddress: emailInput, featureIds: curFeatureIds});
+                $('#invalidName').empty();
+                $('#invalidEmail').empty();
+                $('#submitted').html("Thanks for signing up!");
         }
         event.preventDefault();
 })

@@ -10,7 +10,6 @@ var io = require('socket.io').listen(server);
 
 var client = new MapboxClient('pk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXlobXFxdTYwNXpuMzJvZTkyaHZkY3FnIn0.eTMHeFb7rAlnxU08juWXzQ');
 
-
 app.use(express.static("./assets"));
 
 app.get('/', function (req, res) {
@@ -18,14 +17,11 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', function(socket){
-	console.log('new connection')
-	socket.on('click', function(){
-		console.log("clicked");
-		io.emit("click")
-	})
+
 	socket.on('sendInfo', function(data){
-		console.log(data.emailAddress);
-		console.log(data.featureIds);
+		console.log("name: " + data.name);
+		console.log("email address: " + data.emailAddress);
+		console.log("segments: " + data.featureIds);
 	});
 })
 
