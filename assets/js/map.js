@@ -17,6 +17,7 @@ var map = new mapboxgl.Map({
 });
 
 var curFeatureIds = [];
+var curStreetNames = [];
 
 map.on('click', function(e) {
         // set bbox as 5px reactangle area around clicked point
@@ -26,6 +27,7 @@ map.on('click', function(e) {
         //socket.emit('sendFeatures', {features});
         for (var i = 0; i < features.length; i++){
                 curFeatureIds.push(features[i].id);
+                curStreetNames.push(features[i]);
         }
 
 	//console.log(features);
@@ -39,6 +41,10 @@ map.on('click', function(e) {
         // }, ['in', 'FIPS']);
 
         // map.setFilter("counties-highlighted", filter);
+
+        for(var i = 0; i < curStreetNames.length; i++) {
+        console.log(curStreetNames[i]);
+}
 });
 
 $('#form').submit(function(event){  
@@ -48,11 +54,13 @@ $('#form').submit(function(event){
         if (nameInput == "") {
                 $('#invalidEmail').empty();
                 $('#submitted').empty();
+                $('#segments').empty();
                 $('#invalidName').html("Please enter a name.");
         }
         else if (!isValidEmail(emailInput)) {
                 $('#invalidName').empty();
                 $('#submitted').empty();
+                $('#segments').empty();
                 $('#invalidEmail').html("invalid email address");    
         }
         else {
@@ -60,6 +68,10 @@ $('#form').submit(function(event){
                 $('#invalidName').empty();
                 $('#invalidEmail').empty();
                 $('#submitted').html("Thanks for signing up!");
+                $('#segments').html('your current street segments:<br>');
+                for(var i = 0; i < curFeatureIds.length; i++) {
+                        $('#segments').append(curFeatureIds[i] + '<br>');
+                }
         }
         event.preventDefault();
 })
