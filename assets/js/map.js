@@ -16,8 +16,33 @@ var map = new mapboxgl.Map({
         maxBounds: [[-71.5, 42.429], [-71.375, 42.54]],
 });
 
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+    closeButton: false
+});
+
 var curFeatureIds = [];
 var curStreetNames = [];
+
+map.on('mousemove', function(e) {
+        var bbox = [[e.point.x - 8, e.point.y - 8], [e.point.x + 8, e.point.y + 8]];
+        var features = map.queryRenderedFeatures(bbox, {layers:['acton-segments']});
+        
+        if (features.length){
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+
+   
+            var feature = features[0];
+            // Populate the popup and set its text
+            // based on the feature found. Put it in the middle of the road's coordinates
+            popup.setLngLat(feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length/2)])
+                .setText(feature.properties.street + ' between ' 
+                + ((feature.properties.start == null) ? 'end of the road' : feature.properties.start) + ' and ' 
+                + ((feature.properties.end == null) ? 'end of the road' : feature.properties.end ))
+                .addTo(map);
+         }
+    });
 
 map.on('click', function(e) {
         // set bbox as 8px reactangle area around clicked point
@@ -27,9 +52,10 @@ map.on('click', function(e) {
         
         //socket.emit('sendFeatures', {features});
         for (var i = 0; i < features.length; i++){
-                curFeatureIds.push(features[i].id);
-                curStreetNames.push(features[i]);
-                 map.addLayer({
+                if(!curFeatureIds.includes(features[i].id)){
+                    curFeatureIds.push(features[i].id);
+                    curStreetNames.push(features[i]);
+                    map.addLayer({
                     'id': 'segment-' + curStreetNames.length,
                     'type': 'line',
                     'source': {
@@ -42,7 +68,8 @@ map.on('click', function(e) {
                        'line-opacity': 0.35,
                        'line-width': 10
                      }
-                });
+                    });
+                }
         }
 
 	   // console.log(features);
