@@ -2,11 +2,11 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXlobXFxdTYwNXpuMzJvZ
 
 var socket = io.connect("http://localhost:3000");
 
-socket.on('click', function(){
-        console.log("click from server")
-})
+// socket.on('click', function(){
+//        console.log("click from server")
+// })
 
-var tileset = 'acton-streets';
+// var tileset = 'acton-streets';
 
 var map = new mapboxgl.Map({
         container: 'map',
@@ -20,18 +20,34 @@ var curFeatureIds = [];
 var curStreetNames = [];
 
 map.on('click', function(e) {
-        // set bbox as 5px reactangle area around clicked point
-        var bbox = [[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]];
+        // set bbox as 8px reactangle area around clicked point
+        var bbox = [[e.point.x - 8, e.point.y - 8], [e.point.x + 8, e.point.y + 8]];
         var features = map.queryRenderedFeatures(bbox, {layers:['acton-segments']});
+        
         
         //socket.emit('sendFeatures', {features});
         for (var i = 0; i < features.length; i++){
                 curFeatureIds.push(features[i].id);
                 curStreetNames.push(features[i]);
+                 map.addLayer({
+                    'id': 'segment-' + curStreetNames.length,
+                    'type': 'line',
+                    'source': {
+                         'type': 'geojson',
+                         'data': features[i]
+                     },
+                    'layout': {},
+                    'paint': {
+                       'line-color': '#222',
+                       'line-opacity': 0.35,
+                       'line-width': 10
+                     }
+                });
         }
 
-	//console.log(features);
-
+	   // console.log(features);
+	   // console.log(features[0].id);
+	   
         // Run through the selected features and set a filter
         // to match features with unique FIPS codes to activate
         // the `counties-highlighted` layer.
@@ -42,9 +58,9 @@ map.on('click', function(e) {
 
         // map.setFilter("counties-highlighted", filter);
 
-        for(var i = 0; i < curStreetNames.length; i++) {
-        console.log(curStreetNames[i]);
-}
+        // for(var i = 0; i < curStreetNames.length; i++) {
+        // console.log(curStreetNames[i]);
+        // }
 });
 
 $('#form').submit(function(event){  
@@ -80,4 +96,5 @@ function isValidEmail(emailAddress)
 { 
     var regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return regEx.test(emailAddress);
-}  
+}
+
