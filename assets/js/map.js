@@ -2,30 +2,41 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXlobXFxdTYwNXpuMzJvZ
 
 var socket = io.connect("http://localhost:3000");
 
-// socket.on('click', function(){
-//        console.log("click from server")
-// })
-
-// var tileset = 'acton-streets';
-
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/greenacton/ciyhnkn57002n2ro46orppg16',
     center: [-71.432, 42.482],
-    zoom: 13,
+    zoom: 12,
     maxBounds: [
         [-71.5, 42.429],
         [-71.375, 42.54]
     ],
 });
-
+// Add zoom and rotation controls to the map.
+map.addControl(new mapboxgl.NavigationControl());
+// Add geolocate control to the map.
+map.addControl(new mapboxgl.GeolocateControl());
+// disable map rotation using right click + drag
+map.dragRotate.disable();
+// disable map rotation using touch rotation gesture
+map.touchZoomRotate.disableRotation();
 // Create a popup, but don't add it to the map yet.
 var popup = new mapboxgl.Popup({
     closeButton: false
 });
 
 var curFeatureIds = [];
-var curStreetNames = [];
+var CurFeatures = [];
+
+function feature_description(feature) {
+  return  feature.properties.street 
+                + ' between ' 
+                + ((feature.properties.start == null) 
+                    ? 'end of the road' : feature.properties.start) 
+                + ' and ' 
+                + ((feature.properties.end == null) 
+                    ? 'end of the road' : feature.properties.end);
+}
 
 map.on('mousemove', function(e) {
     var bbox = [
@@ -36,24 +47,23 @@ map.on('mousemove', function(e) {
         layers: ['acton-segments']
     });
 
-    if (features.length) {
-        // Change the cursor style as a UI indicator.
-        map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-
+    // Change the cursor style as a UI indicator.
+     map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+    
+    if (features.length) {    
 
         var feature = features[0];
-        // Populate the popup and set its text
-        // based on the feature found. Put it in the middle of the road's coordinates
-        popup.setLngLat(feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)])
-            .setText(feature.properties.street + ' between ' +
-                ((feature.properties.start == null) ? 'end of the road' : feature.properties.start) + ' and ' +
-                ((feature.properties.end == null) ? 'end of the road' : feature.properties.end))
+     
+        var location 
+             = feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)];
+        popup.setLngLat(location)
+            .setText(feature_description(feature))
             .addTo(map);
     }
 });
 
 map.on('click', function(e) {
-    // set bbox as 8px reactangle area around clicked point
+    // set bbox as 8px rectangle area around clicked point
     var bbox = [
         [e.point.x - 8, e.point.y - 8],
         [e.point.x + 8, e.point.y + 8]
@@ -66,15 +76,17 @@ map.on('click', function(e) {
     //socket.emit('sendFeatures', {features});
     for (var i = 0; i < features.length; i++) {
         console.log(features[i])
-        var idToSend = features[i].properties.street + "" + features[i].properties.id; //[streetname][#]
-        // if(!curFeatureIds.includes(features[i].id)){
-        //     curFeatureIds.push(features[i].id);
-        //     curStreetNames.push(features[i]);
+        var idToSend = features[i].properties.street + "" + features[i].properties.id; 
         if (!curFeatureIds.includes(idToSend)) {
             curFeatureIds.push(idToSend);
-            curStreetNames.push(features[i]);
+            CurFeatures.push(features[i]);
+            
+            $('#segments').html('your current street segments:<br>');
+            for (var j = 0; j < curFeatureIds.length; j++) {
+                $('#segments').append(feature_description(CurFeatures[j]) + '<br>');
+            }
             map.addLayer({
-                'id': 'segment-' + curStreetNames.length,
+                'id': 'segment-' + CurFeatures.length,
                 'type': 'line',
                 'source': {
                     'type': 'geojson',
@@ -89,55 +101,30 @@ map.on('click', function(e) {
             });
         }
     }
-
-    // console.log(features);
-    // console.log(features[0].id);
-
-    // Run through the selected features and set a filter
-    // to match features with unique FIPS codes to activate
-    // the `counties-highlighted` layer.
-    // var filter = features.reduce(function(memo, feature) {
-    //     memo.push(feature.properties.FIPS);
-    //     return memo;
-    // }, ['in', 'FIPS']);
-
-    // map.setFilter("counties-highlighted", filter);
-
-    // for(var i = 0; i < curStreetNames.length; i++) {
-    // console.log(curStreetNames[i]);
-    // }
 });
 
 $('#form').submit(function(event) {
-    var nameInput = $('#nameInput').val();
+    
     var emailInput = $('#emailInput').val();
-
-    if (nameInput == "") {
-        $('#invalidEmail').empty();
-        $('#submitted').empty();
-        $('#segments').empty();
-        $('#invalidName').html("Please enter a name.");
-    } else if (!isValidEmail(emailInput)) {
-        $('#invalidName').empty();
+    var stateInput = $('#stateInput').val();
+    
+    if (!isValidEmail(emailInput)) {
         $('#submitted').empty();
         $('#segments').empty();
         $('#invalidEmail').html("invalid email address");
     } else {
         socket.emit('sendInfo', {
-            name: nameInput,
             emailAddress: emailInput,
+            newState: stateInput,
             featureIds: curFeatureIds
         });
-        $('#invalidName').empty();
+        
         $('#invalidEmail').empty();
-        $('#submitted').html("Thanks for signing up!");
-        $('#segments').html('your current street segments:<br>');
-        for (var i = 0; i < curFeatureIds.length; i++) {
-            $('#segments').append(curFeatureIds[i] + '<br>');
-        }
+        $('#submitted').html("Thanks for updating these streets");
+        
     }
     event.preventDefault();
-})
+});
 
 function isValidEmail(emailAddress) {
     var regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
