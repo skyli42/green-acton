@@ -12,15 +12,19 @@
 		
 		
 		<form id = "form" style="position:absolute;float:left;margin-left:2%">
-			name(person, organization, etc.):<br>
-			<input id="nameInput" type="text"> 
-			<br>
-			<div id="invalidName" style="color:red"></div>
+			
 			email address:<br>
 			<input id="emailInput" type="text">
 			<br>
 			<div id="invalidEmail" style="color:red"></div>
-			<input type="submit" value="submit">
+	
+			<input id="stateInput" type="radio" name="Status" value="0"> 
+			    <span style="color:red">These need cleaning</span><br>
+			<input id="stateInput" type="radio" name="Status" value="1"> 
+			    <span style="color:blue">I will clean these</span><br>
+			<input id="stateInput" type="radio" name="Status" value="2"> 
+			    <span style="color:green">These are clean</span><br>
+  		<input type="submit" value="submit">
 			<br>
 			<div id="submitted" style="color:green"></div>
 		</form>
