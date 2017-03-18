@@ -36,10 +36,10 @@ mongoose.connect(url).then(function() {
 
             //query for mapbox id
             for(var i in data.featureIds){
-                ID.find({name:data.featureIds[i]}).select('id').then(function(id, err){
+                ID.find({name:data.featureIds[i]}).select('id name').then(function(row, err){
                     if(err)console.log(err);
-                    console.log(data.featureIds[i])
-                    console.log(id[0].id);
+                    console.log(row[0].name);
+                    console.log(row[0].id);
                 })
             }
             // console.log("name: " + data.name);
