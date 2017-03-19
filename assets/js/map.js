@@ -103,10 +103,12 @@ map.on('click', function(e) {
     }
 });
 
+
+
 $('#form').submit(function(event) {
     
     var emailInput = $('#emailInput').val();
-    var stateInput = $('#stateInput').val();
+    var stateInput =  $( "input:checked" ).val();
     
     if (!isValidEmail(emailInput)) {
         $('#submitted').empty();

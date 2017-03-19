@@ -15,6 +15,7 @@ var io = require('socket.io').listen(server);
 
 // sk... can access dataset write
 var client = new MapboxClient('sk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXpiaGkyM3cwcGY1MnhxcHhhZjlpeTZiIn0.cL48iVWM8qYJG6rroRBrow');
+var dataset_id = 'cj05n0i9p0ma631qltnyigi85'  // id for segments
 
 app.use(express.static("./assets"));
 
@@ -37,9 +38,17 @@ mongoose.connect(url).then(function() {
             //query for mapbox id
             for(var i in data.featureIds){
                 ID.find({name:data.featureIds[i]}).select('id name').then(function(row, err){
+                    
                     if(err)console.log(err);
-                    console.log(row[0].name);
-                    console.log(row[0].id);
+                    client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                        if (err) console.log(err);
+                        feature.properties.state = data.newState;
+                        feature.properties.claimedby = data.emailAddress;
+                        client.insertFeature(feature, dataset_id, function(err, feature) {
+                            if (err) console.log(err);
+                            console.log(feature.properties);
+                        })
+                    })
                 })
             }
             // console.log("name: " + data.name);
