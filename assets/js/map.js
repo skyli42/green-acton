@@ -81,9 +81,9 @@ map.on('click', function(e) {
             curFeatureIds.push(idToSend);
             CurFeatures.push(features[i]);
             
-            $('#segments').html('your current street segments:<br>');
+            $('#segments').html('Your Current Street Segments<br><br>');
             for (var j = 0; j < curFeatureIds.length; j++) {
-                $('#segments').append(feature_description(CurFeatures[j]) + '<br>');
+                $('#segments').append('<li>' + feature_description(CurFeatures[j]) + '</li><br>');
             }
             map.addLayer({
                 'id': 'segment-' + CurFeatures.length,
