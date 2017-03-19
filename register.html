@@ -3,13 +3,14 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js"
 		integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-		crossorigin="anonymous"></script>	
+		crossorigin="anonymous"></script>
 		<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      	<link type="text/css" rel="stylesheet" href="/css/materialize.min.css"  media="screen,projection"/>
-      	<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
+		<link type="text/css" rel="stylesheet" href="/css/materialize.min.css"  media="screen,projection"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
 	</head>
 	<body>
-		<form id="registration" style="position:absolute;float:left;margin-left:2%">
+		<row>
+		<form class="col m2 pull-m5" id="registration" style="position:absolute;float:left;margin-left:2%">
 			name:<br>
 			<input id="nameInput" type="text"><br>
 			email address:<br>
@@ -19,12 +20,13 @@
 			<input id="phoneNumberInput" type="text"><br>
 			number of people in group:<br>
 			<input id="groupNumberInput" type="text"><br>
-  		<input type="submit" value="submit">
+			<input type="submit" value="submit">
 			<br>
 			<div id="submitted" style="color:green"></div>
 		</form>
 		
 		<script src = "/js/map.js"></script>
 		<script type="text/javascript" src="/js/materialize.min.js"></script>
+		</row>
 	</body>
 </html>

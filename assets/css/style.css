@@ -14,6 +14,11 @@ html{
 	float:left;
 }
 
+#register{
+	position:absolute;
+	margin: 0 auto;
+}
+
 #map{
 	width: 60%; height: 100%;
 	margin: 0 auto;
