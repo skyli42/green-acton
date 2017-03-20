@@ -1,0 +1,21 @@
+(DONE) add code to update the datasets.
+
+add code to update the tilesets. For now. This can be done by hand within mapbox: open the dataset and choose export to tileset & accept the default tileset name offered.  Then wait...
+
+When highlighting a segment, make it in the color that corresponds to the current state
+
+When hitting submit, change the segments to highlight in the new state color, and reduce their width back to the way regular un-selected segments look. (I think we'll need to remove & re-add these segments as new layers). Then, re-set the lists of segments back to 0 length. 
+
+If selecting a segment that's already selected, de-select it (update the feature arrays, remove the layer) 
+
+Add a new page that let's people put in their email & name & address & phone & the number of people in their group. Perhaps this can be done with Mongo & Socket, since that would let us use code we already know how to write, and not need to learn the Google Sheets / node.js code.
+
+Add a link in the app to the new registration page.  
+
+Add code to check the email name in the map submission against the users, and perhaps offer to send them to the registration page if their name isn't recognized.  
+
+Now that we have the app on Heroku, I can see how bad it looks on a phone. Redo the divs so that they also look OK on a phone. 
+
+Probably need a way to get a report of who has signed up for what segments, and/or for poeple to see what segments they have signed up for.
+
+ It would be nice to also support click and drag for selecting segments. Or,in the mean time, write a timy bit of code to reset the segments to state=3 (unknown - black lines). 
