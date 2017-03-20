@@ -1,8 +1,3 @@
-html{
-	font-size: 100px;
-	font-family: 'Arial';
-}
-
 #invalidEmail{
 	color: red;
 	font-family: 'Scada';
@@ -11,15 +6,9 @@ html{
 #form{
 	font-family: 'Scada';
 	position:absolute;
-	float:left;
-}
-
-#register{
-	position:absolute;
-	margin: 0 auto;
 }
 
 #map{
-	width: 60%; height: 100%;
+	width: 65%; height: 100%;
 	margin: 0 auto;
 }

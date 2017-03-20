@@ -9,24 +9,28 @@
 		<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
 	</head>
 	<body>
-		<row>
-		<form class="col m2 push-m11" id="registration" style="position:absolute;float:left;margin-left:2%">
-			name:<br>
-			<input id="nameInput" type="text"><br>
-			email address:<br>
-			<input id="emailInput" type="text"><br>
-			<div id="invalidEmail" style="color:red"></div>
-			phone number:<br>
-			<input id="phoneNumberInput" type="text"><br>
-			number of people in group:<br>
-			<input id="groupNumberInput" type="text"><br>
-			<input type="submit" value="submit">
-			<br>
-			<div id="submitted" style="color:green"></div>
-		</form>
-		
+		<br><br><br>
+		<center><span class="flow-text" style="color:green">Welcome to Green Acton</span></center>
+		<div class="row">
+			<br><br>
+			<form class="col m2 push-m5">
+				name:<br>
+				<input id="nameInput" type="text"><br>
+				email address:<br>
+				<input id="emailInput" type="text"><br>
+				<div id="invalidEmail" style="color:red"></div>
+				phone number:<br>
+				<input id="phoneNumberInput" type="text"><br>
+				<div id="invalidPhoneNumber" style="color:red"></div>
+				number of people in group:<br>
+				<input id="groupNumberInput" type="text"><br>
+				<div id="invalidGroupNumber" style="color:red;"></div>
+				<input type="submit" value="submit">
+				<br>
+				<div id="submitted" style="color:green"></div>
+			</form>
+		</div>
 		<script src = "/js/map.js"></script>
 		<script type="text/javascript" src="/js/materialize.min.js"></script>
-		</row>
 	</body>
 </html>
