@@ -5,11 +5,11 @@ function isValidEmailAddress(emailAddress) {
 
 function isValidPhoneNumber(phoneNumber) {
     var pattern = /^[0-9\s- \+]{8,13}$/;
-    return(pattern.test(phoneNumber));
+    return pattern.test(phoneNumber) || phoneNumber == "";
 }
 
 function isNotNumber(string) {
-    return (isNaN(string));
+    return isNaN(string) || string == "";
 }
 
 $('#registration').submit(function(event) {
@@ -31,7 +31,7 @@ $('#registration').submit(function(event) {
         $('#invalidGroupSize').empty();   
         $('#invalidEmailAddress').html("invalid email address<br><br>");
     }
-    else if (!isValidPhoneNumber(phoneNumberInput) && phoneNumberInput != '') {
+    else if (!isValidPhoneNumber(phoneNumberInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidGroupSize').empty();   
@@ -44,7 +44,6 @@ $('#registration').submit(function(event) {
         $('#invalidGroupSize').html("invalid group size<br><br>");
     }
     else {
-        
         socket.emit('registration', {
             name: nameInput,
             emailAddress: emailAddressInput,
