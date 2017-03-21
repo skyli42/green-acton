@@ -43,7 +43,7 @@ mongoose.connect(url).then(function() {
 
         socket.on('sendInfo', function(data) {
 
-            query for mapbox id
+            //query for mapbox id
             for(var i in data.featureIds){
                 ID.find({name:data.featureIds[i]}).select('id name').then(function(row, err){
                     
