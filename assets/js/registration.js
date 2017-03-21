@@ -8,7 +8,7 @@ function isValidPhoneNumber(phoneNumber) {
     return(pattern.test(phoneNumber));
 }
 
-function isNumber(string) {
+function isNotNumber(string) {
     return (isNaN(string));
 }
 
@@ -37,7 +37,7 @@ $('#registration').submit(function(event) {
         $('#invalidGroupSize').empty();   
         $('#invalidPhoneNumber').html("invalid phone number<br><br>");
     }
-    else if (isNumber(groupSizeInput)) {
+    else if (isNotNumber(groupSizeInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
