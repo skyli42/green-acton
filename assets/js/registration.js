@@ -23,7 +23,7 @@ $('#registration').submit(function(event) {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();  
-        $('#invalidName').html("please enter a name<br><br>");
+        $('#invalidName').html("please enter your name<br><br>");
     }
     else if (!isValidEmailAddress(emailAddressInput)) {
         $('#invalidName').empty();
@@ -41,7 +41,7 @@ $('#registration').submit(function(event) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').html("invalid group number<br><br>");
+        $('#invalidGroupSize').html("invalid group size<br><br>");
     }
     else {
         
