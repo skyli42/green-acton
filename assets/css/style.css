@@ -1,0 +1,9 @@
+#form, #registration{
+	font-family: 'Scada';
+	position:absolute;
+}
+
+#map{
+	width: 65%; height: 100%;
+	margin: 0 auto;
+}

@@ -31,7 +31,15 @@ var ID = mongoose.model('id', idSchema);
 
 mongoose.connect(url).then(function() {
     console.log("connected to mongo database")
+  
     io.on('connection', function(socket) {
+        socket.on('registration', function(data) {
+            console.log("arrived");
+            console.log("name: " + data.name);
+            console.log("email address: " + data.emailAddress);
+            console.log("phone number: " +  data.phoneNumber);
+            console.log("group number: " + data.groupNumber);
+        });
 
         socket.on('sendInfo', function(data) {
 
@@ -51,26 +59,29 @@ mongoose.connect(url).then(function() {
                     })
                 })
             }
-            // console.log("name: " + data.name);
-            // console.log("email address: " + data.emailAddress);
-            // console.log("segments: " + data.featureIds);
+            console.log("name: " + data.name);
+            console.log("email address: " + data.emailAddress);
+            console.log("segments: " + data.featureIds);
 
 
-            // // step 1: verify we can do dataset writes in backend 
-            // // 1A) get a feature to work with
-            // client.readFeature('cff800c8b0ddafc54950d67776cf8153', 'cj05n0i9p0ma631qltnyigi85', function(err, feature) {
-            //     if (err) console.log(err);
-            //     console.log("feature id: " + feature.id);
-            //     console.log("current state: " + feature.properties.state);
-            //     // 1B) make a change
-            //     feature.properties.state = (1 + feature.properties.state) % 3; //increment & wrap
-            //     console.log("proposed state: " + feature.properties.state);
-            //     // 1C) write it back
-            //     client.insertFeature(feature, 'cj05n0i9p0ma631qltnyigi85', function(err, feature) {
-            //         if (err) console.log(err);
-            //     });
-            // });
+            // step 1: verify we can do dataset writes in backend 
+            // 1A) get a feature to work with
+            client.readFeature('cff800c8b0ddafc54950d67776cf8153', 'cj05n0i9p0ma631qltnyigi85', function(err, feature) {
+                if (err) console.log(err);
+                console.log("feature id: " + feature.id);
+                console.log("current state: " + feature.properties.state);
+                // 1B) make a change
+                feature.properties.state = (1 + feature.properties.state) % 3; //increment & wrap
+                console.log("proposed state: " + feature.properties.state);
+                // 1C) write it back
+                client.insertFeature(feature, 'cj05n0i9p0ma631qltnyigi85', function(err, feature) {
+                    if (err) console.log(err);
+                });
+            });
         });
+
+
+
     });
 
 })
