@@ -1,9 +1,4 @@
-#invalidEmail{
-	color: red;
-	font-family: 'Scada';
-}
-
-#form{
+#form, #registration{
 	font-family: 'Scada';
 	position:absolute;
 }

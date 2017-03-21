@@ -7,19 +7,20 @@
 		<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link type="text/css" rel="stylesheet" href="/css/materialize.min.css"  media="screen,projection"/>
 		<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
+		
 	</head>
 	<body>
 		<br><br><br>
 		<center><span class="flow-text" style="color:green">Welcome to Green Acton</span></center>
 		<div class="row">
 			<br><br>
-			<form id="registration" class="col m2 push-m5">
+			<form id="registration" class="col m2 push-m5" action="/../">
 				name:<br>
 				<input id="nameInput" type="text"><br>
-				<div id="invalidName" style=color:red"></div>
+				<div id="invalidName" style="color:red"></div>
 				email address:<br>
-				<input id="emailInput" type="text"><br>
-				<div id="invalidEmail" style="color:red"></div>
+				<input id="emailAddressInput" type="text"><br>
+				<div id="invalidEmailAddress" style="color:red"></div>
 				phone number:<br>
 				<input id="phoneNumberInput" type="text"><br>
 				<div id="invalidPhoneNumber" style="color:red"></div>
@@ -28,10 +29,9 @@
 				<div id="invalidGroupNumber" style="color:red;"></div>
 				<input type="submit" value="submit">
 				<br>
-				<div id="submitted" style="color:green"></div>
 			</form>
+			<script src = "/js/registration.js"></script>
 		</div>
-		<script src = "/js/registration.js"></script>
 		<script type="text/javascript" src="/js/materialize.min.js"></script>
 	</body>
 </html>
