@@ -17,31 +17,31 @@ $('#registration').submit(function(event) {
     var nameInput = $('#nameInput').val();
     var emailAddressInput = $('#emailAddressInput').val();
     var phoneNumberInput = $('#phoneNumberInput').val();
-    var groupNumberInput = $('#groupNumberInput').val();
+    var groupSizeInput = $('#groupSizeInput').val();
     
     if (nameInput == '') {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupNumber').empty();  
+        $('#invalidGroupSize').empty();  
         $('#invalidName').html("please enter a name<br><br>");
     }
     else if (!isValidEmailAddress(emailAddressInput)) {
         $('#invalidName').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupNumber').empty();   
+        $('#invalidGroupSize').empty();   
         $('#invalidEmailAddress').html("invalid email address<br><br>");
     }
-    else if (!isValidPhoneNumber(phoneNumberInput)) {
+    else if (!isValidPhoneNumber(phoneNumberInput) && phoneNumberInput != '') {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
-        $('#invalidGroupNumber').empty();   
+        $('#invalidGroupSize').empty();   
         $('#invalidPhoneNumber').html("invalid phone number<br><br>");
     }
-    else if (isNumber(groupNumberInput)) {
+    else if (isNumber(groupSizeInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupNumber').html("invalid group number<br><br>");
+        $('#invalidGroupSize').html("invalid group number<br><br>");
     }
     else {
         
@@ -49,13 +49,13 @@ $('#registration').submit(function(event) {
             name: nameInput,
             emailAddress: emailAddressInput,
             phoneNumber: phoneNumberInput,
-            groupNumber: groupNumberInput
+            groupSize: groupSizeInput
         });
-        
+
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupNumber').empty();   
+        $('#invalidGroupSize').empty();   
     }
     event.preventDefault();
 });
