@@ -43,7 +43,6 @@ mongoose.connect(url).then(function() {
             console.log("email address: " + data.emailAddress);
             console.log("phone number: " +  data.phoneNumber);
             console.log("group number: " + data.groupNumber);
-            
         });
 
         socket.on('sendInfo', function(data) {
