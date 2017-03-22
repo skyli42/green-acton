@@ -106,7 +106,7 @@ map.on('click', function(e) {
 
 
 $('#form').submit(function(event) {
-    
+    event.preventDefault();
     var emailInput = $('#emailInput').val();
     var stateInput =  $( "input:checked" ).val();
     
@@ -125,7 +125,7 @@ $('#form').submit(function(event) {
         $('#submitted').html("Thanks for updating these streets");
         
     }
-    event.preventDefault();
+    
 });
 
 function isValidEmail(emailAddress) {

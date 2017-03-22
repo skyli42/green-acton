@@ -2,8 +2,9 @@ var MongoClient = require('mongodb').MongoClient
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 mongoose.Promise = require("bluebird")
-    // var url = process.env.MONGOLAB_URL; //url (will be set on heroku, needs to be set on desktop systems)
+
 var url = "mongodb://greenacton:350PPMofCO2@ds157549.mlab.com:57549/green-acton";
+
 var MapboxClient = require('mapbox');
 var express = require('express')
 var http = require('http');
@@ -22,6 +23,9 @@ app.use(express.static("./assets"));
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
+app.get('/register', function(req, res){
+    res.sendFile(__dirname+'/html/registration.html');
+})
 
 var idSchema = new Schema({
     name: String,
@@ -39,10 +43,10 @@ mongoose.connect(url).then(function() {
             console.log("email address: " + data.emailAddress);
             console.log("phone number: " +  data.phoneNumber);
             console.log("group number: " + data.groupNumber);
+            
         });
 
         socket.on('sendInfo', function(data) {
-
             //query for mapbox id
             for(var i in data.featureIds){
                 ID.find({name:data.featureIds[i]}).select('id name').then(function(row, err){
@@ -92,9 +96,3 @@ server.listen(app.listen(process.env.PORT || 3000, function() {
 }));
 
 console.log("Listening on port 3000")
-
-// client.readFeature('000d146ae23ead63062756703852513a', 'ciyhnerdx05c92wl4wogi3hdg', function (err, feature) {
-//     if (err) console.log(err);
-//     // console.log(feature);
-// });
-// var url = process.env.MONGOLAB_URL; //environment variable
