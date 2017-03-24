@@ -61,7 +61,6 @@ map.on('mousemove', function(e) {
             .addTo(map);
     }
 });
-
 map.on('click', function(e) {
     // set bbox as 8px rectangle area around clicked point
     var bbox = [
@@ -71,7 +70,16 @@ map.on('click', function(e) {
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-
+    if(features.length == 0){ //clicked on nothing
+        for(var i in CurFeatures){
+            var ind = Number(i)+1; //i is a string for whatever reason
+            map.removeLayer('segment-'+Number(ind));
+            map.removeSource('segment-'+Number(ind));
+            $('#selected').empty();
+        }
+        CurFeatures = [];
+        curFeatureIds = [];
+    }
 
     //socket.emit('sendFeatures', {features});
     for (var i = 0; i < features.length; i++) {
@@ -80,11 +88,13 @@ map.on('click', function(e) {
         if (!curFeatureIds.includes(idToSend)) {
             curFeatureIds.push(idToSend);
             CurFeatures.push(features[i]);
-            
-            $('#segments').html('Your Current Street Segments<br><br>');
-            for (var j = 0; j < curFeatureIds.length; j++) {
-                $('#segments').append('<li>' + feature_description(CurFeatures[j]) + '</li><br>');
-            }
+            console.log(idToSend);
+            console.log(curFeatureIds)
+            // $('#segments').html('Your Current Street Segments<br><br>');
+            // for (var j = 0; j < curFeatureIds.length; j++) {
+            //     $('#selected').append('<li>' + feature_description(CurFeatures[j]) + '</li><br>');
+            // }
+            $('#selected').append("<li>"+feature_description(features[i])+"</li><br>")
             map.addLayer({
                 'id': 'segment-' + CurFeatures.length,
                 'type': 'line',
@@ -123,9 +133,9 @@ $('#form').submit(function(event) {
         
         $('#invalidEmail').empty();
         $('#submitted').html("Thanks for updating these streets");
-        
+        return false;
     }
-    
+    return false;
 });
 
 function isValidEmail(emailAddress) {

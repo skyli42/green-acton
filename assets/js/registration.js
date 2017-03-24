@@ -13,7 +13,7 @@ function isNotNumber(string) {
 }
 
 $('#registration').submit(function(event) {
-
+    console.log("submit")
     var nameInput = $('#nameInput').val();
     var emailAddressInput = $('#emailAddressInput').val();
     var phoneNumberInput = $('#phoneNumberInput').val();
@@ -44,17 +44,18 @@ $('#registration').submit(function(event) {
         $('#invalidGroupSize').html("invalid group size<br><br>");
     }
     else {
+        console.log('hi')
         socket.emit('registration', {
             name: nameInput,
             emailAddress: emailAddressInput,
             phoneNumber: phoneNumberInput,
             groupSize: groupSizeInput
         });
-
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').empty();   
+        $('#invalidGroupSize').empty();
+        return false; 
     }
-    event.preventDefault();
+    return false;
 });
