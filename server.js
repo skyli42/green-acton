@@ -12,7 +12,7 @@ var http = require('http');
 var app = express()
 
 var server = http.createServer(app);
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server); 
 
 // sk... can access dataset write
 var client = new MapboxClient('sk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXpiaGkyM3cwcGY1MnhxcHhhZjlpeTZiIn0.cL48iVWM8qYJG6rroRBrow');
@@ -65,22 +65,6 @@ mongoose.connect(url).then(function() {
             console.log("name: " + data.name);
             console.log("email address: " + data.emailAddress);
             console.log("segments: " + data.featureIds);
-
-
-            // step 1: verify we can do dataset writes in backend 
-            // 1A) get a feature to work with
-            client.readFeature('cff800c8b0ddafc54950d67776cf8153', 'cj05n0i9p0ma631qltnyigi85', function(err, feature) {
-                if (err) console.log(err);
-                console.log("feature id: " + feature.id);
-                console.log("current state: " + feature.properties.state);
-                // 1B) make a change
-                feature.properties.state = (1 + feature.properties.state) % 3; //increment & wrap
-                console.log("proposed state: " + feature.properties.state);
-                // 1C) write it back
-                client.insertFeature(feature, 'cj05n0i9p0ma631qltnyigi85', function(err, feature) {
-                    if (err) console.log(err);
-                });
-            });
         });
 
 
@@ -89,9 +73,11 @@ mongoose.connect(url).then(function() {
 
 })
 
-server.listen(app.listen(process.env.PORT || 3000, function() {
+var port = process.env.PORT || 3000;
+
+server.listen(app.listen(port, function() {
     var host = server.address().address;
-    var port = server.address().port;
+ 
 }));
 
-console.log("Listening on port 3000")
+console.log("Listening on port " + port)
