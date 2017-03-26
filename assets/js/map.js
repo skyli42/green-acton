@@ -1,6 +1,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXlobXFxdTYwNXpuMzJvZTkyaHZkY3FnIn0.eTMHeFb7rAlnxU08juWXzQ';
 
-var socket = io.connect("http://localhost:3000");
+
+var socket = io.connect();
 
 var map = new mapboxgl.Map({
     container: 'map',
@@ -46,14 +47,11 @@ map.on('mousemove', function(e) {
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-
-    // Change the cursor style as a UI indicator.
-     map.getCanvas().style.cursor = features.length ? 'pointer' : '';
     
-    if (features.length) {    
-
+    // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = features.length ? 'pointer' : '';  
+    if (features.length) {  
         var feature = features[0];
-     
         var location 
              = feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)];
         popup.setLngLat(location)
