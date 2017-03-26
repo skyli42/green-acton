@@ -12,8 +12,13 @@ var http = require('http');
 var app = express()
 
 var server = http.createServer(app);
+<<<<<<< HEAD
+var io = require('socket.io').listen(server);
+// var regSocket = require('socket.io')(app).connect('localhost:'+(process.env.PORT || 3000), {path:"/register"})
+=======
 var io = require('socket.io').listen(server); 
 
+>>>>>>> 717d18e18caf25ca623ffd64c597faac313ed0f8
 // sk... can access dataset write
 var client = new MapboxClient('sk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXpiaGkyM3cwcGY1MnhxcHhhZjlpeTZiIn0.cL48iVWM8qYJG6rroRBrow');
 var dataset_id = 'cj05n0i9p0ma631qltnyigi85'  // id for segments
@@ -24,7 +29,7 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/register', function(req, res){
-    res.sendFile(__dirname+'/html/registration.html');
+    res.sendFile(__dirname+'/assets/html/registration.html');
 })
 
 var idSchema = new Schema({
@@ -37,6 +42,7 @@ mongoose.connect(url).then(function() {
     console.log("connected to mongo database")
   
     io.on('connection', function(socket) {
+        console.log("a user connected!")
         socket.on('registration', function(data) {
             console.log("arrived");
             console.log("name: " + data.name);
@@ -66,19 +72,17 @@ mongoose.connect(url).then(function() {
             console.log("email address: " + data.emailAddress);
             console.log("segments: " + data.featureIds);
         });
-
-
-
     });
-
+    // regSocket.on('connection', function(socket){
+    //     console.log("s")
+    // })
 })
 
 var port = process.env.PORT || 3000;
 
 server.listen(app.listen(port, function() {
     var host = server.address().address;
- 
+    var port = server.address().port;
 }));
 
 console.log("Listening on port " + port)
-
