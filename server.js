@@ -12,13 +12,8 @@ var http = require('http');
 var app = express()
 
 var server = http.createServer(app);
-<<<<<<< HEAD
-var io = require('socket.io').listen(server);
-// var regSocket = require('socket.io')(app).connect('localhost:'+(process.env.PORT || 3000), {path:"/register"})
-=======
-var io = require('socket.io').listen(server); 
 
->>>>>>> 717d18e18caf25ca623ffd64c597faac313ed0f8
+var io = require('socket.io').listen(server);
 // sk... can access dataset write
 var client = new MapboxClient('sk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXpiaGkyM3cwcGY1MnhxcHhhZjlpeTZiIn0.cL48iVWM8qYJG6rroRBrow');
 var dataset_id = 'cj05n0i9p0ma631qltnyigi85'  // id for segments
