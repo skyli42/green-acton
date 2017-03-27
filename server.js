@@ -10,18 +10,9 @@ var http = require('http');
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-var client = new MapboxClient(process.env.MAPBOX_SK);
 var dataset_id = 'cj05n0i9p0ma631qltnyigi85'  // id for segments
 
-client.createUploadCredentials(function(err, credentials) {
-  // Use aws-sdk to stage the file on Amazon S3
-    var s3 = new AWS.S3({
-       accessKeyId: credentials.accessKeyId,
-       secretAccessKey: credentials.secretAccessKey,
-       sessionToken: credentials.sessionToken,
-       region: 'us-east-1'});
-  });
-console.log('From S3: ' + credentials.accessKeyId);
+
 
 ///  s3.putObject({
 //    Bucket: credentials.bucket,
@@ -39,6 +30,14 @@ app.get('/', function(req, res) {
 app.get('/register', function(req, res){
     res.sendFile(__dirname+'/assets/html/registration.html');
 })
+
+
+
+var port = process.env.PORT || 3000;
+
+var skey = process.env.MAPBOX_SK
+console.log('Need MAPBOX_SK in environment: ' + skey);
+var client = new MapboxClient(skey);
 
 var idSchema = new Schema({
     name: String,
@@ -86,11 +85,23 @@ mongoose.connect(url).then(function() {
     // })
 })
 
-var port = process.env.PORT || 3000;
-
 server.listen(app.listen(port, function() {
     var host = server.address().address;
     var port = server.address().port;
 }));
 
 console.log("Listening on port " + port)
+
+
+client.createUploadCredentials(function(err, credentials) {
+  // Use aws-sdk to stage the file on Amazon S3
+    var s3 = new AWS.S3({
+       accessKeyId: credentials.accessKeyId,
+       secretAccessKey: credentials.secretAccessKey,
+       sessionToken: credentials.sessionToken,
+       region: 'us-east-1'});
+    console.log('From S3: ' + credentials.accessKeyId);
+    
+  });
+
+
