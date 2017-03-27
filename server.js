@@ -2,21 +2,34 @@ var MongoClient = require('mongodb').MongoClient
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 mongoose.Promise = require("bluebird")
-
 var url = "mongodb://greenacton:350PPMofCO2@ds157549.mlab.com:57549/green-acton";
-
+var AWS = require('aws-sdk');
 var MapboxClient = require('mapbox');
 var express = require('express')
 var http = require('http');
-
-var app = express()
-
+var app = express();
 var server = http.createServer(app);
-
 var io = require('socket.io').listen(server);
-// sk... can access dataset write
-var client = new MapboxClient('sk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXpiaGkyM3cwcGY1MnhxcHhhZjlpeTZiIn0.cL48iVWM8qYJG6rroRBrow');
+var client = new MapboxClient(process.env.MAPBOX_SK);
 var dataset_id = 'cj05n0i9p0ma631qltnyigi85'  // id for segments
+
+client.createUploadCredentials(function(err, credentials) {
+  // Use aws-sdk to stage the file on Amazon S3
+    var s3 = new AWS.S3({
+       accessKeyId: credentials.accessKeyId,
+       secretAccessKey: credentials.secretAccessKey,
+       sessionToken: credentials.sessionToken,
+       region: 'us-east-1'});
+  });
+console.log('From S3: ' + credentials.accessKeyId);
+
+///  s3.putObject({
+//    Bucket: credentials.bucket,
+//    Key: credentials.key,
+//    Body: fs.createReadStream('/path/to/file.mbtiles')
+//  }, function(err, resp) {
+//  });
+// );
 
 app.use(express.static("./assets"));
 
