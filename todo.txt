@@ -4,19 +4,19 @@
 
 (DONE) Add a link in the app to the new registration page.  
 
-Jim: reserve ActonCleanup.info and ActonCleanup.org and have them point to our website
+(DONE) Jim: reserve ActonCleanup.info and ActonCleanup.org and have them point to our website
 
 Jim: add code to update the tilesets. For now. This can be done by hand within mapbox: open the dataset and choose export to tileset & accept the default tileset name offered.  Then wait...
 
 Jim: Add general instructions and welcome to top of page
 
-Put popups more out of the way - they are stopping the selection of segments. 
+(DONE) Put popups more out of the way - they are stopping the selection of segments. 
 
 When highlighting a segment, make it in the color that corresponds to the state chosen in the UI. 
 
 When hitting submit, change the segments to highlight in the new state color, and reduce their width back to the way regular un-selected segments look. (I think we'll need to remove & re-add these segments as new layers). Then, re-set the lists of segments back to 0 length. 
 
-If selecting a segment that's already selected, de-select it (update the feature arrays, remove the layer) 
+(DONE) If selecting a segment that's already selected, de-select it (update the feature arrays, remove the layer) 
 
 Add code to check the email name in the map submission against the users, and send them to the registration page if their name isn't recognized.  
 
