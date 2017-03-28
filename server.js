@@ -11,7 +11,10 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var dataset_id = 'cj05n0i9p0ma631qltnyigi85'  // id for segments
+var dataset_id_testing = 'cj0tk7a6n04ca2qrx1xaizc6r' // smaller dataset for testing
 
+var TileSetNeedsUpdating = false;
+var TileSetInProcess=false;
 
 app.use(express.static("./assets"));
 
@@ -50,28 +53,28 @@ mongoose.connect(url).then(function() {
         });
 
         socket.on('sendInfo', function(data) {
-            //query for mapbox id
+            var someChanged = false;
             for(var i in data.featureIds){
                 ID.find({name:data.featureIds[i]}).select('id name').then(function(row, err){
-                    
                     if(err)console.log(err);
                     client.readFeature(row[0].id, dataset_id, function(err, feature) {
                         if (err) console.log(err);
                         feature.properties.state = data.newState;
                         feature.properties.claimedby = data.emailAddress;
                         client.insertFeature(feature, dataset_id, function(err, feature) {
-                            if (err) console.log(err);
-                            console.log(feature.properties);
+                            if (err) {
+                                console.log(err);
+                            } else {
+                            console.log('update dataset OK');
+                            someChanged =true;
+                            }
                         })
                     })
                 })
             }
-            console.log("name: " + data.name);
-            console.log("email address: " + data.emailAddress);
-            console.log("segments: " + data.featureIds);
+            if (someChanged) TileSetNeedsUpdating= true;
         });
     });
- 
 })
 
 server.listen(app.listen(port, function() {
@@ -81,8 +84,7 @@ server.listen(app.listen(port, function() {
 
 console.log("Listening on port " + port)
 
-var timeDatasetLastUpdated = 0;
-var TileSetInProcess=0;
+
 
 const Readable = require('stream').Readable;
 
@@ -123,30 +125,39 @@ class ReadableDataset extends Readable {
   }
 }
 
-
+var s3 = null;   // will hold Amamzon s3 info for updating. 
 
 
 client.createUploadCredentials(function(err, credentials) {
   // Use aws-sdk to stage the file on Amazon S3
-    var s3 = new AWS.S3({
+    s3 = new AWS.S3({
        accessKeyId: credentials.accessKeyId,
        secretAccessKey: credentials.secretAccessKey,
        sessionToken: credentials.sessionToken,
        region: 'us-east-1'});
     console.log('From S3: ' + credentials.accessKeyId);
-    var datasetReader = new ReadableDataset();
-    
-    s3.putObject({
-    Bucket: credentials.bucket,
-    Key: credentials.key,
-   Body: datasetReader
-  }, function(err, resp) {
-        if (err) {
-            console.log("Error ", err);
-        } 
-        if (resp) {
-            console.log("Upload Success ", resp);
-        }   
-     });
-});
+ });
+ 
+ var updateTask = function () {
+    console.log("updateTask");
+    setTimeout(updateTask,30000);
+}
+updateTask();
+ 
+ 
+//    var datasetReader = new ReadableDataset();
+//    
+//    s3.putObject({
+//    Bucket: credentials.bucket,
+//    Key: credentials.key,
+//   Body: datasetReader
+//  }, function(err, resp) {
+//        if (err) {
+//           console.log("Error ", err);
+//        } 
+//        if (resp) {
+//            console.log("Upload Success ", resp);
+//       }   
+//     });
+//});
 
