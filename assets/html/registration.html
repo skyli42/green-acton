@@ -8,31 +8,31 @@
 		<link type="text/css" rel="stylesheet" href="/css/materialize.min.css"  media="screen,projection"/>
 		<link type="text/css" rel="stylesheet" href="../css/style.css"  media="screen,projection"/>
 		<meta name="theme-color" content="green"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="icon" href="/img/logo.png" sizes="192x192">
 	</head>
 	<body>
-		<br><br><br>
-		<center><span class="flow-text" style="color:green;margin-top:0">Welcome to Green Acton</span></center>
+		<br>
+		<center><span class="flow-text" style="color:green;font-size:150%">Welcome to Green Acton</span></center>
 		<div class="row">
-			<br><br>
-			<form id="registration" class="col s4 m4 push-m4">
-				name:<br>
-				<input id="nameInput" type="text"><br>
+			<br>
+			<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
+				name:
+				<input id="nameInput" type="text">
 				<div id="invalidName" style="color:red"></div>
-				email address:<br>
-				<input id="emailAddressInput" type="text"><br>
+				email address:
+				<input id="emailAddressInput" type="text">
 				<div id="invalidEmailAddress" style="color:red"></div>
-				phone number: (optional)<br>
-				<input id="phoneNumberInput" type="text"><br>
+				phone number: (optional)
+				<input id="phoneNumberInput" type="text">
 				<div id="invalidPhoneNumber" style="color:red"></div>
-				group size:<br>
-				<input id="groupSizeInput" type="text"><br>
-				<div id="invalidGroupSize" style="color:red;"></div>
+				group size:
+				<input id="groupSizeInput" type="text">
+				<div id="invalidGroupSize" style="color:red;"></div><br>
 				<input type="submit" value="submit">
-				<br>
 			</form>
 		</div>
 		<script type="text/javascript" src="/js/materialize.min.js"></script>
-					<script src = "/js/registration.js"></script>
-
+		<script src = "../js/registration.js"></script>
 	</body>
 </html>

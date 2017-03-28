@@ -23,25 +23,25 @@ $('#registration').submit(function(event) {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();  
-        $('#invalidName').html("please enter your name<br><br>");
+        $('#invalidName').html("please enter your name<br>");
     }
     else if (!isValidEmailAddress(emailAddressInput)) {
         $('#invalidName').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();   
-        $('#invalidEmailAddress').html("invalid email address<br><br>");
+        $('#invalidEmailAddress').html("invalid email address<br>");
     }
     else if (!isValidPhoneNumber(phoneNumberInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidGroupSize').empty();   
-        $('#invalidPhoneNumber').html("invalid phone number<br><br>");
+        $('#invalidPhoneNumber').html("invalid phone number<br>");
     }
     else if (isNotNumber(groupSizeInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').html("invalid group size<br><br>");
+        $('#invalidGroupSize').html("invalid group size<br>");
     }
     else {
         console.log('hi')
