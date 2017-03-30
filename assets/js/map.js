@@ -1,6 +1,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JlZW5hY3RvbiIsImEiOiJjaXlobXFxdTYwNXpuMzJvZTkyaHZkY3FnIn0.eTMHeFb7rAlnxU08juWXzQ';
 
-var socket = io.connect("http://localhost:3000");
+
+var socket = io.connect();
 
 var map = new mapboxgl.Map({
     container: 'map',
@@ -21,9 +22,8 @@ map.dragRotate.disable();
 // disable map rotation using touch rotation gesture
 map.touchZoomRotate.disableRotation();
 // Create a popup, but don't add it to the map yet.
-var popup = new mapboxgl.Popup({
-    closeButton: false
-});
+var popup = new mapboxgl.Popup(
+    {closeButton: false, offset: 25, closeOnClick: true});
 
 var curFeatureIds = [];
 var CurFeatures = [];
@@ -46,17 +46,14 @@ map.on('mousemove', function(e) {
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-
-    // Change the cursor style as a UI indicator.
-     map.getCanvas().style.cursor = features.length ? 'pointer' : '';
     
-    if (features.length) {    
-
+    // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = features.length ? 'pointer' : '';  
+    if (features.length) {  
         var feature = features[0];
-     
         var location 
              = feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)];
-        popup.setLngLat(location)
+            popup.setLngLat(location)
             .setText(feature_description(feature))
             .addTo(map);
     }
@@ -70,33 +67,20 @@ map.on('click', function(e) {
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-    if(features.length == 0){ //clicked on nothing
-        for(var i in CurFeatures){
-            var ind = Number(i)+1; //i is a string for whatever reason
-            map.removeLayer('segment-'+Number(ind));
-            map.removeSource('segment-'+Number(ind));
-            $('#selected').empty();
-        }
-        CurFeatures = [];
-        curFeatureIds = [];
-    }
-
-    //socket.emit('sendFeatures', {features});
+    
+     
     for (var i = 0; i < features.length; i++) {
         console.log(features[i])
         var idToSend = features[i].properties.street + "" + features[i].properties.id; 
-        if (!curFeatureIds.includes(idToSend)) {
+        var alreadySelected = curFeatureIds.indexOf(idToSend);
+        console.log("selected index is " + alreadySelected);
+        if (alreadySelected == -1){
+            // not already selected - select it
             curFeatureIds.push(idToSend);
             CurFeatures.push(features[i]);
-            console.log(idToSend);
-            console.log(curFeatureIds)
-            // $('#segments').html('Your Current Street Segments<br><br>');
-            // for (var j = 0; j < curFeatureIds.length; j++) {
-            //     $('#selected').append('<li>' + feature_description(CurFeatures[j]) + '</li><br>');
-            // }
-            $('#selected').append("<li>"+feature_description(features[i])+"</li><br>")
+            console.log("will select" + idToSend);
             map.addLayer({
-                'id': 'segment-' + CurFeatures.length,
+                'id': idToSend,
                 'type': 'line',
                 'source': {
                     'type': 'geojson',
@@ -109,10 +93,19 @@ map.on('click', function(e) {
                     'line-width': 10
                 }
             });
+            } else{ 
+            console.log("will deselect " + idToSend); 
+            curFeatureIds.splice( alreadySelected, 1 ); 
+            CurFeatures.splice ( alreadySelected, 1);  
+            map.removeLayer(idToSend);  
+            map.removeSource(idToSend);               
         }
-    }
+     }
+     $('#selected').empty();
+     for (var j = 0; j < CurFeatures.length; j++) {
+        $('#selected').append("<li>"+feature_description(CurFeatures[j])+"</li><br>")
+     }
 });
-
 
 
 $('#form').submit(function(event) {
