@@ -269,4 +269,18 @@ var credentials = null; // bucket access info
   // kick off update task
 updateTask();
  
-
+//    var datasetReader = new ReadableDataset();
+//    
+//    s3.putObject({
+//    Bucket: credentials.bucket,
+//    Key: credentials.key,
+//   Body: datasetReader
+//  }, function(err, resp) {
+//        if (err) {
+//           console.log("Error ", err);
+//        } 
+//        if (resp) {
+//            console.log("Upload Success ", resp);
+//       }   
+//     });
+//});
