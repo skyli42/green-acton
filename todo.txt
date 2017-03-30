@@ -25,6 +25,12 @@ Add code to check the email name in the map submission against the users, and se
 
 We need a way to get a report of who has signed up for what segments, and/or for people to see what segments they have signed up for.
 
-It would be nice to also support click and drag for selecting segments. Or,in the mean time, write a timy bit of code to reset the segments to state=3 (unknown - black lines). 
- 
-Move secret key to environment file
+It would be nice to also support click and drag for selecting segments. Or,in the mean time, write a timy bit of code to reset the segments to state=3 (unknown - black lines)? (or just export / edit / re-export)
+
+Maybe have max number for displaying selected segments, and just describe any past N as 'and more')
+
+(DONE) Move secret key to environment file
+
+How do we deal with adding new segments? How do we update the mongo database? 
+
+Maybe we grey out the submit button if no streets are selected, and highlight the instructions to select some segments?
