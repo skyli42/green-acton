@@ -10,29 +10,41 @@
 		<meta name="theme-color" content="green"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="icon" href="/img/logo.png" sizes="192x192">
+		<title>Registration</title>
 	</head>
 	<body>
-		<br>
-		<center><span class="flow-text" style="color:green;font-size:150%">Welcome to Green Acton</span></center>
-		<div class="row">
-			<br>
-			<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
-				name:
-				<input id="nameInput" type="text">
-				<div id="invalidName" style="color:red"></div>
-				email address:
-				<input id="emailAddressInput" type="text">
-				<div id="invalidEmailAddress" style="color:red"></div>
-				phone number: (optional)
-				<input id="phoneNumberInput" type="text">
-				<div id="invalidPhoneNumber" style="color:red"></div>
-				group size:
-				<input id="groupSizeInput" type="text">
-				<div id="invalidGroupSize" style="color:red;"></div><br>
-				<input type="submit" value="submit">
-			</form>
+		<nav class="green hide-on-med-and-down">
+			<div class="nav-wrapper">
+				<div class="row"><a href="#" class="brand-logo col push-m1 push-l1">Green Acton</a>
+				<ul class="col push-m7 push-l7" id="nav-mobile" class="right hide-on-med-and-down">
+					<li><a style="font-size:120%" href="registration.html">Register</a></li>
+					<li><a style="font-size:120%" href="../../">Map</a></li>
+					<li><a style="font-size:120%" href="about.html">About</a></li>
+				</ul>
+			</div>
 		</div>
-		<script type="text/javascript" src="/js/materialize.min.js"></script>
-		<script src = "../js/registration.js"></script>
-	</body>
+	</nav>
+	<br>
+	<center><span class="flow-text" style="color:green;font-size:150%">Welcome to Green Acton</span></center>
+	<div class="row">
+		<br>
+		<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
+			name:
+			<input id="nameInput" type="text">
+			<div id="invalidName" style="color:red"></div>
+			email address:
+			<input id="emailAddressInput" type="text">
+			<div id="invalidEmailAddress" style="color:red"></div>
+			phone number: (optional)
+			<input id="phoneNumberInput" type="text">
+			<div id="invalidPhoneNumber" style="color:red"></div>
+			group size:
+			<input id="groupSizeInput" type="text">
+			<div id="invalidGroupSize" style="color:red;"></div><br>
+			<input type="submit" value="submit">
+		</form>
+	</div>
+	<script type="text/javascript" src="/js/materialize.min.js"></script>
+	<script src = "../js/registration.js"></script>
+</body>
 </html>
