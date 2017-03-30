@@ -20,9 +20,10 @@ When hitting submit, change the segments to highlight in the new state color, an
 
 Add code to check the email name in the map submission against the users, and send them to the registration page if their name isn't recognized.  
 
-Now that we have the app on Heroku, I can see how bad it looks on a phone. Redo the divs so that they also look OK on a phone. 
 
-need a way to get a report of who has signed up for what segments, and/or for people to see what segments they have signed up for.
+(DONE) Now that we have the app on Heroku, I can see how bad it looks on a phone. Redo the divs so that they also look OK on a phone. 
+
+We need a way to get a report of who has signed up for what segments, and/or for people to see what segments they have signed up for.
 
 It would be nice to also support click and drag for selecting segments. Or,in the mean time, write a timy bit of code to reset the segments to state=3 (unknown - black lines)? (or just export / edit / re-export)
 
