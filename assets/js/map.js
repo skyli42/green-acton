@@ -38,6 +38,9 @@ function feature_description(feature) {
                     ? 'end of the road' : feature.properties.end);
 }
 
+
+// just a simple comment here to study github / heroku integration
+
 map.on('mousemove', function(e) {
     var bbox = [
         [e.point.x - 8, e.point.y - 8],
