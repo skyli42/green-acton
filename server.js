@@ -29,8 +29,11 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/register', function (req, res) {
-    res.sendFile(__dirname+'/assets/html/registration.html');
+    res.sendFile(__dirname+'/assets/registration.html');
 });
+app.get('/about', function(req, res){
+    res.sendFile(__dirname+'/assets/about.html');
+})
 
 var port = process.env.PORT || 3000;
 
