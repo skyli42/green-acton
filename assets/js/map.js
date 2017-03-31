@@ -108,7 +108,7 @@ map.on('click', function(e) {
 });
 
 
-$('#form').submit(function(event) {
+$('#slide-out').submit(function(event) {
     event.preventDefault();
     var emailInput = $('#emailInput').val();
     var stateInput =  $( "input:checked" ).val();
