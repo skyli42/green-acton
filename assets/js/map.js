@@ -42,6 +42,7 @@ function feature_description(feature) {
 }
 
 
+
 map.on('mousemove', function(e) {
     var bbox = [
         [e.point.x - 8, e.point.y - 8],
