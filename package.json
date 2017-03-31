@@ -14,7 +14,7 @@
     "mapbox": "^1.0.0-beta6",
     "mapbox.js": "^3.0.1",
     "mongodb": "^2.2.25",
-    "mongoose": "^4.8.4",
+    "mongoose": "^4.9.2",
     "socket.io": "^1.7.3",
     "stream": "0.0.2",
     "temp": "^0.8.3"
