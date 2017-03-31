@@ -21,6 +21,9 @@ map.addControl(new mapboxgl.GeolocateControl());
 map.dragRotate.disable();
 // disable map rotation using touch rotation gesture
 map.touchZoomRotate.disableRotation();
+//a scal
+map.addControl(new mapboxgl.ScaleControl({unit: 'imperial'}));
+
 // Create a popup, but don't add it to the map yet.
 var popup = new mapboxgl.Popup(
     {closeButton: false, offset: 25, closeOnClick: true});
