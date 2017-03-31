@@ -12,3 +12,9 @@ body{
 
 html{
 }
+#logo{
+	display: inline;
+}
+#heading_text{
+	float:right;
+}

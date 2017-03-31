@@ -15,43 +15,46 @@
 			<div class="nav-wrapper">
 				<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
 				<div class="row">
-					<a href="#" class="brand-logo col push-m1 push-l1">Green Acton</a>
-					<ul class="right col pull-m1 pull-l1" id="nav-mobile">
-						<li><a style="font-size:120%" href="/register">Register</a></li>
-						<li><a style="font-size:120%" href="/">Map</a></li>
-						<li><a style="font-size:120%" href="/about">About</a></li>
-					</ul>
-				</div>
+					<a href="/" class="brand-logo col push-m1 push-l1">
+						<img id = "logo" src ="/img/logo.png" height = "65px">
+						&nbsp;
+						<span id ="heading_text">Acton Cleanup Week April 22-29</span>
+					</a>					<ul class="right col pull-m1 pull-l1" id="nav-mobile">
+					<li><a style="font-size:120%" href="/register">Register</a></li>
+					<li><a style="font-size:120%" href="/">Map</a></li>
+					<li><a style="font-size:120%" href="/about">About</a></li>
+				</ul>
 			</div>
-		</nav>
-		<br>
-		<center><span class="flow-text" style="color:green;font-size:200%">Welcome to Green Acton</span></center>
-		<div class="row">
-			<br>
-			<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
-				name:
-				<input id="nameInput" type="text">
-				<div id="invalidName" style="color:red"></div>
-				email address:
-				<input id="emailAddressInput" type="text">
-				<div id="invalidEmailAddress" style="color:red"></div>
-				phone number: (optional)
-				<input id="phoneNumberInput" type="text">
-				<div id="invalidPhoneNumber" style="color:red"></div>
-				group size:
-				<input id="groupSizeInput" type="text">
-				<div id="invalidGroupSize" style="color:red;"></div><br>
-				<input type="submit" value="submit">
-			</form>
 		</div>
-		<script>
-			var socket = io();
-		</script>
-		<button id = "b">Submit</button>
-		<script type="text/javascript" src="/js/materialize.min.js"></script>
-		<script src = "/js/registration.js"></script>
-		<script type="text/javascript" src="/js/materialize.min.js"></script>
-		<script src = "/js/registration.js"></script>
-		<script src="/js/navbar.js"></script>
-	</body>
+	</nav>
+	<br>
+	<center><span class="flow-text" style="color:green;font-size:200%">Welcome to Green Acton</span></center>
+	<div class="row">
+		<br>
+		<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
+			name:
+			<input id="nameInput" type="text">
+			<div id="invalidName" style="color:red"></div>
+			email address:
+			<input id="emailAddressInput" type="text">
+			<div id="invalidEmailAddress" style="color:red"></div>
+			phone number: (optional)
+			<input id="phoneNumberInput" type="text">
+			<div id="invalidPhoneNumber" style="color:red"></div>
+			group size:
+			<input id="groupSizeInput" type="text">
+			<div id="invalidGroupSize" style="color:red;"></div><br>
+			<input type="submit" value="submit">
+		</form>
+	</div>
+	<script>
+		var socket = io();
+	</script>
+	<button id = "b">Submit</button>
+	<script type="text/javascript" src="/js/materialize.min.js"></script>
+	<script src = "/js/registration.js"></script>
+	<script type="text/javascript" src="/js/materialize.min.js"></script>
+	<script src = "/js/registration.js"></script>
+	<script src="/js/navbar.js"></script>
+</body>
 </html>
