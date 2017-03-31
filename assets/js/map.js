@@ -38,7 +38,7 @@ function feature_description(feature) {
                     ? 'end of the road' : feature.properties.end);
 }
 
-var stateMap =[];  // first steps in improving colors of selected objects
+var stateMap =[];  // first steps in improving UI/colors of selected objects
 
 map.on('mousemove', function(e) {
     var bbox = [
