@@ -10,14 +10,15 @@ var http = require('http');
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
+
 var fs   = require('fs');
 var temp = require('temp');
 
 var dataset_id = 'cj05n0i9p0ma631qltnyigi85';  // id for segments
-// var dataset_id = 'cj0tk7a6n04ca2qrx1xaizc6r'; // smaller dataset for testing
+var dataset_id_testing = 'cj0tk7a6n04ca2qrx1xaizc6r'; // smaller dataset for testing
 // var tileset_name = 'acton-segments';
-var tileset_name = 'acton-segments';
-var tilseset_id = 'cj05n0i9p0ma631qltnyigi85-1bg4y';
+var tileset_name = 'smallsegments';
+var tilseset_id = 'cj0tk7a6n04ca2qrx1xaizc6r-3c37i';
 var username = "greenacton"
 
 var TileSetNeedsUpdating = false;
@@ -29,12 +30,18 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/register', function (req, res) {
-    res.sendFile(__dirname+'/assets/html/registration.html');
+    res.sendFile(__dirname+'/assets/registration.html');
 });
+app.get('/about', function(req, res){
+    res.sendFile(__dirname+"/assets/about.html");
+})
+
+
 
 var port = process.env.PORT || 3000;
 
 var skey = process.env.MAPBOX_SK;
+
 console.log('Need MAPBOX_SK in environment: ' + skey);
 var client = new MapboxClient(skey);
 
@@ -46,15 +53,11 @@ var ID = mongoose.model('id', idSchema);
 
 mongoose.connect(url).then(function () {
     console.log("connected to mongo database");
-  
-    io.on('connection', function(socket) {
+    io.sockets.on('connection', function(socket) {
         console.log("a user connected!")
         socket.on('registration', function (data) {
-            console.log("arrived");
-            console.log("name: " + data.name);
-            console.log("email address: " + data.emailAddress);
-            console.log("phone number: " +  data.phoneNumber);
-            console.log("group number: " + data.groupNumber);
+            //add to database
+            console.log(data);
         });
 
         socket.on('sendInfo', function (data) {
@@ -81,6 +84,7 @@ mongoose.connect(url).then(function () {
     });
 })
 
+
 server.listen(app.listen(port, function() {
     var host = server.address().address;
     var port = server.address().port;
@@ -104,15 +108,15 @@ class ReadableDataset extends Readable {
     super(opt);
     this._max = 10;
     this._index = 1;
-    this.length = 1e8; //  big max, reduced as we read actual data 
+    this.length = 1e9; // need to set a max here or else AWS gives up too early. 
     datasetReader = this;
-    this.objectCount = 50;
+    this.objectCount = 2;
     this.pagination = null;
     this.featuresRead = 0;  
     this.CharsSent = 0;
-//    this.debugbuffer = "";
+    this.debugbuffer = "";
 
-client.readDataset(dataset_id,
+client.readDataset(dataset_id_testing,
     function(err, dataset_data) {
         if (err) {console.log('dataset read error: ' + err );}
         console.log('dataset data: ' + JSON.stringify(dataset_data) );
@@ -129,27 +133,27 @@ client.readDataset(dataset_id,
     if (datasetReader.pagination != null) {options.start = datasetReader.pagination;}
     console.log(JSON.stringify(options));
       
-    client.listFeatures(dataset_id, options, function(err, featureObject) {
-      		// Pause the stream to avoid race conditions while pushing in the new objects.
-		// Without this, _read() would be called again from inside each push(),
-		// resulting in multiple parallel calls to listFeatures
-	   
+    client.listFeatures(dataset_id_testing, options, function(err, featureObject) {
+            // Pause the stream to avoid race conditions while pushing in the new objects.
+        // Without this, _read() would be called again from inside each push(),
+        // resulting in multiple parallel calls to listFeatures
+       
        const wasPaused = datasetReader.isPaused();
         datasetReader.pause();
         console.log('was paused? ' + wasPaused);
         
-	   var newChars = 0;
+       var newChars = 0;
         
        if (datasetReader.pagination == null) 
         {
             // just starting: prolog to the JSON
-            datasetReader.push(JSONprolog); // datasetReader.debugbuffer += JSONprolog;
+            datasetReader.push(JSONprolog); datasetReader.debugbuffer += JSONprolog;
             newChars += JSONprolog.length;
         } 
        var featureCount = featureObject.features.length;
        var featureString = JSON.stringify(featureObject.features).slice(1,-1); //remove square brackets
        
-//       console.log('feature count: '+ featureCount + ' feature data: ' + featureString);
+       console.log('feature count: '+ featureCount + ' feature data: ' + featureString);
         
        
        if (featureCount != 0) {
@@ -157,21 +161,21 @@ client.readDataset(dataset_id,
            datasetReader.CharsSent += newChars;    
            datasetReader.pagination = featureObject.features[featureCount-1].id;
            datasetReader.length = datasetReader.CharsSent + EnoughExtraChars;     // there's some more - keep calling me back, please
-           datasetReader.push(featureString);   // datasetReader.debugbuffer += featureString;
+           datasetReader.push(featureString);   datasetReader.debugbuffer += featureString;
            datasetReader.featuresRead += featureCount;
            if (datasetReader.featuresRead != datasetProperties.features) // not the last set of features, so add a seperator
             {
                 newChars+=JSONsep.length;
                 datasetReader.CharsSent += JSONsep.length;
                 datasetReader.length = datasetReader.CharsSent + EnoughExtraChars;   
-                datasetReader.push(JSONsep);  // datasetReader.debugbuffer += JSONsep;
+                datasetReader.push(JSONsep);  datasetReader.debugbuffer += JSONsep;
             }
        } else { // it's the end of the feature collection
            newChars+=JSONepilog.length;
            datasetReader.pagination = null;
            datasetReader.CharsSent += newChars;   
            datasetReader.length = datasetReader.CharsSent;  
-           datasetReader.push(JSONepilog);  // datasetReader.debugbuffer += JSONepilog;
+           datasetReader.push(JSONepilog);  datasetReader.debugbuffer += JSONepilog;
            datasetReader.push(null);
         }
         
@@ -181,7 +185,7 @@ client.readDataset(dataset_id,
         
         if (!wasPaused) {
         
-			// This will deliver the objects and trigger the next call to _read() once they have been consumed.
+            // This will deliver the objects and trigger the next call to _read() once they have been consumed.
             datasetReader.resume();
         } // end if
     }); // end listFeatures callback
@@ -229,7 +233,7 @@ var credentials = null; // bucket access info
                             console.log("putObject Error ", err);
                         } else {                 
                             console.log("putObject Success ", resp);
-                            // console.log('preparing to upload ' + datasetReader.debugbuffer.length + '/' + datasetReader.length + ' chars (actual/claimed): ' + datasetReader.debugbuffer);
+                            console.log('preparing to upload ' + datasetReader.debugbuffer.length + '/' + datasetReader.length + ' chars (actual/claimed): ' + datasetReader.debugbuffer);
                             client.createUpload({
                                 tileset: username + '.' + tilseset_id,
                                 name: tileset_name,
@@ -244,7 +248,7 @@ var credentials = null; // bucket access info
                                         {
                                             setTimeout(progressMeter,30000, upload.id);
                                         } else {
-                                            console.log('finished uploading ');
+                                            console.log('finished uploading ' + datasetReader.debugbuffer.length + ' chars: ' + datasetReader.debugbuffer);
                                             delete datasetReader; datasetReader = null;
                                             delete s3; s3 = null;
                                             TileSetInProcess = false;            

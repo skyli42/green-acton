@@ -6,3 +6,5 @@ $('.button-collapse').sideNav({
         // Show sideNav
     }
   );
+
+$(".button-collapse").sideNav();

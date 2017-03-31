@@ -1,3 +1,4 @@
+
 function isValidEmailAddress(emailAddress) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(emailAddress);
@@ -11,8 +12,9 @@ function isValidPhoneNumber(phoneNumber) {
 function isNotNumber(string) {
     return isNaN(string) || string == "";
 }
-
 $('#registration').submit(function(event) {
+    event.preventDefault();
+    event.stopImmediatePropagation() 
     console.log("submit")
     var nameInput = $('#nameInput').val();
     var emailAddressInput = $('#emailAddressInput').val();
@@ -44,7 +46,6 @@ $('#registration').submit(function(event) {
         $('#invalidGroupSize').html("invalid group size<br>");
     }
     else {
-        console.log('hi')
         socket.emit('registration', {
             name: nameInput,
             emailAddress: emailAddressInput,
