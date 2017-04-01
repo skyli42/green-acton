@@ -30,8 +30,11 @@
 			</div>
 		</nav>
 		<a style="margin-left:0%;margin-bottom:0%;" href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons"></i></a>
-		<div class="row">
-			<form id="slide-out" class="fixed" style="padding:3%">
+		<div class="row" style="margin-top: 1.8%">
+			<div class="col s12 m7 l6 push-l1">
+				<div id='map'></div>
+			</div>
+			<form class="col s12 m12 l4 push-l1" style="padding:5%">
 				<b>email address:</b>
 				<input placeholder = "example@example.com" id="emailInput" type="text">
 				<div id="invalidEmail"></div>
@@ -42,6 +45,7 @@
 				</div>
 				<input class="with-gap" id="stateInput0" type="radio" name="Status" value="0">
 				<label for="stateInput0" style="color:red">These need cleaning.</label>
+				<br />
 				<input class="with-gap" id="stateInput1" type="radio" name="Status" value="1" checked="checked">
 				<label for="stateInput1" style="color:#2E96FF">I will clean these.</label>
 				<br />
@@ -51,13 +55,8 @@
 				<div id="submitted" style="color:green"></div>
 			</form>
 		</div>
-		<div class="row">
-			<div class="col s12 m10 push-m1 l7 push-l3">
-				<div id='map'></div>
-			</div>
-			<script src = "/js/map.js"></script>
-			<script type="text/javascript" src="/js/materialize.min.js"></script>
-			<script src="/js/navbar.js"></script>
-		</div>
+		<script src = "/js/map.js"></script>
+		<script type="text/javascript" src="/js/materialize.min.js"></script>
+		<script src="/js/navbar.js"></script>
 	</body>
 </html>
