@@ -110,6 +110,9 @@ map.on('click', function(e) {
         }
      }
     $('#selected').empty();
+    if (CurFeatures != 0) {
+        $('#clear').removeClass('disabled')
+    }
     if(!hasMaxedSegments()) {
         for (var i = 0; i < CurFeatures.length && !hasMaxedSegments(); i++) {
             $('#selected').append("<li>"+feature_description(CurFeatures[i])+"</li><br>")
@@ -136,6 +139,11 @@ function HandleStateChange()
 $('#stateInput0').change(function(event){HandleStateChange();});
 $('#stateInput1').change(function(event){HandleStateChange();});
 $('#stateInput2').change(function(event){HandleStateChange();});
+
+$('#clear').trigger(function(event) {
+    $('#segments').empty()
+    event.preventDefault()
+})
 
 $('#mapform').submit(function(event) {
     event.preventDefault();
@@ -167,7 +175,5 @@ function isValidEmail(emailAddress) {
 
 function hasMaxedSegments() {
     var divHeight = $('#segments').innerHeight()
-    console.log("divHeight: " + divHeight)
-    console.log("third bodyHeight: " + (bodyHeight/3))
     return divHeight >= bodyHeight / 3.2
 }

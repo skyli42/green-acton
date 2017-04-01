@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<script src='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
 		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'/>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
@@ -37,12 +38,14 @@
 			<form id="mapform" class="col s12 m12 l4 push-l1" style="padding-left:5%;padding-right:5%;padding-top:2%">
 				<b>email address:</b>
 				<input placeholder = "example@example.com" id="emailInput" type="text">
-				<div id="invalidEmail"></div>
+				<div id="invalidEmail" style="color:red"></div>
 				<b>Your Current Street Segments</b>
 				<div class="collection" id="segments">
 					<br>
 					<div id="selected" style="font-size:80%;padding-left:2%;line-height:100%"></div>
 				</div>
+				<button id="clear" class="disabled green btn waves-effect waves-light">Clear<i class="small material-icons right">clear_all</i></button><br><br>
+				<div id="submitted" style="color:green"></div>
 				<input class="with-gap" id="stateInput0" type="radio" name="Status" value="0">
 				<label for="stateInput0" style="color:red">These need cleaning.</label>
 				<br />
@@ -51,7 +54,7 @@
 				<br />
 				<input class="with-gap" id="stateInput2" type="radio" name="Status" value="2">
 				<label for="stateInput2" style="color:green">These are clean.</label><br><br>
-				<input type="submit" value="submit">
+				<button class="green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
 				<div id="submitted" style="color:green"></div>
 			</form>
 		</div>
