@@ -3,18 +3,11 @@
 }
 
 #map{
-	width: 75%; height: 97%;
+	width: 50vw; height: 40vw;
 	margin: 0 auto;
-}
-body{
-	font-family: Scada;
+	margin-top: 1.8%;
 }
 
 html{
-}
-#logo{
-	display: inline;
-}
-#heading_text{
-	float:right;
+	font-family: Scada;
 }
