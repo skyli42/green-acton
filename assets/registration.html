@@ -40,7 +40,7 @@
 			</div>
 		</nav>
 		<br>
-		<center><span class="green-text flow-text" style="font-size:200%">Welcome to Green Acton</span></center>
+		<center><span class="green-text flow-text" style="font-size:200%">Welcome to Acton Cleanup Day</span></center>
 		<div class="row">
 			<br>
 			<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
@@ -49,7 +49,11 @@
 					<input id="icon_prefix" type="text" class="validate">
 					<label for="icon_prefix">First Name</label>
 				</div>
-				
+				<div id="streetAddressInput" class="input-field">
+					<i class="material-icons prefix">language</i>
+					<input id="icon_prefix" type="text" class="validate">
+					<label for="icon_prefix">Street Address</label>
+				</div>
 				<div id="emailAddressInput" class="input-field">
 					<i class="material-icons prefix">email</i>
 					<input id="icon_prefix" type="email" class="validate">
@@ -62,8 +66,8 @@
 				</div>
 				<div id="groupSizeInput" class="input-field">
 					<i class="material-icons prefix">supervisor_account</i>
-					<input id="icon_prefix" type="number" class="validate">
-					<label for="icon_prefix">Group Size</label>
+					<input id="icon_prefix" type="number" min=1 class="validate">
+					<label for="icon_prefix">Group Size (optional)</label>
 				</div>
 				<br>
 				<button id="register" class="green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
