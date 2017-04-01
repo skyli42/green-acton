@@ -31,7 +31,7 @@ var popup = new mapboxgl.Popup(
 var curFeatureIds = [];
 var CurFeatures = [];
 
-const bodyHeight = $('body').height()
+const BODY_HEIGHT = $('body').height()
 
 function feature_description(feature) {
   return  feature.properties.street 
@@ -112,9 +112,11 @@ map.on('click', function(e) {
     $('#selected').empty();
     if (CurFeatures != 0) {
         $('#clear').removeClass('disabled')
+        $('#invalidEmail').empty();
     }
     if(!hasMaxedSegments()) {
         for (var i = 0; i < CurFeatures.length && !hasMaxedSegments(); i++) {
+            console.log("append")
             $('#selected').append("<li>"+feature_description(CurFeatures[i])+"</li><br>")
         }
     }
@@ -125,7 +127,6 @@ map.on('click', function(e) {
 
 map.on('move', function(event){
     $('body').css("overflow", "hidden")
-    // $('document').css("margin", "0")
     $('body').css("height", "100%")
 })
 
@@ -150,9 +151,10 @@ $('#stateInput0').change(function(event){HandleStateChange();});
 $('#stateInput1').change(function(event){HandleStateChange();});
 $('#stateInput2').change(function(event){HandleStateChange();});
 
-$('#clear').trigger(function(event) {
-    $('#segments').empty()
-    event.preventDefault()
+$('#clear').click(function(event) {
+    $('#selected').empty()
+    $('#clear').addClass('disabled')
+
 })
 
 $('#mapform').submit(function(event) {
@@ -162,7 +164,7 @@ $('#mapform').submit(function(event) {
     
     if (!isValidEmail(emailInput)) {
         $('#submitted').empty();
-        $('#segments').empty();
+        $('#segments').html('<br>');
         $('#invalidEmail').html("invalid email address");
     } else {
         socket.emit('sendInfo', {
@@ -185,5 +187,5 @@ function isValidEmail(emailAddress) {
 
 function hasMaxedSegments() {
     var divHeight = $('#segments').innerHeight()
-    return divHeight >= bodyHeight / 3.2
+    return divHeight >= BODY_HEIGHT / 3.2
 }
