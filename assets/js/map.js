@@ -31,6 +31,8 @@ var popup = new mapboxgl.Popup(
 var curFeatureIds = [];
 var CurFeatures = [];
 
+const bodyHeight = $('body').height()
+
 function feature_description(feature) {
   return  feature.properties.street 
                 + ' between ' 
@@ -40,7 +42,6 @@ function feature_description(feature) {
                 + ((feature.properties.end == null) 
                     ? 'end of the road' : feature.properties.end);
 }
-
 
 map.on('mousemove', function(e) {
     var bbox = [
@@ -108,10 +109,15 @@ map.on('click', function(e) {
             map.removeSource(idToSend);               
         }
      }
-     $('#selected').empty();
-     for (var j = 0; j < CurFeatures.length; j++) {
-        $('#selected').append("<li>"+feature_description(CurFeatures[j])+"</li><br>")
-     }
+    $('#selected').empty();
+    if(!hasMaxedSegments()) {
+        for (var i = 0; i < CurFeatures.length && !hasMaxedSegments(); i++) {
+            $('#selected').append("<li>"+feature_description(CurFeatures[i])+"</li><br>")
+        }
+    }
+    if (hasMaxedSegments()) {
+        $('#selected').append("and more")
+    }
 });
 
 function HandleStateChange()
@@ -157,4 +163,11 @@ $('#mapform').submit(function(event) {
 function isValidEmail(emailAddress) {
     var regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return regEx.test(emailAddress);
+}
+
+function hasMaxedSegments() {
+    var divHeight = $('#segments').innerHeight()
+    console.log("divHeight: " + divHeight)
+    console.log("third bodyHeight: " + (bodyHeight/3))
+    return divHeight >= bodyHeight / 3.2
 }
