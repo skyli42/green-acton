@@ -112,6 +112,7 @@ map.on('click', function(e) {
     $('#selected').empty();
     if (CurFeatures != 0) {
         $('#clear').removeClass('disabled')
+        $('#submit').removeClass('disabled')
         $('#invalidEmail').empty();
     }
     if(!hasMaxedSegments()) {
@@ -126,6 +127,7 @@ map.on('click', function(e) {
 });
 
 map.on('move', function(event){
+    $('html,body').animate({scrollTop:0},0);
     $('body').css("overflow", "hidden")
     $('body').css("height", "100%")
 })
@@ -154,7 +156,7 @@ $('#stateInput2').change(function(event){HandleStateChange();});
 $('#clear').click(function(event) {
     $('#selected').empty()
     $('#clear').addClass('disabled')
-
+    $('#submit').addClass('disabled')
 })
 
 $('#mapform').submit(function(event) {

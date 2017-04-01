@@ -1,62 +1,81 @@
 <html>
 	<head>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href='//fonts.googleapis.com/css?family=Scada' rel='stylesheet'>
 		<link type="text/css" rel="stylesheet" href="/css/materialize.min.css"  media="screen,projection"/>
 		<link type="text/css" rel="stylesheet" href="/css/style.css"  media="screen,projection"/>
 		<meta name="theme-color" content="green"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 		<link rel="icon" href="/img/logo.png" sizes="192x192">
 		<title>Registration</title>
 	</head>
 	<body>
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-		<nav class="green hide-on-med-and-down">
+		<nav class="green">
 			<div class="nav-wrapper">
-				<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-				<div class="row">
-					<a href="/" class="brand-logo col push-m1 push-l1">
-						<div class="row">
-							<img id = "logo" src ="/img/logo.png" height = "65px">
-							&nbsp;
-							<span id ="heading_text">Acton Cleanup Week April 22-29</span>
-						</div>
-					</a>					
-					<ul class="right col pull-m1 pull-l1" id="nav-mobile">
-					<li><a style="font-size:120%" href="/register">Register</a></li>
-					<li><a style="font-size:120%" href="/">Map</a></li>
-					<li><a style="font-size:120%" href="/about">About</a></li>
-				</ul>
+				<div class="container">
+					<a style="margin-left:0%;margin-bottom:0%;" href="#" data-activates="slide-out" class="button-collapse"><i class=" material-icons"></i></a>
+					<a href="/" class="brand-logo">
+						<img id = "logo" class="hide-on-med-and-down" src ="/img/logo.png" height = "65px">
+						&nbsp;
+						<span style="font-size:80%" class="hide-on-med-and-down">Acton Cleanup Week April 22-29</span>
+						<span style="font-size:80%" class="hide-on-med-and-up">Acton Cleanup</span>
+					</a>
+					<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+					<ul class="right hide-on-med-and-down">
+						<li><a style="font-size:120%" href="/register">Register</a></li>
+						<li><a style="font-size:120%" href="/">Map</a></li>
+						<li><a style="font-size:120%" href="/about">About</a></li>
+					</ul>
+					<ul class="side-nav" id="mobile-demo" style="text-align:center">
+						<br>
+						<li><a class="green-text waves-effect waves-green" style="font-size:120%" href="/register">Register</a></li>
+						<li><a class="green-text waves-effect waves-green" style="font-size:120%" href="/">Map</a></li>
+						<li><a class="green-text waves-effect waves-green" style="font-size:120%" href="/about">About</a></li>
+					</ul>
+				</div>
 			</div>
-		</div>
-	</nav>
-	<br>
-	<center><span class="flow-text" style="color:green;font-size:200%">Welcome to Green Acton</span></center>
-	<div class="row">
+		</nav>
 		<br>
-		<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
-			name:
-			<input id="nameInput" type="text">
-			<div id="invalidName" style="color:red"></div>
-			email address:
-			<input id="emailAddressInput" type="text">
-			<div id="invalidEmailAddress" style="color:red"></div>
-			phone number: (optional)
-			<input id="phoneNumberInput" type="text">
-			<div id="invalidPhoneNumber" style="color:red"></div>
-			group size:
-			<input id="groupSizeInput" type="text">
-			<div id="invalidGroupSize" style="color:red;"></div><br>
-			<input type="submit" value="submit">
-		</form>
-	</div>
-	<script>
-		var socket = io();
-	</script>
-	<script type="text/javascript" src="/js/materialize.min.js"></script>
-	<script src = "/js/registration.js"></script>
-	<script type="text/javascript" src="/js/materialize.min.js"></script>
-	<script src = "/js/registration.js"></script>
-	<script src="/js/navbar.js"></script>
-</body>
+		<center><span class="green-text flow-text" style="font-size:200%">Welcome to Green Acton</span></center>
+		<div class="row">
+			<br>
+			<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
+				<div id="nameInput" class="input-field">
+					<i class="material-icons prefix">account_circle</i>
+					<input id="icon_prefix" type="text" class="validate">
+					<label for="icon_prefix">First Name</label>
+				</div>
+				
+				<div id="emailAddressInput" class="input-field">
+					<i class="material-icons prefix">email</i>
+					<input id="icon_prefix" type="email" class="validate">
+					<label for="icon_prefix">Email Address</label>
+				</div>
+
+				<div id="phoneNumberInput" class="input-field">
+					<i class="material-icons prefix">phone</i>
+					<input id="icon_prefix" type="tel" class="validate">
+					<label for="icon_prefix">Phone Number (optional)</label>
+				</div>
+
+				<div id="GroupSizeInput" class="input-field">
+					<i class="material-icons prefix">supervisor_account</i>
+					<input id="icon_prefix" type="number" class="validate">
+					<label for="icon_prefix">Group Size</label>
+				</div>
+				<br>
+				<button id="register" class="green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
+			</form>
+		</div>
+		<script>
+			var socket = io();
+		</script>
+		<script type="text/javascript" src="/js/materialize.min.js"></script>
+		<script src = "/js/registration.js"></script>
+		<script type="text/javascript" src="/js/materialize.min.js"></script>
+		<script src = "/js/registration.js"></script>
+		<script src="/js/navbar.js"></script>
+	</body>
 </html>
