@@ -11,7 +11,6 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var fs   = require('fs');
-var temp = require('temp');
 
 var dataset_id = 'cj05n0i9p0ma631qltnyigi85';  // id for segments
 // var dataset_id = 'cj0tk7a6n04ca2qrx1xaizc6r'; // smaller dataset for testing

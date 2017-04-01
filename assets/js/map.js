@@ -53,7 +53,7 @@ map.on('mousemove', function(e) {
     });
     
     // Change the cursor style as a UI indicator.
-        map.getCanvas().style.cursor = features.length ? 'pointer' : '';  
+    map.getCanvas().style.cursor = features.length ? 'pointer' : '';  
     if (features.length) {  
         var feature = features[0];
         var location 
@@ -122,6 +122,16 @@ map.on('click', function(e) {
         $('#selected').append("and more")
     }
 });
+
+map.on('move', function(event){
+    $('body').css("overflow", "hidden")
+    // $('document').css("margin", "0")
+    $('body').css("height", "100%")
+})
+
+map.on('moveend', function(event){
+    $('body').css("overflow", "scroll")
+})
 
 function HandleStateChange()
 {
