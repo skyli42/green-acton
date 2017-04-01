@@ -36,3 +36,39 @@ html{
 .input-field .prefix.active {
  color: #4caf50;
 }
+
+@media (min-width: 858px) {
+    html {
+        font-size: 20px;
+    }
+    #welcome {
+    	font-size: 200%;
+    }
+}
+
+@media (min-width: 780px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 702px) {
+    html {
+        font-size: 17px;
+    }
+}
+
+@media (min-width: 724px) {
+    html {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 623px) {
+    html {
+        font-size: 11px;
+    }
+    #welcome {
+    	font-size: 200%;
+    }
+}
