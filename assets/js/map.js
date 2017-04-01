@@ -21,9 +21,6 @@ map.addControl(new mapboxgl.GeolocateControl());
 map.dragRotate.disable();
 // disable map rotation using touch rotation gesture
 map.touchZoomRotate.disableRotation();
-//a scal
-map.addControl(new mapboxgl.ScaleControl({unit: 'imperial'}));
-
 // Create a popup, but don't add it to the map yet.
 var popup = new mapboxgl.Popup(
     {closeButton: false, offset: 25, closeOnClick: true});
@@ -40,8 +37,6 @@ function feature_description(feature) {
                 + ((feature.properties.end == null) 
                     ? 'end of the road' : feature.properties.end);
 }
-
-
 
 map.on('mousemove', function(e) {
     var bbox = [
@@ -63,9 +58,6 @@ map.on('mousemove', function(e) {
             .addTo(map);
     }
 });
-
-var colorMap =[{rgb:'rgb(238,23,23)'},{rgb:'rgb(22,87,218)'},{rgb:'rgb(0,255,43)'}];  
-
 map.on('click', function(e) {
     // set bbox as 8px rectangle area around clicked point
     var bbox = [
@@ -96,9 +88,9 @@ map.on('click', function(e) {
                 },
                 'layout': {},
                 'paint': {
-                    'line-color': colorMap[parseInt($( "input:checked" ).val())].rgb,
+                    'line-color': '#222',
                     'line-opacity': 0.35,
-                    'line-width': 12
+                    'line-width': 10
                 }
             });
             } else{ 
@@ -115,24 +107,8 @@ map.on('click', function(e) {
      }
 });
 
-function HandleStateChange()
-{
-    var stateInput =  parseInt($( "input:checked" ).val());
-    var newColor = colorMap[stateInput].rgb;
-    
-    console.log('new state/color ' + stateInput + '/' + newColor);  
-   
-    curFeatureIds.forEach(function(element) {
-        // console.log(element);
-        map.setPaintProperty(element, 'line-color', newColor);
-    });
-}
 
-$('#stateInput0').change(function(event){HandleStateChange();});
-$('#stateInput1').change(function(event){HandleStateChange();});
-$('#stateInput2').change(function(event){HandleStateChange();});
-
-$('#slide-out').submit(function(event) {
+$('#form').submit(function(event) {
     event.preventDefault();
     var emailInput = $('#emailInput').val();
     var stateInput =  $( "input:checked" ).val();
