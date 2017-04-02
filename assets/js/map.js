@@ -31,7 +31,7 @@ var popup = new mapboxgl.Popup(
 var curFeatureIds = [];
 var CurFeatures = [];
 
-const bodyHeight = $('body').height()
+const BODY_HEIGHT = $('body').height()
 
 function feature_description(feature) {
   return  feature.properties.street 
@@ -53,7 +53,7 @@ map.on('mousemove', function(e) {
     });
     
     // Change the cursor style as a UI indicator.
-        map.getCanvas().style.cursor = features.length ? 'pointer' : '';  
+    map.getCanvas().style.cursor = features.length ? 'pointer' : '';  
     if (features.length) {  
         var feature = features[0];
         var location 
@@ -112,9 +112,12 @@ map.on('click', function(e) {
     $('#selected').empty();
     if (CurFeatures != 0) {
         $('#clear').removeClass('disabled')
+        $('#submit').removeClass('disabled')
+        $('#invalidEmail').empty();
     }
     if(!hasMaxedSegments()) {
         for (var i = 0; i < CurFeatures.length && !hasMaxedSegments(); i++) {
+            console.log("append")
             $('#selected').append("<li>"+feature_description(CurFeatures[i])+"</li><br>")
         }
     }
@@ -122,6 +125,16 @@ map.on('click', function(e) {
         $('#selected').append("and more")
     }
 });
+
+map.on('move', function(event){
+    $('html,body').animate({scrollTop:0},0);
+    $('body').css("overflow", "hidden")
+    $('body').css("height", "100%")
+})
+
+map.on('moveend', function(event){
+    $('body').css("overflow", "scroll")
+})
 
 function HandleStateChange()
 {
@@ -140,9 +153,10 @@ $('#stateInput0').change(function(event){HandleStateChange();});
 $('#stateInput1').change(function(event){HandleStateChange();});
 $('#stateInput2').change(function(event){HandleStateChange();});
 
-$('#clear').trigger(function(event) {
-    $('#segments').empty()
-    event.preventDefault()
+$('#clear').click(function(event) {
+    $('#selected').empty()
+    $('#clear').addClass('disabled')
+    $('#submit').addClass('disabled')
 })
 
 $('#mapform').submit(function(event) {
@@ -152,7 +166,7 @@ $('#mapform').submit(function(event) {
     
     if (!isValidEmail(emailInput)) {
         $('#submitted').empty();
-        $('#segments').empty();
+        $('#segments').html('<br>');
         $('#invalidEmail').html("invalid email address");
     } else {
         socket.emit('sendInfo', {
@@ -175,5 +189,5 @@ function isValidEmail(emailAddress) {
 
 function hasMaxedSegments() {
     var divHeight = $('#segments').innerHeight()
-    return divHeight >= bodyHeight / 3.2
+    return divHeight >= BODY_HEIGHT / 3.2
 }
