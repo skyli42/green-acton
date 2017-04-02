@@ -160,21 +160,25 @@ $('#clear').click(function(event) {
 })
 
 $('#mapform').submit(function(event) {
+    console.log('mapform - submit');
     event.preventDefault();
-    var emailInput = $('#emailInput').val();
+    var emailInput = $('#icon_prefix').val();
     var stateInput =  $( "input:checked" ).val();
     
     if (!isValidEmail(emailInput)) {
+        console.log('bad email address');
         $('#submitted').empty();
         $('#segments').html('<br>');
         $('#invalidEmail').html("invalid email address");
     } else {
+        console.log('about to socket.emit sendInfo');
         socket.emit('sendInfo', {
             emailAddress: emailInput,
             newState: stateInput,
             featureIds: curFeatureIds
         });
-        
+        console.log('socket.emit sendInfo');
+
         $('#invalidEmail').empty();
         $('#submitted').html("Thanks for updating these streets");
         return false;
