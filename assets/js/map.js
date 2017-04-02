@@ -126,14 +126,17 @@ map.on('click', function(e) {
     }
 });
 
-map.on('move', function(event){
-    $('html,body').animate({scrollTop:0},0);
-    $('body').css("overflow", "hidden")
-    $('body').css("height", "100%")
+map.on('drag', function(event){
+    if (screen.width < 480) {
+        $('body').css("overflow", "hidden")
+        $('body').css("height", "100%")
+    }
 })
 
-map.on('moveend', function(event){
-    $('body').css("overflow", "scroll")
+map.on('dragend', function(event){
+    if (screen.width < 480) {
+        $('body').css("overflow", "scroll")
+    }
 })
 
 function HandleStateChange()
@@ -178,7 +181,7 @@ $('#mapform').submit(function(event) {
             featureIds: curFeatureIds
         });
         console.log('socket.emit sendInfo');
-
+        
         $('#invalidEmail').empty();
         $('#submitted').html("Thanks for updating these streets");
         return false;
