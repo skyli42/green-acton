@@ -25,12 +25,15 @@ var TileSetInProcess = false;
 
 app.use(express.static("./assets"));
 
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
-app.get('/register', function (req, res) {
-    res.sendFile(__dirname+'/assets/html/registration.html');
-});
+app.get('/register', function(req, res){
+    res.sendFile(__dirname+'/assets/registration.html');
+})
+app.get('/about', function(req, res){
+  res.sendFile(__dirname+'/assets/about.html')
+})
 
 var port = process.env.PORT || 3000;
 
@@ -267,18 +270,3 @@ var credentials = null; // bucket access info
   // kick off update task
 updateTask();
  
-//    var datasetReader = new ReadableDataset();
-//    
-//    s3.putObject({
-//    Bucket: credentials.bucket,
-//    Key: credentials.key,
-//   Body: datasetReader
-//  }, function(err, resp) {
-//        if (err) {
-//           console.log("Error ", err);
-//        } 
-//        if (resp) {
-//            console.log("Upload Success ", resp);
-//       }   
-//     });
-//});
