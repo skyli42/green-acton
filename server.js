@@ -52,6 +52,7 @@ mongoose.connect(url).then(function () {
   
     io.on('connection', function(socket) {
         console.log("a user connected!")
+
         socket.on('registration', function (data) {
             console.log("arrived");
             console.log("name: " + data.name);

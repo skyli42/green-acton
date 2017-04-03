@@ -1,1 +1,1 @@
-$('.button-collapse').sideNav({"menuWidth": 200, "draggable": false})
+$('.button-collapse').sideNav({"menuWidth": 180, "draggable": false})
