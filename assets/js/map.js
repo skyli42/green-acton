@@ -29,7 +29,7 @@ var popup = new mapboxgl.Popup(
     {closeButton: false, offset: 25, closeOnClick: true});
 
 var curFeatureIds = [];
-var CurFeatures = [];
+var curFeatures = [];
 
 const BODY_HEIGHT = $('body').height()
 
@@ -85,7 +85,7 @@ map.on('click', function(e) {
         if (alreadySelected == -1){
             // not already selected - select it
             curFeatureIds.push(idToSend);
-            CurFeatures.push(features[i]);
+            curFeatures.push(features[i]);
             console.log("will select" + idToSend);
             map.addLayer({
                 'id': idToSend,
@@ -104,21 +104,21 @@ map.on('click', function(e) {
             } else{ 
             console.log("will deselect " + idToSend); 
             curFeatureIds.splice( alreadySelected, 1 ); 
-            CurFeatures.splice ( alreadySelected, 1);  
+            curFeatures.splice ( alreadySelected, 1);  
             map.removeLayer(idToSend);  
             map.removeSource(idToSend);               
         }
      }
     $('#selected').empty();
-    if (CurFeatures != 0) {
+    if (curFeatures != 0) {
         $('#clear').removeClass('disabled')
         $('#submit').removeClass('disabled')
         $('#invalidEmail').empty();
     }
     if(!hasMaxedSegments()) {
-        for (var i = 0; i < CurFeatures.length && !hasMaxedSegments(); i++) {
+        for (var i = 0; i < curFeatures.length && !hasMaxedSegments(); i++) {
             console.log("append")
-            $('#selected').append("<li>"+feature_description(CurFeatures[i])+"</li><br>")
+            $('#selected').append("<li>"+feature_description(curFeatures[i])+"</li><br>")
         }
     }
     if (hasMaxedSegments()) {
@@ -160,6 +160,13 @@ $('#clear').click(function(event) {
     $('#selected').empty()
     $('#clear').addClass('disabled')
     $('#submit').addClass('disabled')
+    for (var i = 0; i < curFeatureIds.length; i++)
+    {
+        map.removeLayer(curFeatureIds[i]);  
+        map.removeSource(curFeatureIds[i]);
+    }
+    curFeatureIds = [];
+    curFeatures = []; 
 })
 
 $('#mapform').submit(function(event) {
