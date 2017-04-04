@@ -2,7 +2,9 @@
 	<head>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href='//fonts.googleapis.com/css?family=Scada' rel='stylesheet'>
-		<link type="text/css" rel="stylesheet" href="/css/materialize.min.css"  media="screen,projection"/>
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+		<!-- Compiled and minified JavaScript -->
 		<link type="text/css" rel="stylesheet" href="/css/style.css"  media="screen,projection"/>
 		<meta name="theme-color" content="green"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
@@ -10,8 +12,9 @@
 		<title>Registration</title>
 	</head>
 	<body>
-		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
 		<nav class="green">
 			<div class="nav-wrapper">
 				<div class="container hide-on-med-and-down">
@@ -43,7 +46,7 @@
 		<center><span id="welcome" class="green-text flow-text">Welcome to Acton Cleanup Day</span></center>
 		<div class="row">
 			<br>
-			<form id="registration" class="col s10 push-s1 m4 l4 push-l4">
+			<form id="registration" class="col s10 push-s1 m4 l4 push-l4" action = "/">
 				<div id="nameInput" class="input-field">
 					<i class="material-icons prefix">account_circle</i>
 					<input id="icon_prefix" type="text" class="validate">
@@ -70,15 +73,12 @@
 					<label for="icon_prefix">Group Size (optional)</label>
 				</div>
 				<br>
-				<button id="register" class="green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
+				<button class="btn waves-effect waves-light green" type="submit" name="action">Submit
+				<i class="material-icons right">send</i>
+				</button>
 			</form>
 		</div>
-		<script>
-			var socket = io();
-		</script>
-		<script type="text/javascript" src="/js/materialize.min.js"></script>
-		<script src = "/js/registration.js"></script>
-		<script type="text/javascript" src="/js/materialize.min.js"></script>
+		<script src = "/js/main.js"></script>
 		<script src = "/js/registration.js"></script>
 		<script src="/js/navbar.js"></script>
 	</body>
