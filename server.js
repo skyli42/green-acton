@@ -32,7 +32,7 @@ app.get('/about', function(req, res) {
 })
 var port = process.env.PORT || 3000;
 var skey = process.env.MAPBOX_SK;
-console.log('Need MAPBOX_SK in environment: ' + skey);
+// console.log('Need MAPBOX_SK in environment: ' + skey);
 var client = new MapboxClient(skey);
 var idSchema = new Schema({
     name: String,
@@ -53,12 +53,12 @@ mongoose.connect(url).then(function() {
     io.on('connection', function(socket) {
         console.log("a user connected!")
         socket.on('registration', function(data) {
-            console.log("arrived");
-            console.log("name: " + data.name);
-            console.log("email address: " + data.emailAddress);
-            console.log("phone number: " + data.phoneNumber);
-            console.log("group number: " + data.groupSize);
-            var gSize = data.groupSize == undefined ? 1 : data.groupSize;
+            // console.log("arrived");
+            // console.log("name: " + data.name);
+            // console.log("email address: " + data.emailAddress);
+            // console.log("phone number: " + data.phoneNumber);
+            // console.log("group number: " + data.groupSize);
+            var gSize = data.groupSize == '' ? 1 : data.groupSize;
             var newAcct = new Account({
                 name: data.name,
                 email: data.email,
@@ -75,35 +75,39 @@ mongoose.connect(url).then(function() {
                         newAcct.save(function(err) {
                             if (err) return console.log(err);
                             console.log("account saved!")
+                            socket.emit('message', 'Registered!')
                         })
+                    } else {
+                        console.log('email already registered')
+                        socket.emit('message', "Email is already registered");
                     }
                 }
             })
 
         });
         socket.on('sendInfo', function(data) {
-            var i;
-            for (i in data.featureIds) {
+            for (var i in data.featureIds) {
                 ID.find({
-                    name: data.featureIds[i]
-                }).select('id name').then(function(row, err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                        if (err) console.log(err);
-                        feature.properties.state = parseInt(data.newState);
-                        feature.properties.claimedby = data.emailAddress;
-                        client.insertFeature(feature, dataset_id, function(err, feature) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                console.log('update dataset OK');
-                                TileSetNeedsUpdating = true;
-                            }
+                        name: data.featureIds[i]
+                    })
+                    .select('id name').then(function(row, err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                            if (err) console.log(err);
+                            feature.properties.state = parseInt(data.newState);
+                            feature.properties.claimedby = data.emailAddress;
+                            client.insertFeature(feature, dataset_id, function(err, feature) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log('update dataset OK');
+                                    TileSetNeedsUpdating = true;
+                                }
+                            })
                         })
                     })
-                })
             }
         });
     });
@@ -113,6 +117,9 @@ server.listen(app.listen(port, function() {
     var port = server.address().port;
 }));
 console.log("Listening on port " + port);
+
+//updating dataset
+
 const Readable = require('stream').Readable;
 var datasetProperties;
 var datasetReader = null; // readable stream of dataset features
@@ -202,7 +209,7 @@ class ReadableDataset extends Readable {
 } // end class
 var s3 = null; // will hold Amazon s3 info for updating.
 var credentials = null; // bucket access info
-var updateTask = function() {
+var updateTask = function() { //update tileset after modifications
         console.log('tiles needs update? ' + TileSetNeedsUpdating + ' / update in process? ' + TileSetInProcess);
         if (TileSetNeedsUpdating && !TileSetInProcess) {
             datasetReader = new ReadableDataset();
@@ -269,7 +276,7 @@ var updateTask = function() {
             datasetReader.pipe(tempStream);
             console.log('ended call to stream to tempfile');
         } // end if we need to do anything
-        setTimeout(updateTask, 30000);
+        setTimeout(updateTask, 30000); //Sky: for future reference, setInterval() calls repeatedly a function every X amount of time
     }
     // kick off update task
 updateTask();

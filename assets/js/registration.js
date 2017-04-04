@@ -57,5 +57,6 @@ $('#registration').on("submit", function(event) {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();
+        return false;
     }
 });
