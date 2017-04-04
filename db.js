@@ -5,26 +5,12 @@ mongoose.Promise = require('bluebird')
 var url = process.env.MONGOLAB_URL;
 var fs = require('fs');
 // var Segment = require('./segment');
-var data = JSON.parse(fs.readFileSync('./segments_new.json', 'utf8').toString()).features;
+var data = JSON.parse(fs.readFileSync('./database/segments_new.json', 'utf8').toString()).features;
 
-// var segmentSchema = new Schema({
-//     type: {type:String},
-//     properties:{
-//         start: String,
-//         end: String,
-//         street: String,
-//         id: Number,
-//         state: Number,
-//         claimedby: String
-//     },
-//     geometry:{
-//         coordinates: [[Number, Number]],
-//         type: {type:String}
-//     }
-// });
 var idSchema = new Schema({
     name: String,
-    id: String
+    id: String,
+    claimedby: [String]
 });
 var ID= mongoose.model('id', idSchema);
 mongoose.connect(url).then(function(){
@@ -33,15 +19,9 @@ mongoose.connect(url).then(function(){
     for (var i = 0; i < data.length; i++) {
         var name = data[i].properties.street+""+data[i].properties.id;
         var id = data[i].id;
-        var out = new ID({name:name, id:id});
-        // console.log(out)
-    //     var segModel = new Segment(data[i]);
+        var out = new ID({name:name, id:id, claimedby:[]});
         out.save(function (err) {
             if (err) return console.log(err);
         })
     }
 });
-
-// mongoose.connection.on('open', function (ref) {
-    
-// })

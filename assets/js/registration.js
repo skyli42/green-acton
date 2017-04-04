@@ -11,43 +11,48 @@ function isValidPhoneNumber(phoneNumber) {
 function isNotNumber(string) {
     return isNaN(string) || string == "";
 }
-
-$('#registration').submit(function(event) {
-    console.log("submit")
+$('#registration').on("submit", function(event) {
     var nameInput = $('#nameInput').val();
     var emailAddressInput = $('#emailAddressInput').val();
     var phoneNumberInput = $('#phoneNumberInput').val();
     var groupSizeInput = $('#groupSizeInput').val();
-    
+    var addressInput = $('#streetAddressInput').val();
     if (nameInput == '') {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').empty();  
+        $('#invalidGroupSize').empty();
         $('#invalidName').html("please enter your name<br>");
-    }
-    else if (!isValidEmailAddress(emailAddressInput)) {
+        event.preventDefault();
+
+    } else if (addressInput = "") {
+        console.log('invalid')
+        event.preventDefault();
+    } else if (!isValidEmailAddress(emailAddressInput)) {
         $('#invalidName').empty();
         $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').empty();   
+        $('#invalidGroupSize').empty();
         $('#invalidEmailAddress').html("invalid email address<br>");
-    }
-    else if (!isValidPhoneNumber(phoneNumberInput)) {
+        event.preventDefault();
+
+    } else if (!isValidPhoneNumber(phoneNumberInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
-        $('#invalidGroupSize').empty();   
+        $('#invalidGroupSize').empty();
         $('#invalidPhoneNumber').html("invalid phone number<br>");
-    }
-    else if (isNotNumber(groupSizeInput)) {
+        event.preventDefault();
+
+    } else if (isNotNumber(groupSizeInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').html("invalid group size<br>");
-    }
-    else {
-        console.log('hi')
+        event.preventDefault();
+
+    } else {
         socket.emit('registration', {
             name: nameInput,
             emailAddress: emailAddressInput,
+            address: addressInput,
             phoneNumber: phoneNumberInput,
             groupSize: groupSizeInput
         });
@@ -55,7 +60,7 @@ $('#registration').submit(function(event) {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();
-        return false; 
+        return false;
     }
     return false;
 });
