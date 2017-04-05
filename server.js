@@ -27,6 +27,9 @@ app.get('/', function(req, res) {
 app.get('/register', function(req, res) {
     res.sendFile(__dirname + '/assets/registration.html');
 })
+app.get('/map', function(req, res) {
+    res.sendFile(__dirname + '/assets/map.html')
+})
 app.get('/about', function(req, res) {
     res.sendFile(__dirname + '/assets/about.html')
 })
