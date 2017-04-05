@@ -42,7 +42,7 @@ var idSchema = new Schema({
 var accSchema = new Schema({
     name: String,
     address: String,
-    email: String,
+    emailAdd: String,
     phone: String,
     groupSize: Number
 })
@@ -61,16 +61,18 @@ mongoose.connect(url).then(function() {
             var gSize = data.groupSize == '' ? 1 : data.groupSize;
             var newAcct = new Account({
                 name: data.name,
-                email: data.email,
+                address: data.address,
+                emailAdd: data.emailAddress,
                 phone: data.phoneNumber,
                 groupSize: gSize
             })
             Account.find({
-                email: data.email
+                emailAdd: data.emailAddress
             }).select('name').then(function(row, err) {
                 if (err) {
                     console.log(err)
                 } else {
+                    console.log(row)
                     if (row.length == 0) { //email doesn't already exist
                         newAcct.save(function(err) {
                             if (err) return console.log(err);
@@ -86,6 +88,17 @@ mongoose.connect(url).then(function() {
 
         });
         socket.on('sendInfo', function(data) {
+            Account.find({
+                email: data.email
+            }).select('name').then(function(row, err){
+                if(err)console.log(err)
+                else{
+                    console.log('hi')
+                    if(row.length == 0){
+                        socket.emit('message', 'email address isn\'t registered. Please register your email.')
+                    }
+                }
+            })
             for (var i in data.featureIds) {
                 ID.find({
                         name: data.featureIds[i]
@@ -94,19 +107,21 @@ mongoose.connect(url).then(function() {
                         if (err) {
                             console.log(err);
                         }
-                        client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                            if (err) console.log(err);
-                            feature.properties.state = parseInt(data.newState);
-                            feature.properties.claimedby = data.emailAddress;
-                            client.insertFeature(feature, dataset_id, function(err, feature) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    console.log('update dataset OK');
-                                    TileSetNeedsUpdating = true;
-                                }
-                            })
-                        })
+                        console.log(row)
+                        // client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                        //     if (err) console.log(err);
+                        //     console.log(feature)
+                        //     feature.properties.state = parseInt(data.newState);
+                        //     feature.properties.claimedby = data.emailAddress;
+                        //     client.insertFeature(feature, dataset_id, function(err, feature) {
+                        //         if (err) {
+                        //             console.log(err);
+                        //         } else {
+                        //             console.log('update dataset OK');
+                        //             TileSetNeedsUpdating = true;
+                        //         }
+                        //     })
+                        // })
                     })
             }
         });
