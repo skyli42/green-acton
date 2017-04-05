@@ -30,8 +30,8 @@ app.get('/register', function(req, res) {
 app.get('/map', function(req, res) {
     res.sendFile(__dirname + '/assets/map.html')
 })
-app.get('/about', function(req, res) {
-    res.sendFile(__dirname + '/assets/about.html')
+app.get('/info', function(req, res) {
+    res.sendFile(__dirname + '/assets/info.html')
 })
 var port = process.env.PORT || 3000;
 var skey = process.env.MAPBOX_SK;
