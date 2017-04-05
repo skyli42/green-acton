@@ -1,12 +1,12 @@
 <html>
 	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js"
 		integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
 		crossorigin="anonymous"></script>
 		<link href='//fonts.googleapis.com/css?family=Scada' rel='stylesheet'>
-		
 		<link type="text/css" rel="stylesheet" href="../css/style.css"  media="screen,projection"/>
 		<meta name="theme-color" content="green"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
@@ -14,9 +14,6 @@
 		<title>About</title>
 	</head>
 	<body>
-		<!-- Compiled and minified CSS -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-		<!-- Compiled and minified JavaScript -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
 		<nav class="green">
 			<div class="nav-wrapper">
@@ -27,8 +24,9 @@
 						<span style="font-size:80%" class="hide-on-med-and-down">Acton Cleanup Week April 22-29</span>
 					</a>
 					<ul class="right hide-on-med-and-down">
+						<li><a style="font-size:120%" href="/register"><i class="material-icons left">home</i>Home</a></li>
 						<li><a style="font-size:120%" href="/register"><i class="material-icons left">assignment_ind</i>Register</a></li>
-						<li><a style="font-size:120%" href="/"><i class="material-icons left">map</i>Map</a></li>
+						<li><a style="font-size:120%" href="/map"><i class="material-icons left">map</i>Map</a></li>
 						<li><a style="font-size:120%" href="/about"><i class="material-icons left">info</i>About</a></li>
 					</ul>
 				</div>
@@ -50,21 +48,20 @@
 		<center><span class="green-text flow-text" style="font-size:170%">What is Green Acton?</span></center>
 		<div class="row">
 			<div class="col m6 push-m3 l6 push-l3" style="font-size:110%;line-height: 170%">
-				<p>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+				<p style="line-height: 200%">
+					Green Acton is a nonprofit community organization in Acton, Massachusetts, that works to conserve local resources and protect our environment for future generations. Through education and advocacy, we aim to:
+					<ul class="browser-default" style="line-height:200%">
+						<li>reduce, reuse, and recycle energy and materials</li>
+						<li>promote sustainable, environmentally sound practices</li>
+						<li>support local and regional food production and consumption</li>
+					</ul>
+					We work on a wide variety of projects in <a target="blank" href="https://greenacton.org/issues/">seven issue areas</a>, in open teams that you can join at any time. Please <a target="blank" href="https://greenacton.org/contact-us/">contact us</a> with any questions, concerns, or ideas, come to any of our <a target="_blank" href="http://greenacton.org/events/category/monthly-meeting">open monthly meetings</a>, and join our <a target="_blank" href="https://groups.google.com/forum/#!forum/green-acton-announcements">mailing lists</a>.
 				</p>
 			</div>
 		</div>
 		<br>
 		<br>
-		<center><span class="green-text flow-text" style="font-size:170%">How do I sign up?</span></center>
-		<div class="row">
-			<div class="col m6 push-m3 l6 push-l3" style="font-size:110%;line-height: 170%">
-				<p>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-				</p>
-			</div>
-		</div>
+		
 		<script src = "/js/main.js"></script>
 		<script src="/js/navbar.js"></script>
 	</body>

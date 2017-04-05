@@ -1,21 +1,19 @@
 <html>
 	<head>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<script src='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
-		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'/>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
-		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 		<link href='//fonts.googleapis.com/css?family=Scada' rel='stylesheet'>
-		<link href="/css/style.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+		<link type="text/css" rel="stylesheet" href="/css/style.css"  media="screen,projection"/>
 		<meta name="theme-color" content="green"/>
-		<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 		<link rel="icon" href="/img/logo.png" sizes="192x192">
-		<title>Acton Cleanup</title>
+		<title>About</title>
 	</head>
 	<body>
-		<!-- Compiled and minified CSS -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-		<!-- Compiled and minified JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+			integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+		crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
 		<nav class="green">
 			<div class="nav-wrapper">
@@ -23,11 +21,12 @@
 					<a href="/" class="brand-logo">
 						<img id = "logo" class="hide-on-med-and-down" src ="/img/logo.png" height = "65px">
 						&nbsp;
-						<span style="font-size:80%" class="hide-on-med-and-down">Acton Cleanup Week April 22-29</span>
+						<span style="font-size:80%" class="hide-on-med-and-down">Acton Cleanup Week</span>
 					</a>
 					<ul class="right hide-on-med-and-down">
+						<li><a style="font-size:120%" href="/register"><i class="material-icons left">home</i>Home</a></li>
 						<li><a style="font-size:120%" href="/register"><i class="material-icons left">assignment_ind</i>Register</a></li>
-						<li><a style="font-size:120%" href="/"><i class="material-icons left">map</i>Map</a></li>
+						<li><a style="font-size:120%" href="/map.html"><i class="material-icons left">map</i>Map</a></li>
 						<li><a style="font-size:120%" href="/about"><i class="material-icons left">info</i>About</a></li>
 					</ul>
 				</div>
@@ -44,38 +43,26 @@
 				</ul>
 			</div>
 		</nav>
-		
-		<div class="row" style="margin-top: 1.8%">
-			<div class="col s12 m7 l6 push-l1">
-				<div id='map'></div>
+		<br class="hide-on-med-and-down">
+		<br>
+		<center><span class="green-text flow-text" style="font-size:170%">Welcome to Acton Cleanup Week</span></center>
+		<div class="row">
+			<div class="col m6 push-m3 l6 push-l3" style="font-size:110%;line-height: 170%">
+				<p style="line-height: 200%">
+				</p>
 			</div>
-			<form id="mapform" class="col s12 m12 l4 push-l1" style="padding-left:5%;padding-right:5%;padding-top:2%">
-				<div id="emailAddressInput" class="input-field">
-					<i class="material-icons prefix">email</i>
-					<input id="icon_prefix" type="email" class="validate">
-					<label for="icon_prefix">Email Address</label>
-				</div>
-				<b>Your Current Street Segments</b>
-				<div class="collection" id="segments">
-					<br>
-					<div id="selected" style="font-size:80%;padding-left:2%;line-height:100%"></div>
-				</div>
-				<button id="clear" class="disabled green btn waves-effect waves-light" type="button">Clear<i class="small material-icons right">clear_all</i></button><br><br>
-				<div id="submitted" style="color:green"></div>
-				<input class="with-gap" id="stateInput0" type="radio" name="Status" value="0">
-				<label for="stateInput0" style="color:red">These need cleaning.</label>
-				<br />
-				<input class="with-gap" id="stateInput1" type="radio" name="Status" value="1" checked="checked">
-				<label for="stateInput1" style="color:#2E96FF">I will clean these.</label>
-				<br />
-				<input class="with-gap" id="stateInput2" type="radio" name="Status" value="2">
-				<label for="stateInput2" style="color:green">These are clean.</label><br><br>
-				<button id="submit" class="disabled green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
-				<div id="submitted" style="color:green"></div>
-			</form>
+		</div>
+		<br>
+		<br>
+		<center><span class="green-text flow-text" style="font-size:170%">How do I sign up?</span></center>
+		<div class="row">
+			<div class="col m6 push-m3 l6 push-l3" style="font-size:110%;line-height: 170%">
+				<p>
+					
+				</p>
+			</div>
 		</div>
 		<script src = "/js/main.js"></script>
-		<script src = "/js/map.js"></script>
 		<script src="/js/navbar.js"></script>
 	</body>
 </html>
