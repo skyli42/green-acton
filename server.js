@@ -92,11 +92,12 @@ mongoose.connect(url).then(function() {
         });
         socket.on('sendInfo', function(data) {
             Account.find({
-                email: data.email
+                email: data.emailAddress
             }).select('name').then(function(row, err){
                 if(err)console.log(err)
                 else{
-                    console.log('hi')
+                    console.log('row length ' + row.length);
+                    console.log(row);
                     if(row.length == 0){
                         socket.emit('message', 'email address isn\'t registered. Please register your email.')
                     }
