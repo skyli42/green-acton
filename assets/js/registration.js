@@ -12,16 +12,19 @@ function isNotNumber(string) {
     return isNaN(string) || string == "";
 }
 $('#registration').on("submit", function(event) {
+    // console.log("entering local registration handler");
     var nameInput = $('#nameInput #icon_prefix').val();
     var emailAddressInput = $('#emailAddressInput #icon_prefix').val();
     var phoneNumberInput = $('#phoneNumberInput #icon_prefix').val();
     var groupSizeInput = $('#groupSizeInput #icon_prefix').val();
     var addressInput = $('#streetAddressInput #icon_prefix').val();
+    // console.log(nameInput +  '/' +emailAddressInput + '/' + phoneNumberInput + '/' + groupSizeInput + '/' + addressInput);
     if (nameInput == '') {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();
         $('#invalidName').html("please enter your name<br>");
+        Materialize.toast("please enter your name<br>", 4000)
         event.preventDefault();
 
     } else if (addressInput = "") {
@@ -31,12 +34,14 @@ $('#registration').on("submit", function(event) {
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();
         $('#invalidEmailAddress').html("invalid email address<br>");
+        Materialize.toast("invalid email address<br>", 4000)
         event.preventDefault();
     } else if (!phoneNumberInput == "" && !isValidPhoneNumber(phoneNumberInput)) {
         $('#invalidName').empty();
         $('#invalidEmail').empty();
         $('#invalidGroupSize').empty();
         $('#invalidPhoneNumber').html("invalid phone number<br>");
+        Materialize.toast("invalid phone number<br>", 4000)
         event.preventDefault();
 
     } else if (!groupSizeInput == "" &&isNotNumber(groupSizeInput)) {
@@ -44,8 +49,10 @@ $('#registration').on("submit", function(event) {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').html("invalid group size<br>");
+        Materialize.toast("invalid group size<br>", 4000)
         event.preventDefault();
     } else {
+        // console.log('about to do registration emit');
         socket.emit('registration', {
             name: nameInput,
             emailAddress: emailAddressInput,
@@ -57,6 +64,7 @@ $('#registration').on("submit", function(event) {
         $('#invalidEmail').empty();
         $('#invalidPhoneNumber').empty();
         $('#invalidGroupSize').empty();
+        // console.log('done withregistration emit');
         return false;
     }
 });
