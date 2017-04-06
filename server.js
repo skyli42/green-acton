@@ -12,11 +12,13 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var fs = require('fs');
 var temp = require('temp');
-var dataset_id = 'cj05n0i9p0ma631qltnyigi85'; // id for segments
+var dataset_id = 'cj15w86wx00w02xovd0koqddm'; //parsed MASS GIS data.
+// var dataset_id = 'cj05n0i9p0ma631qltnyigi85'; // id for segments
 // var dataset_id = 'cj0tk7a6n04ca2qrx1xaizc6r'; // smaller dataset for testing
 // var tileset_name = 'acton-segments';
-var tileset_name = 'acton-segments';
-var tileset_id = 'cj05n0i9p0ma631qltnyigi85-1bg4y';
+// var tileset_name = 'acton-segments';
+var tileset_name = 'ParsedMassGIS';
+var tileset_id = 'cj15w86wx00w02xovd0koqddm-3gm2c'; //parsedMassGIS
 var username = "greenacton"
 var TileSetNeedsUpdating = false;
 var TileSetInProcess = false;
@@ -263,7 +265,7 @@ var updateTask = function() { //update tileset after modifications
                                 console.log("putObject Success ", resp);
                                 // console.log('preparing to upload ' + datasetReader.debugbuffer.length + '/' + datasetReader.length + ' chars (actual/claimed): ' + datasetReader.debugbuffer);
                                 client.createUpload({
-                                    tileset: username + '.' + tilseset_id,
+                                    tileset: username + '.' + tileset_id,
                                     name: tileset_name,
                                     url: credentials.url
                                 }, function(err, upload) {
