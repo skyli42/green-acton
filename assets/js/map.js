@@ -37,13 +37,13 @@ $(function() {
 const BODY_HEIGHT = $('body').height()
 
 function feature_description(feature) {
-  return  feature.properties.street 
+  return feature.properties.street == ""?"UNNAMED STREET":feature.properties.street
                 + ' between ' 
                 + ((feature.properties.start == null) 
-                    ? 'end of the road' : feature.properties.start) 
+                    ? 'end of the road' : feature.properties.start == ""?"UNNAMED STREET":feature.properties.start) 
                 + ' and ' 
                 + ((feature.properties.end == null) 
-                    ? 'end of the road' : feature.properties.end);
+                    ? 'end of the road' : feature.properties.end == ""?"UNNAMED STREET":feature.properties.end);
 }
 
 map.on('mousemove', function(e) {

@@ -16,7 +16,7 @@ var dataset_id = 'cj05n0i9p0ma631qltnyigi85'; // id for segments
 // var dataset_id = 'cj0tk7a6n04ca2qrx1xaizc6r'; // smaller dataset for testing
 // var tileset_name = 'acton-segments';
 var tileset_name = 'acton-segments';
-var tilseset_id = 'cj05n0i9p0ma631qltnyigi85-1bg4y';
+var tileset_id = 'cj05n0i9p0ma631qltnyigi85-1bg4y';
 var username = "greenacton"
 var TileSetNeedsUpdating = false;
 var TileSetInProcess = false;
@@ -56,11 +56,6 @@ mongoose.connect(url).then(function() {
     io.on('connection', function(socket) {
         console.log("a user connected!")
         socket.on('registration', function(data) {
-            // console.log("arrived");
-            // console.log("name: " + data.name);
-            // console.log("email address: " + data.emailAddress);
-            // console.log("phone number: " + data.phoneNumber);
-            // console.log("group number: " + data.groupSize);
             var gSize = data.groupSize == '' ? 1 : data.groupSize;
             var newAcct = new Account({
                 name: data.name,
@@ -92,42 +87,46 @@ mongoose.connect(url).then(function() {
         });
         socket.on('sendInfo', function(data) {
             Account.find({
-                email: data.emailAddress
-            }).select('name').then(function(row, err){
-                if(err)console.log(err)
-                else{
+                emailAdd: data.emailAddress
+            }).select('name email').then(function(row, err) {
+                if (err) {
+                    console.log("err: "+ err)
+                }
+                else {
                     console.log('row length ' + row.length);
                     console.log(row);
-                    if(row.length == 0){
-                        socket.emit('message', 'email address isn\'t registered. Please register your email.')
+                    if (row.length == 0) {
+                        socket.emit('message', 'Email address isn\'t registered. Please register your email.')
                     }
                 }
+            }).then(function(row, err) {
+                for (var i in data.featureIds) {
+                    ID.find({
+                            name: data.featureIds[i]
+                        })
+                        .select('id name').then(function(row, err) {
+                            if (err) {
+                                console.log("err"+ err);
+                            }
+                            console.log(row)
+                            client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                                if (err) console.log(err);
+                                console.log(feature)
+                                feature.properties.state = parseInt(data.newState);
+                                feature.properties.claimedby = data.emailAddress;
+                                client.insertFeature(feature, dataset_id, function(err, feature) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        console.log('update dataset OK');
+                                        TileSetNeedsUpdating = true;
+                                    }
+                                })
+                            })
+                        })
+                }
             })
-            for (var i in data.featureIds) {
-                ID.find({
-                        name: data.featureIds[i]
-                    })
-                    .select('id name').then(function(row, err) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        console.log(row)
-                        // client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                        //     if (err) console.log(err);
-                        //     console.log(feature)
-                        //     feature.properties.state = parseInt(data.newState);
-                        //     feature.properties.claimedby = data.emailAddress;
-                        //     client.insertFeature(feature, dataset_id, function(err, feature) {
-                        //         if (err) {
-                        //             console.log(err);
-                        //         } else {
-                        //             console.log('update dataset OK');
-                        //             TileSetNeedsUpdating = true;
-                        //         }
-                        //     })
-                        // })
-                    })
-            }
+
         });
     });
 })
