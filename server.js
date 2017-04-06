@@ -40,9 +40,11 @@ app.get('/info', function(req, res) {
 var messages = require(__dirname + '/assets/js/messages.js');  // for server use
 
 var port = process.env.PORT || 3000;
+
 var skey = process.env.MAPBOX_SK;
 // console.log('Need MAPBOX_SK in environment: ' + skey);
 var client = new MapboxClient(skey);
+
 var idSchema = new Schema({
     name: String,
     id: String,
