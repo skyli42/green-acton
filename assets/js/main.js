@@ -1,4 +1,4 @@
 var socket = io();
 socket.on('message', function(msg){
-	Materialize.toast(msg, 4000)
+	Materialize.toast(messages.myMessages.properties[msg].msg_string, 4000)
 })
