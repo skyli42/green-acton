@@ -27,6 +27,13 @@ var popup = new mapboxgl.Popup(
 var curFeatureIds = [];
 var curFeatures = [];
 
+var noSegmentsMessage; 
+
+$(function() {
+    noSegmentsMessage = $('#selected').html();
+    console.log(noSegmentsMessage)
+});
+
 const BODY_HEIGHT = $('body').height()
 
 function feature_description(feature) {
@@ -111,6 +118,9 @@ map.on('click', function(e) {
         $('#submit').removeClass('disabled')
         $('#invalidEmail').empty();
     }
+    else {
+        $('#selected').append(noSegmentsMessage);
+    }
     if(!hasMaxedSegments()) {
         for (var i = 0; i < curFeatures.length && !hasMaxedSegments(); i++) {
             console.log("append")
@@ -140,7 +150,7 @@ function HandleStateChange()
     var stateInput =  parseInt($( "input:checked" ).val());
     var newColor = colorMap[stateInput].rgb;
     
-    console.log('new state/color ' + stateInput + '/' + newColor);  
+    // console.log('new state/color ' + stateInput + '/' + newColor);  
    
     curFeatureIds.forEach(function(element) {
         // console.log(element);
@@ -154,6 +164,7 @@ $('#stateInput2').change(function(event){HandleStateChange();});
 
 $('#clear').click(function(event) {
     $('#selected').empty()
+    $('#selected').append(noSegmentsMessage);
     $('#clear').addClass('disabled')
     $('#submit').addClass('disabled')
     for (var i = 0; i < curFeatureIds.length; i++)
@@ -165,8 +176,10 @@ $('#clear').click(function(event) {
     curFeatures = []; 
 })
 
+
+
 $('#mapform').submit(function(event) {
-    console.log('mapform - submit');
+    // console.log('mapform - submit');
     event.preventDefault();
     var emailInput = $('#icon_prefix').val();
     var stateInput =  $( "input:checked" ).val();
