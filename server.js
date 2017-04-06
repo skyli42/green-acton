@@ -35,6 +35,10 @@ app.get('/map', function(req, res) {
 app.get('/info', function(req, res) {
     res.sendFile(__dirname + '/assets/info.html')
 })
+
+//matched message info for server & clients
+var messages = require(__dirname + '/assets/js/messages.js');  // for server use
+
 var port = process.env.PORT || 3000;
 var skey = process.env.MAPBOX_SK;
 // console.log('Need MAPBOX_SK in environment: ' + skey);
@@ -58,6 +62,7 @@ mongoose.connect(url).then(function() {
     io.on('connection', function(socket) {
         console.log("a user connected!")
         socket.on('registration', function(data) {
+            console.log('registration init on server')
             var gSize = data.groupSize == '' ? 1 : data.groupSize;
             var newAcct = new Account({
                 name: data.name,
@@ -77,11 +82,13 @@ mongoose.connect(url).then(function() {
                         newAcct.save(function(err) {
                             if (err) return console.log(err);
                             console.log("account saved!")
-                            socket.emit('message', 'Registered!')
+                            socket.emit('message', messages.myMessages.REG_OK)
                         })
                     } else {
                         console.log('email already registered')
-                        socket.emit('message', "Email is already registered");
+//                        socket.emit('message', "Email is already registered");
+                        socket.emit('message', messages.myMessages.REG_ALREADY);
+                        
                     }
                 }
             })
@@ -98,7 +105,7 @@ mongoose.connect(url).then(function() {
                     console.log('row length ' + row.length);
                     console.log(row);
                     if (row.length == 0) {
-                        socket.emit('message', 'Email address isn\'t registered. Please register your email.')
+                        socket.emit('message', messages.myMessages.NEW_EMAIL);
                     }
                 }
             }).then(function(row, err) {
