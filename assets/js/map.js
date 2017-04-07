@@ -191,17 +191,13 @@ $('#stateInput1').change(function(event){HandleStateChange();});
 $('#stateInput2').change(function(event){HandleStateChange();});
 
 $('#clear').click(function(event) {
-    $('#selected').html("")
-    $('#selected').append(noSegmentsMessage);
-    $('#clear').addClass('disabled')
-    $('#submit').addClass('disabled')
     for (var i = 0; i < curFeatureIds.length; i++)
     {
         map.removeLayer(curFeatureIds[i]);  
         map.removeSource(curFeatureIds[i]);
     }
-    curFeatureIds = [];
-    curFeatures = []; 
+    clearSegmentList();
+    
 })
 
 
