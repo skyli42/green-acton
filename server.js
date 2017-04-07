@@ -37,7 +37,7 @@ app.get('/info', function(req, res) {
 })
 
 //matched message info for server & clients
-var messages = require(__dirname + '/assets/js/messages.js');  // for server use
+var messages = require(__dirname + '/assets/js/messages.js'); // for server use
 
 var port = process.env.PORT || 3000;
 
@@ -88,9 +88,9 @@ mongoose.connect(url).then(function() {
                         })
                     } else {
                         console.log('email already registered')
-//                        socket.emit('message', "Email is already registered");
+                            //                        socket.emit('message', "Email is already registered");
                         socket.emit('message', messages.myMessages.REG_ALREADY);
-                        
+
                     }
                 }
             })
@@ -100,41 +100,53 @@ mongoose.connect(url).then(function() {
             Account.find({
                 emailAdd: data.emailAddress
             }).select('name email').then(function(row, err) {
+                var registered = true;
                 if (err) {
-                    console.log("err: "+ err)
-                }
-                else {
+                    console.log("err: " + err)
+                } else {
                     console.log('row length ' + row.length);
                     console.log(row);
                     if (row.length == 0) {
                         socket.emit('message', messages.myMessages.NEW_EMAIL);
+                        registered = false;
+                    }
+                    else{
+
+                        socket.emit('message', messages.myMessages.SUBMIT_OK)
                     }
                 }
-            }).then(function(row, err) {
-                for (var i in data.featureIds) {
-                    ID.find({
-                            name: data.featureIds[i]
-                        })
-                        .select('id name').then(function(row, err) {
-                            if (err) {
-                                console.log("err"+ err);
-                            }
-                            console.log(row)
-                            client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                                if (err) console.log(err);
-                                console.log(feature + "WE ARE HERE")
-                                feature.properties.state = parseInt(data.newState);
-                                feature.properties.claimedby = data.emailAddress;
-                                client.insertFeature(feature, dataset_id, function(err, feature) {
-                                    if (err) {
-                                        console.log(err);
-                                    } else {
-                                        console.log('update dataset OK');
-                                        TileSetNeedsUpdating = true;
-                                    }
+                return Promise.resolve(registered);
+            }).then(function(registered) {
+                console.log("registered: "+ registered)
+                if (registered) {
+                    for (var i in data.featureIds) {
+                        ID.find({
+                                name: data.featureIds[i]
+                            })
+                            .select('id name').then(function(row, err) {
+                                if (err) {
+                                    console.log("err" + err);
+                                }
+                                console.log(row)
+                                client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                                    if (err) console.log(err);
+                                    console.log(feature)
+                                    feature.properties.state = parseInt(data.newState);
+                                    feature.properties.claimedby = data.emailAddress;
+                                    client.insertFeature(feature, dataset_id, function(err, feature) {
+                                        if (err) {
+                                            console.log(err);
+                                        } else {
+                                            console.log('update dataset OK');
+                                            TileSetNeedsUpdating = true;
+                                        }
+                                    })
                                 })
                             })
-                        })
+                    }
+                }
+                else{
+                    console.log("Email is not registered, no database work done")
                 }
             })
 
