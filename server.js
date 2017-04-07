@@ -122,7 +122,7 @@ mongoose.connect(url).then(function() {
                             console.log(row)
                             client.readFeature(row[0].id, dataset_id, function(err, feature) {
                                 if (err) console.log(err);
-                                console.log(feature)
+                                console.log(feature + "WE ARE HERE")
                                 feature.properties.state = parseInt(data.newState);
                                 feature.properties.claimedby = data.emailAddress;
                                 client.insertFeature(feature, dataset_id, function(err, feature) {

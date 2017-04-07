@@ -187,15 +187,15 @@ $('#mapform').submit(function(event) {
     if (!isValidEmail(emailInput)) {
         console.log('bad email address');
         $('#submitted').empty();
-        $('#segments').html('<br>');
+        // $('#segments').html('');
         $('#invalidEmail').html("invalid email address");
-        for (var i = 0; i < curFeatureIds.length; i++)
-        {
-            map.removeLayer(curFeatureIds[i]);  
-            map.removeSource(curFeatureIds[i]);
-        }
-        curFeatureIds = [];
-        curFeatures = [];
+        // for (var i = 0; i < curFeatureIds.length; i++)
+        // {
+        //     map.removeLayer(curFeatureIds[i]);  
+        //     map.removeSource(curFeatureIds[i]);
+        // }
+        // curFeatureIds = [];
+        // curFeatures = [];
         Materialize.toast("invalid email address<br>", 4000) 
     } else {
         console.log('about to socket.emit sendInfo');
