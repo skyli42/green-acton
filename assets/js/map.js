@@ -163,7 +163,7 @@ $('#stateInput1').change(function(event){HandleStateChange();});
 $('#stateInput2').change(function(event){HandleStateChange();});
 
 $('#clear').click(function(event) {
-    $('#selected').empty()
+    $('#selected').html("")
     $('#selected').append(noSegmentsMessage);
     $('#clear').addClass('disabled')
     $('#submit').addClass('disabled')
@@ -194,8 +194,9 @@ $('#mapform').submit(function(event) {
             map.removeLayer(curFeatureIds[i]);  
             map.removeSource(curFeatureIds[i]);
         }
-    curFeatureIds = [];
-    curFeatures = []; 
+        curFeatureIds = [];
+        curFeatures = [];
+        Materialize.toast("invalid email address<br>", 4000) 
     } else {
         console.log('about to socket.emit sendInfo');
         socket.emit('sendInfo', {
