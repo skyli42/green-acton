@@ -111,10 +111,6 @@ mongoose.connect(url).then(function() {
                         registered = false;
                     }
                     else{
-<<<<<<< HEAD
-
-=======
->>>>>>> 704e99deafadf89bb4a3dd2540c724a97898d015
                         socket.emit('message', messages.myMessages.SUBMIT_OK)
                     }
                 }
