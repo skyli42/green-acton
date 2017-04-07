@@ -208,7 +208,7 @@ $('#mapform').submit(function(event) {
         
         $('#invalidEmail').empty();
         // $('#submitted').html("Thanks for updating these streets");
-        Materialize.toast("Thanks for updating these streets<br>", 4000)
+        // Materialize.toast("Thanks for updating these streets<br>", 4000)
         return false;
     }
     return false;
