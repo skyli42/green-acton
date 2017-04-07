@@ -31,7 +31,6 @@ var noSegmentsMessage;
 
 $(function() {
     noSegmentsMessage = $('#selected').html();
-    console.log(noSegmentsMessage)
 });
 
 const BODY_HEIGHT = $('body').height()
@@ -44,6 +43,13 @@ function feature_description(feature) {
                 + ' and ' 
                 + ((feature.properties.end == null) 
                     ? 'end of the road' : feature.properties.end == ""?"UNNAMED STREET":feature.properties.end);
+}
+
+function localMessageHandler(msg)
+{
+    if (msg==messages.myMessages.NEW_EMAIL){
+        $('#submitted').html('Unrecognized Email. Correct it or <a href="register">register this email here</a>');
+    }
 }
 
 map.on('mousemove', function(e) {

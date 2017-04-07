@@ -111,7 +111,7 @@ mongoose.connect(url).then(function() {
                         registered = false;
                     }
                     else{
-                        socket.emit('message', "Thanks for updating these streets!")
+                        socket.emit('message', messages.myMessages.SUBMIT_OK)
                     }
                 }
                 return Promise.resolve(registered);
