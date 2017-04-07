@@ -111,6 +111,7 @@ mongoose.connect(url).then(function() {
                         registered = false;
                     }
                     else{
+
                         socket.emit('message', messages.myMessages.SUBMIT_OK)
                     }
                 }
