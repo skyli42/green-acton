@@ -35,6 +35,9 @@ $(function() {
 
 const BODY_HEIGHT = $('body').height()
 
+const LINE_WIDTH_THIN = 7.24
+const LINE_WIDTH_WIDE = 12
+
 function feature_description(feature) {
   return feature.properties.street == ""?"UNNAMED STREET":feature.properties.street
                 + ' between ' 
@@ -45,11 +48,30 @@ function feature_description(feature) {
                     ? 'end of the road' : feature.properties.end == ""?"UNNAMED STREET":feature.properties.end);
 }
 
+function clearSegmentList()
+{
+    $('#selected').html("")
+    $('#selected').append(noSegmentsMessage);
+    $('#clear').addClass('disabled')
+    $('#submit').addClass('disabled')
+    curFeatureIds = [];
+    curFeatures = [];    
+}
+
 function localMessageHandler(msg)
 {
-    if (msg==messages.myMessages.NEW_EMAIL){
+    switch(msg) {
+    case messages.myMessages.NEW_EMAIL:
         $('#submitted').html('Unrecognized Email. Correct it or <a href="register">register this email here</a>');
-    }
+        break;
+    case messages.myMessages.SUBMIT_OK:
+        for (var i = 0; i < curFeatureIds.length; i++)
+        {
+            map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
+        }
+        clearSegmentList();
+        break;    
+    }  
 }
 
 map.on('mousemove', function(e) {
@@ -107,7 +129,7 @@ map.on('click', function(e) {
                 'paint': {
                     'line-color': colorMap[parseInt($( "input:checked" ).val())].rgb,
                     'line-opacity': 0.35,
-                    'line-width': 12
+                    'line-width': LINE_WIDTH_WIDE
                 }
             });
             } else{ 
@@ -119,13 +141,13 @@ map.on('click', function(e) {
         }
      }
     $('#selected').empty();
-    if (curFeatures != 0) {
+    if (curFeatures.length != 0) {
         $('#clear').removeClass('disabled')
         $('#submit').removeClass('disabled')
         $('#invalidEmail').empty();
     }
     else {
-        $('#selected').append(noSegmentsMessage);
+        clearSegmentList();
     }
     if(!hasMaxedSegments()) {
         for (var i = 0; i < curFeatures.length && !hasMaxedSegments(); i++) {
@@ -169,17 +191,13 @@ $('#stateInput1').change(function(event){HandleStateChange();});
 $('#stateInput2').change(function(event){HandleStateChange();});
 
 $('#clear').click(function(event) {
-    $('#selected').html("")
-    $('#selected').append(noSegmentsMessage);
-    $('#clear').addClass('disabled')
-    $('#submit').addClass('disabled')
     for (var i = 0; i < curFeatureIds.length; i++)
     {
         map.removeLayer(curFeatureIds[i]);  
         map.removeSource(curFeatureIds[i]);
     }
-    curFeatureIds = [];
-    curFeatures = []; 
+    clearSegmentList();
+    
 })
 
 
