@@ -189,6 +189,13 @@ $('#mapform').submit(function(event) {
         $('#submitted').empty();
         $('#segments').html('<br>');
         $('#invalidEmail').html("invalid email address");
+        for (var i = 0; i < curFeatureIds.length; i++)
+        {
+            map.removeLayer(curFeatureIds[i]);  
+            map.removeSource(curFeatureIds[i]);
+        }
+    curFeatureIds = [];
+    curFeatures = []; 
     } else {
         console.log('about to socket.emit sendInfo');
         socket.emit('sendInfo', {
