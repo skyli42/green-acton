@@ -31,7 +31,6 @@ var noSegmentsMessage;
 
 $(function() {
     noSegmentsMessage = $('#selected').html();
-    console.log(noSegmentsMessage)
 });
 
 const BODY_HEIGHT = $('body').height()
@@ -44,6 +43,13 @@ function feature_description(feature) {
                 + ' and ' 
                 + ((feature.properties.end == null) 
                     ? 'end of the road' : feature.properties.end == ""?"UNNAMED STREET":feature.properties.end);
+}
+
+function localMessageHandler(msg)
+{
+    if (msg==messages.myMessages.NEW_EMAIL){
+        $('#submitted').html('Unrecognized Email. Correct it or <a href="register">register this email here</a>');
+    }
 }
 
 map.on('mousemove', function(e) {
@@ -163,7 +169,7 @@ $('#stateInput1').change(function(event){HandleStateChange();});
 $('#stateInput2').change(function(event){HandleStateChange();});
 
 $('#clear').click(function(event) {
-    $('#selected').empty()
+    $('#selected').html("")
     $('#selected').append(noSegmentsMessage);
     $('#clear').addClass('disabled')
     $('#submit').addClass('disabled')
@@ -189,6 +195,14 @@ $('#mapform').submit(function(event) {
         $('#submitted').empty();
         $('#segments').html('<br>');
         $('#invalidEmail').html("invalid email address");
+        for (var i = 0; i < curFeatureIds.length; i++)
+        {
+            map.removeLayer(curFeatureIds[i]);  
+            map.removeSource(curFeatureIds[i]);
+        }
+        curFeatureIds = [];
+        curFeatures = [];
+        Materialize.toast("invalid email address<br>", 4000) 
     } else {
         console.log('about to socket.emit sendInfo');
         socket.emit('sendInfo', {
@@ -199,7 +213,8 @@ $('#mapform').submit(function(event) {
         console.log('socket.emit sendInfo');
         
         $('#invalidEmail').empty();
-        $('#submitted').html("Thanks for updating these streets");
+        // $('#submitted').html("Thanks for updating these streets");
+        // Materialize.toast("Thanks for updating these streets<br>", 4000)
         return false;
     }
     return false;
