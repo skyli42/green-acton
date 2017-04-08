@@ -107,6 +107,14 @@ map.on('click', function(e) {
         layers: ['acton-segments']
     });
     
+    if (features.length == 0) {
+        for (var i = 0; i < curFeatureIds.length; i++)
+        {
+            map.removeLayer(curFeatureIds[i]);  
+            map.removeSource(curFeatureIds[i]);
+        }
+        clearSegmentList();
+    }
      
     for (var i = 0; i < features.length; i++) {
         console.log(features[i])
