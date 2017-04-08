@@ -205,3 +205,19 @@ html {
 #errMessages{
   color: red;
 }
+
+.tabs .indicator {
+    background-color: #4caf50;
+}
+
+.tabs .tab a.active {
+  color: #4caf50;
+}
+
+.tabs .tab a:hover {
+  color: #4caf50;
+}
+
+.tabs .tab a {
+  color: #4caf50;
+}
