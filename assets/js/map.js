@@ -70,8 +70,8 @@ function localMessageHandler(msg)
             map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
         }
         clearSegmentList();
-        break;    
-    }  
+        break;
+        }
 }
 
 map.on('mousemove', function(e) {
@@ -152,6 +152,7 @@ map.on('click', function(e) {
     if(!hasMaxedSegments()) {
         for (var i = 0; i < curFeatures.length && !hasMaxedSegments(); i++) {
             console.log("append")
+            $('#temp').remove()
             $('#selected').append("<li>"+feature_description(curFeatures[i])+"</li><br>")
         }
     }

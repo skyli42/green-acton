@@ -115,7 +115,8 @@ mongoose.connect(url).then(function() {
                     if (row.length == 0) {
                         socket.emit('message', messages.myMessages.NEW_EMAIL);
                         registered = false;
-                    } else {
+                    }
+                    else{
                         socket.emit('message', messages.myMessages.SUBMIT_OK)
                     }
                 }
@@ -127,7 +128,7 @@ mongoose.connect(url).then(function() {
                         ID.find({
                                 name: data.featureIds[i]
                             })
-                            .select('id claimedby').then(function(row, err) {
+                            .select('id name').then(function(row, err) {
                                 if (err) {
                                     console.log("err" + err);
                                 }
@@ -145,7 +146,7 @@ mongoose.connect(url).then(function() {
                                             if (err) {
                                                 console.log(err);
                                             } else {
-                                                console.log('update dataset OK');
+                                                console.log('update dataset OK WE ARE HERE');
                                                 TileSetNeedsUpdating = true;
                                             }
                                         })
@@ -155,7 +156,8 @@ mongoose.connect(url).then(function() {
                                 }
                             })
                     }
-                } else {
+                }
+                else{
                     console.log("Email is not registered, no database work done")
                 }
             })

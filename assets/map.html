@@ -47,16 +47,25 @@
 			<div class="col s12 m7 l6 push-l1">
 				<div id='map'></div>
 			</div>
-			<form id="mapform" class="col s12 m12 l4 push-l1" style="padding-left:5%;padding-right:5%;padding-top:2%">
+			<div class="col s12 m12 l4 push-l1" style="padding-left:3%;padding-right:3%">
 				<div id="emailAddressInput" class="input-field">
 					<i class="material-icons prefix">email</i>
 					<input id="icon_prefix" type="email" class="validate">
 					<label for="icon_prefix">Email Address</label>
 				</div>
-				<b>Street Segments to Change</b>
+			</div>
+			<div class="col s12 m12 l4 push-l1">
+				<ul class="tabs">
+					<li class="tab col s6 m6 l5"><a href="#mapform">New Segments</a></li>
+					<li class="tab col s6 m6 l5"><a href="#curSegments">Current Segments</a></li>
+				</ul>
+			</div>
+			<form id="mapform" class="col s12 m12 l4 push-l1" style="padding-left:5%;padding-right:5%;padding-top:2%">
+				<h6>Street Segments to Change</h6>
 				<div class="collection" id="segments">
 					<br>
-					<div id="selected" style="font-size:80%;padding-left:2%;line-height:100%"><li>(click on map to select street segments to update)<br></li></div>
+					<div id="selected" style="font-size:80%;padding-left:2%;line-height:120%"><li>(click on map to select street segments to update)<br></li></div>
+					<br>
 				</div>
 				<button id="clear" class="disabled green btn waves-effect waves-light" type="button">Clear<i class="small material-icons right">clear_all</i></button><br><br>
 				<input class="with-gap" id="stateInput0" type="radio" name="Status" value="0">
@@ -71,7 +80,10 @@
 				<div id="submitted" style="color:green"></div>
 			</form>
 		</div>
-        <script src = "/js/messages.js"></script>
+		<div class="collection col s12 m12 l4 push-l1" id="curSegments">
+			position div<br>get previously selected segments
+		</div>
+		<script src = "/js/messages.js"></script>
 		<script src = "/js/main.js"></script>
 		<script src = "/js/map.js"></script>
 		<script src="/js/navbar.js"></script>
