@@ -102,6 +102,34 @@ mongoose.connect(url).then(function() {
                 }
             })
         });
+        socket.on('signin', function(email){
+            Account.find({ //check if email is registered already
+                emailAdd: email
+            }).select('name email').then(function(row, err) {
+                var registered = false;
+                if (err) {
+                    console.log("err: " + err)
+                } else {
+                    if (row.length == 0) {
+                        registered = false;
+                    }
+                    else{
+                        registered = true;
+                    }
+                }
+                var out = {}
+                out.valid = registered;
+                if(registered){
+                    out.name = row[0].name;
+                }
+                else{
+                    out.name = null;
+                }
+                return Promise.resolve(out);
+            }).then(function(out){
+                socket.emit('signInReturn', out);
+            })
+        })
         socket.on('sendInfo', function(data) {
             Account.find({ //check if email is registered already
                 emailAdd: data.emailAddress
@@ -128,15 +156,16 @@ mongoose.connect(url).then(function() {
                         ID.find({
                                 name: data.featureIds[i]
                             })
-                            .select('id name').then(function(row, err) {
-                                if (err) {
-                                    console.log("err" + err);
-                                }
+                            .select('id name claimedby').then(function(row, err) {
+                                if (err) console.log("err" + err);
+
                                 var claimed = false;
                                 if (row[0].claimedby.length != 0) { //check if segment is already claimed by someone else
                                     claimed = true;
                                 }
                                 if (!claimed) {
+                                    var newClaimed = [].push(data.emailAddress)
+                                    ID.update({id:row[0].id}, {claimedby:newClaimed})
                                     client.readFeature(row[0].id, dataset_id, function(err, feature) {
                                         if (err) console.log(err);
                                         console.log(feature)
