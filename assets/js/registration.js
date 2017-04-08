@@ -12,59 +12,50 @@ function isNotNumber(string) {
     return isNaN(string) || string == "";
 }
 $('#registration').on("submit", function(event) {
-    // console.log("entering local registration handler");
     var nameInput = $('#nameInput #icon_prefix').val();
     var emailAddressInput = $('#emailAddressInput #icon_prefix').val();
     var phoneNumberInput = $('#phoneNumberInput #icon_prefix').val();
     var groupSizeInput = $('#groupSizeInput #icon_prefix').val();
     var addressInput = $('#streetAddressInput #icon_prefix').val();
-    // console.log(nameInput +  '/' +emailAddressInput + '/' + phoneNumberInput + '/' + groupSizeInput + '/' + addressInput);
+    console.log(addressInput)
     if (nameInput == '') {
-        $('#invalidEmail').empty();
-        $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').empty();
-        $('#invalidName').html("please enter your name<br>");
-        Materialize.toast("please enter your name<br>", 4000)
+        $("#errMessages").html("Please enter your name");
+        Materialize.toast("Please enter your name<br>", 4000)
+        $("#nameInput #icon_prefix").select();
         event.preventDefault();
 
-    } else if (addressInput = "") {
+    } else if (addressInput == "") {
+        $("#errMessages").html("Please enter your address");
+        Materialize.toast("Please enter your address", 4000)
+        $("#streetAddressInput #icon_prefix").select();
         event.preventDefault();
     } else if (!isValidEmailAddress(emailAddressInput)) {
-        $('#invalidName').empty();
-        $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').empty();
-        $('#invalidEmailAddress').html("invalid email address<br>");
+        $('#errMessages').html("Invalid email address<br>");
         Materialize.toast("invalid email address<br>", 4000)
+        $("#emailAddressInput #icon_prefix").select();
         event.preventDefault();
     } else if (!phoneNumberInput == "" && !isValidPhoneNumber(phoneNumberInput)) {
-        $('#invalidName').empty();
-        $('#invalidEmail').empty();
-        $('#invalidGroupSize').empty();
-        $('#invalidPhoneNumber').html("invalid phone number<br>");
-        Materialize.toast("invalid phone number<br>", 4000)
+        $('#errMessages').html("Invalid phone number<br>");
+        Materialize.toast("Invalid phone number<br>", 4000)
+        $("#phoneNumberInput #icon_prefix").select();
         event.preventDefault();
 
     } else if (!groupSizeInput == "" &&isNotNumber(groupSizeInput)) {
-        $('#invalidName').empty();
-        $('#invalidEmail').empty();
-        $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').html("invalid group size<br>");
-        Materialize.toast("invalid group size<br>", 4000)
+        $('#errMessages').html("Invalid group size<br>");
+        Materialize.toast("Invalid group size<br>", 4000)
+        $("#groupSizeInput #icon_prefix").select();
         event.preventDefault();
     } else {
-        // console.log('about to do registration emit');
-        socket.emit('registration', {
+        $("#errMessages").empty();
+        var send = {
             name: nameInput,
             emailAddress: emailAddressInput,
             address: addressInput,
             phoneNumber: phoneNumberInput,
             groupSize: groupSizeInput
-        });
-        $('#invalidName').empty();
-        $('#invalidEmail').empty();
-        $('#invalidPhoneNumber').empty();
-        $('#invalidGroupSize').empty();
-        // console.log('done withregistration emit');
+        };
+        
+        socket.emit('registration', send);
         return false;
     }
 });

@@ -109,42 +109,48 @@ mongoose.connect(url).then(function() {
                     if (row.length == 0) {
                         socket.emit('message', messages.myMessages.NEW_EMAIL);
                         registered = false;
-                    }
-                    else{
+                    } else {
                         socket.emit('message', messages.myMessages.SUBMIT_OK)
                     }
                 }
                 return Promise.resolve(registered);
             }).then(function(registered) {
-                console.log("registered: "+ registered)
+                console.log("registered: " + registered)
                 if (registered) {
                     for (var i in data.featureIds) {
                         ID.find({
                                 name: data.featureIds[i]
                             })
-                            .select('id name').then(function(row, err) {
+                            .select('id claimedby').then(function(row, err) {
                                 if (err) {
                                     console.log("err" + err);
                                 }
-                                console.log(row)
-                                client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                                    if (err) console.log(err);
-                                    console.log(feature)
-                                    feature.properties.state = parseInt(data.newState);
-                                    feature.properties.claimedby = data.emailAddress;
-                                    client.insertFeature(feature, dataset_id, function(err, feature) {
-                                        if (err) {
-                                            console.log(err);
-                                        } else {
-                                            console.log('update dataset OK');
-                                            TileSetNeedsUpdating = true;
-                                        }
+                                var claimed = false;
+                                if(row[0].claimedby.length != 0){
+                                    claimed = true;
+                                }
+                                if (!claimed) {
+                                    client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                                        if (err) console.log(err);
+                                        console.log(feature)
+                                        feature.properties.state = parseInt(data.newState);
+                                        feature.properties.claimedby = data.emailAddress;
+                                        client.insertFeature(feature, dataset_id, function(err, feature) {
+                                            if (err) {
+                                                console.log(err);
+                                            } else {
+                                                console.log('update dataset OK');
+                                                TileSetNeedsUpdating = true;
+                                            }
+                                        })
                                     })
-                                })
+                                }
+                                else{
+                                    socket.emit("message", "Sorry, you have selected segments that are already claimed."); //probably change later
+                                }
                             })
                     }
-                }
-                else{
+                } else {
                     console.log("Email is not registered, no database work done")
                 }
             })
