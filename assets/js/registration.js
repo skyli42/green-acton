@@ -40,7 +40,7 @@ $('#registration').on("submit", function(event) {
         $("#phoneNumberInput #icon_prefix").select();
         event.preventDefault();
 
-    } else if (!groupSizeInput == "" &&isNotNumber(groupSizeInput)) {
+    } else if (!groupSizeInput == "" && isNotNumber(groupSizeInput)) {
         $('#errMessages').html("Invalid group size<br>");
         Materialize.toast("Invalid group size<br>", 4000)
         $("#groupSizeInput #icon_prefix").select();

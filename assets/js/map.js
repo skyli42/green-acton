@@ -161,7 +161,7 @@ map.on('click', function(e) {
         for (var i = 0; i < curFeatures.length && !hasMaxedSegments(); i++) {
             console.log("append")
             $('#temp').remove()
-            $('#selected').append("<li>"+feature_description(curFeatures[i])+"</li><br>")
+            $('#selected').append("<li>"+feature_description(curFeatures[i])+"</li>")
         }
     }
     if (hasMaxedSegments()) {
@@ -209,10 +209,35 @@ $('#clear').click(function(event) {
     
 })
 
+$('#signIn').submit(function(event) {
+    event.preventDefault()
+    var emailAddress = $('#emailAddressInput #icon_prefix').val();
+    if (isValidEmail(emailAddress)) {
+        $('#signIn').addClass('hide')
+        $('#welcome').removeClass('hide')
+        $('#tabs').removeClass('hide')
+        $('#mapform').removeClass('hide')
+        $('#curSegments').removeClass('hide')
+        $('#signOut').removeClass('hide')
+        // check if emailAddress exists in accounts collection, load that user's selected segments  
+        // enter user session
+    }
+    else {
+        Materialize.toast("invalid email address", 4000)
+    }
+})
 
+$('#signOut').click(function(event) {
+    $('#signIn').removeClass('hide')
+    $('#welcome').addClass('hide')
+    $('#tabs').addClass('hide')
+    $('#mapform').addClass('hide')
+    $('#curSegments').addClass('hide')
+    $('#signOut').addClass('hide')
+    // exit user session
+})
 
 $('#mapform').submit(function(event) {
-    // console.log('mapform - submit');
     event.preventDefault();
     var emailInput = $('#icon_prefix').val();
     var stateInput =  $( "input:checked" ).val();
@@ -254,5 +279,5 @@ function isValidEmail(emailAddress) {
 
 function hasMaxedSegments() {
     var divHeight = $('#segments').innerHeight()
-    return divHeight >= BODY_HEIGHT / 3.2
+    return divHeight >= BODY_HEIGHT / 4
 }

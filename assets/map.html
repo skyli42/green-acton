@@ -47,25 +47,25 @@
 			<div class="col s12 m7 l6 push-l1">
 				<div id='map'></div>
 			</div>
-			<div class="col s12 m12 l4 push-l1" style="padding-left:3%;padding-right:3%">
+			<form id="signIn" class="col s12 m12 l4 push-l1" style="padding-left:3%;padding-right:3%">
 				<div id="emailAddressInput" class="input-field">
 					<i class="material-icons prefix">email</i>
 					<input id="icon_prefix" type="email" class="validate">
 					<label for="icon_prefix">Email Address</label>
 				</div>
-			</div>
-			<ul class="tabs tabs-fixed-width col s12 m12 l4 push-l1">
+				<button class="green btn waves-effect waves-light" type="submit">Sign In<i class="small material-icons right">send</i></button>
+			</form>
+			<h5 id="welcome" class="green-text hide col s12 m12 l4 push-l1" style="text-align:center">Welcome [name]</h5>
+			<ul id="tabs" class="hide tabs tabs-fixed-width col s12 m12 l4 push-l1">
 				<li class="tab col s6 m6 l5"><a class="active" href="#mapform">New Segments</a></li>
 				<li class="tab col s6 m6 l5"><a href="#curSegments">Current Segments</a></li>
 			</ul>
-			<form id="mapform" class="col s12 m12 l4 push-l1" style="padding-left:5%;padding-right:5%;padding-top:2%">
+			<form id="mapform" class="hide col s12 m12 l4 push-l1" style="padding-left:2%;padding-right:2%">
 				<h6>Street Segments to Change</h6>
 				<div class="collection" id="segments">
-					<br>
-					<div id="selected" style="font-size:80%;padding-left:2%;line-height:120%"><li>(click on map to select street segments to update)<br></li></div>
-					<br>
+					<div id="selected" style="font-size:80%;padding-left:2%"><li>(click on map to select street segments to update)</li></div>
 				</div>
-				<button id="clear" class="disabled green btn waves-effect waves-light" type="button">Clear<i class="small material-icons right">clear_all</i></button><br><br>
+				<button id="clear" class="disabled green btn waves-effect waves-light" type="button">Clear<i class="small material-icons right">delete</i></button><br><br>
 				<input class="with-gap" id="stateInput0" type="radio" name="Status" value="0">
 				<label for="stateInput0" style="color:red">These need cleaning.</label>
 				<br />
@@ -77,14 +77,18 @@
 				<button id="submit" class="disabled green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
 				<div id="submitted" style="color:green"></div>
 			</form>
-			<div class="col s12 m12 l4 push-l1" id="curSegments" style="padding-left:5%;padding-right:5%">
+			<div class="hide col s12 m12 l4 push-l1" id="curSegments" style="padding-left:5%;padding-right:5%">
 				<div class="collection">
 					get previously selected segments
 				</div>
 			</div>
+			<div class="col s12 m12 l4 push-l1">
+				<button id="signOut" class="hide green btn waves-effect waves-light" type="button">Sign Out<i class="material-icons right">exit_to_app</i></button>
+			</div>
 		</div>
 		<script src = "/js/messages.js"></script>
 		<script src = "/js/main.js"></script>
+		<script src = "js/registration.js"></script>
 		<script src = "/js/map.js"></script>
 		<script src="/js/navbar.js"></script>
 	</body>
