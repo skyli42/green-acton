@@ -1,8 +1,8 @@
+//imports
 var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 mongoose.Promise = require("bluebird");
-var url = "mongodb://greenacton:350PPMofCO2@ds157549.mlab.com:57549/green-acton";
 var AWS = require('aws-sdk');
 var MapboxClient = require('mapbox');
 var express = require('express');
@@ -12,6 +12,12 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var fs = require('fs');
 var temp = require('temp');
+
+//matched message info for server & clients
+var messages = require(__dirname + '/assets/js/messages.js'); // for server use
+
+//global variables
+var url = "mongodb://greenacton:350PPMofCO2@ds157549.mlab.com:57549/green-acton";
 var dataset_id = 'cj15w86wx00w02xovd0koqddm'; //parsed MASS GIS data.
 // var dataset_id = 'cj05n0i9p0ma631qltnyigi85'; // id for segments
 // var dataset_id = 'cj0tk7a6n04ca2qrx1xaizc6r'; // smaller dataset for testing
@@ -22,6 +28,12 @@ var tileset_id = 'cj15w86wx00w02xovd0koqddm-3gm2c'; //parsedMassGIS
 var username = "greenacton"
 var TileSetNeedsUpdating = false;
 var TileSetInProcess = false;
+var port = process.env.PORT || 3000;
+var skey = process.env.MAPBOX_SK;
+// console.log('Need MAPBOX_SK in environment: ' + skey);
+var client = new MapboxClient(skey);
+
+//serves webpage
 app.use(express.static("./assets"));
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
@@ -36,15 +48,8 @@ app.get('/info', function(req, res) {
     res.sendFile(__dirname + '/assets/info.html')
 })
 
-//matched message info for server & clients
-var messages = require(__dirname + '/assets/js/messages.js'); // for server use
 
-var port = process.env.PORT || 3000;
-
-var skey = process.env.MAPBOX_SK;
-// console.log('Need MAPBOX_SK in environment: ' + skey);
-var client = new MapboxClient(skey);
-
+//Mongoose Schemas
 var idSchema = new Schema({
     name: String,
     id: String,
@@ -59,12 +64,14 @@ var accSchema = new Schema({
 })
 var ID = mongoose.model('id', idSchema);
 var Account = mongoose.model('account', accSchema);
+
+//connecting to database and listening to client
 mongoose.connect(url).then(function() {
     console.log("connected to mongo database");
     io.on('connection', function(socket) {
         console.log("a user connected!")
-        socket.on('registration', function(data) {
-            console.log('registration init on server')
+        socket.on('registration', function(data) { //client tries to register
+            // console.log('registration init on server')
             var gSize = data.groupSize == '' ? 1 : data.groupSize;
             var newAcct = new Account({
                 name: data.name,
@@ -79,25 +86,24 @@ mongoose.connect(url).then(function() {
                 if (err) {
                     console.log(err)
                 } else {
-                    console.log(row)
                     if (row.length == 0) { //email doesn't already exist
                         newAcct.save(function(err) {
                             if (err) return console.log(err);
-                            console.log("account saved!")
-                            socket.emit('message', messages.myMessages.REG_OK)
+                            else {
+                                console.log("account saved!")
+                                socket.emit('message', messages.myMessages.REG_OK)
+                            }
                         })
                     } else {
-                        console.log('email already registered')
-                            //                        socket.emit('message', "Email is already registered");
+                        // console.log('email already registered')
                         socket.emit('message', messages.myMessages.REG_ALREADY);
 
                     }
                 }
             })
-
         });
         socket.on('sendInfo', function(data) {
-            Account.find({
+            Account.find({ //check if email is registered already
                 emailAdd: data.emailAddress
             }).select('name email').then(function(row, err) {
                 var registered = true;
@@ -114,8 +120,8 @@ mongoose.connect(url).then(function() {
                     }
                 }
                 return Promise.resolve(registered);
-            }).then(function(registered) {
-                console.log("registered: " + registered)
+            })
+            .then(function(registered) { //if email is registered, update selected segments
                 if (registered) {
                     for (var i in data.featureIds) {
                         ID.find({
@@ -126,7 +132,7 @@ mongoose.connect(url).then(function() {
                                     console.log("err" + err);
                                 }
                                 var claimed = false;
-                                if(row[0].claimedby.length != 0){
+                                if (row[0].claimedby.length != 0) { //check if segment is already claimed by someone else
                                     claimed = true;
                                 }
                                 if (!claimed) {
@@ -144,8 +150,7 @@ mongoose.connect(url).then(function() {
                                             }
                                         })
                                     })
-                                }
-                                else{
+                                } else {
                                     socket.emit("message", "Sorry, you have selected segments that are already claimed."); //probably change later
                                 }
                             })
@@ -154,18 +159,19 @@ mongoose.connect(url).then(function() {
                     console.log("Email is not registered, no database work done")
                 }
             })
-
         });
+
     });
 })
+
 server.listen(app.listen(port, function() {
     var host = server.address().address;
     var port = server.address().port;
 }));
 console.log("Listening on port " + port);
 
-//updating dataset
 
+//updating dataset
 const Readable = require('stream').Readable;
 var datasetProperties;
 var datasetReader = null; // readable stream of dataset features
@@ -253,6 +259,7 @@ class ReadableDataset extends Readable {
             }); // end listFeatures callback
         } // end _read
 } // end class
+
 var s3 = null; // will hold Amazon s3 info for updating.
 var credentials = null; // bucket access info
 var updateTask = function() { //update tileset after modifications
