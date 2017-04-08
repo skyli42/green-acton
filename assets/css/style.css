@@ -221,3 +221,7 @@ html {
 .tabs .tab a {
   color: #4caf50;
 }
+
+.tabs {
+overflow-x: hidden;
+}

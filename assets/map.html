@@ -54,16 +54,16 @@
 					<label for="icon_prefix">Email Address</label>
 				</div>
 			</div>
-			<ul class="tabs col s12 m12 l4 push-l1">
+			<ul class="tabs tabs-fixed-width col s12 m12 l4 push-l1">
 				<li class="tab col s6 m6 l5"><a class="active" href="#mapform">New Segments</a></li>
 				<li class="tab col s6 m6 l5"><a href="#curSegments">Current Segments</a></li>
 			</ul>
 			<form id="mapform" class="col s12 m12 l4 push-l1" style="padding-left:5%;padding-right:5%;padding-top:2%">
 				<h6>Street Segments to Change</h6>
 				<div class="collection" id="segments">
-								<br>
-								<div id="selected" style="font-size:80%;padding-left:2%;line-height:120%"><li>(click on map to select street segments to update)<br></li></div>
-								<br>
+					<br>
+					<div id="selected" style="font-size:80%;padding-left:2%;line-height:120%"><li>(click on map to select street segments to update)<br></li></div>
+					<br>
 				</div>
 				<button id="clear" class="disabled green btn waves-effect waves-light" type="button">Clear<i class="small material-icons right">clear_all</i></button><br><br>
 				<input class="with-gap" id="stateInput0" type="radio" name="Status" value="0">
@@ -77,8 +77,10 @@
 				<button id="submit" class="disabled green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
 				<div id="submitted" style="color:green"></div>
 			</form>
-			<div class="collection col s12 m12 l4 push-l1" id="curSegments">
-				position div<br>get previously selected segments
+			<div class="col s12 m12 l4 push-l1" id="curSegments" style="padding-left:5%;padding-right:5%">
+				<div class="collection">
+					get previously selected segments
+				</div>
 			</div>
 		</div>
 		<script src = "/js/messages.js"></script>
