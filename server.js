@@ -43,7 +43,7 @@ app.get('/map', function(req, res) {
     res.sendFile(__dirname + '/assets/map.html')
 })
 app.get('/info', function(req, res) {
-        res.sendFile(__dirname + '/assets/info.html')
+        res.sendFile(__dirname + '/index.html')
     })
     //Mongoose Schemas
 var idSchema = new Schema({

@@ -36,6 +36,7 @@ var noSegmentsMessage;
 
 $(function() {
     noSegmentsMessage = $('#selected').html();
+    noCurSegmentsMsg = $('#selectedStreets').html();
 });
 
 const BODY_HEIGHT = $('body').height()
@@ -50,6 +51,7 @@ function feature_description(feature) {
 function clearSegmentList() {
     $('#selected').html("")
     $('#selected').append(noSegmentsMessage);
+    $('selectedStreets').append(noCurSegmentsMsg)
     $('#clear').addClass('disabled')
     $('#submit').addClass('disabled')
     curFeatureIds = [];
@@ -272,6 +274,9 @@ socket.on("segmentsAcc", function(segments) {
     }
     else{
         $("deleteSeg").removeClass('disabled');
+    }
+    if($('#selectedStreets').html() == "") {
+        $('#selectedStreets').append('no current street segments to clean')
     }
 })
 $('#signOut').click(function(event) {
