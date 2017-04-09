@@ -61,22 +61,17 @@ var accSchema = new Schema({
 var ID = mongoose.model('id', idSchema);
 var Account = mongoose.model('account', accSchema);
 //connecting to database and listening to client
-
 var promiseWhile = function(condition, action) { //helpful function for promises
     var resolver = Promise.defer();
-
     var loop = function() {
         if (!condition()) return resolver.resolve();
         return Promise.cast(action())
             .then(loop)
             .catch(resolver.reject);
     };
-
     process.nextTick(loop);
-
     return resolver.promise;
 };
-
 mongoose.connect(url).then(function() {
     console.log("connected to mongo database");
     io.on('connection', function(socket) {
@@ -148,7 +143,7 @@ mongoose.connect(url).then(function() {
                     var rows = [];
                     var count = 0;
                     promiseWhile(function() {
-                        return count<row.length;
+                        return count < row.length;
                     }, function() {
                         return new Promise(function(resolve, reject) {
                             client.readFeature(row[count].id, dataset_id, function(err, feature) {
@@ -164,6 +159,42 @@ mongoose.connect(url).then(function() {
                     });
                 }
             })
+        })
+        socket.on('deleteSeg', function(segments) {
+            var i = 0;
+            promiseWhile(function() {
+                return i < segments.length;
+            }, function() {
+                return new Promise(function(resolve, reject) {
+                    var curSeg = segments[i];
+                    // var constrID = curSeg.properties.name + "" + curSeg.properties.id;
+                    console.log(curSeg.id)
+                    ID.update({
+                        id: curSeg.id
+                    }, {
+                        claimedby: []
+                    }).then(function() {})
+
+                    client.readFeature(curSeg.id, dataset_id, function(err, feature) {
+                        if (err) console.log(err);
+                        console.log(feature)
+                        feature.properties.state = 0;
+                        feature.properties.claimedby = null;
+                        client.insertFeature(feature, dataset_id, function(err, feature) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log('update dataset OK WE ARE HERE');
+                                TileSetNeedsUpdating = true;
+                            }
+                        })
+                        i++;
+                        resolve();
+                    })
+                });
+            }).then(function() {
+                socket.emit('updateCurSeg');
+            });
         })
         socket.on('sendInfo', function(data) {
             Account.find({ //check if email is registered already
@@ -199,18 +230,29 @@ mongoose.connect(url).then(function() {
                                         claimed = true;
                                     }
                                     if (!claimed) {
-                                        var newClaimed = [data.emailAddress]
-                                        ID.update({
-                                            id: row[0].id
-                                        }, {
-                                            claimedby: newClaimed
-                                        }).then(function() {})
+                                        if (state == 1) {
+                                            var newClaimed = [data.emailAddress]
+                                            ID.update({
+                                                id: row[0].id
+                                            }, {
+                                                claimedby: newClaimed
+                                            }).then(function() {})
+                                        } else {
+                                            var newClaimed = []
+                                            ID.update({
+                                                id: row[0].id
+                                            }, {
+                                                claimedby: newClaimed
+                                            }).then(function() {})
+                                        }
                                         client.readFeature(row[0].id, dataset_id, function(err, feature) {
                                             if (err) console.log(err);
                                             console.log(feature)
                                             feature.properties.state = state;
                                             if (state == 1) {
                                                 feature.properties.claimedby = data.emailAddress;
+                                            } else {
+                                                feature.properties.claimedby = null;
                                             }
                                             client.insertFeature(feature, dataset_id, function(err, feature) {
                                                 if (err) {

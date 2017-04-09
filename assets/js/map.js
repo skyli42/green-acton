@@ -152,7 +152,7 @@ map.on('click', function(e) {
     } else {
         clearSegmentList();
     }
-    if (!hasMaxedSegments()) {
+    if (!hasMaxedSegments()) { //TODO: Change to scrolling
         for (var i = 0; i < curFeatures.length && !hasMaxedSegments(); i++) {
             console.log("append")
             $('#temp').remove()
@@ -217,9 +217,7 @@ function clearSegments() {
     clearSegmentList();
 }
 
-$('#clear').click(function() {
-    clearSegments()
-});
+$('#clear').click(()=>clearSegments());
 
 function signIn(name) {
     $('#signIn').addClass('hide')
@@ -229,6 +227,7 @@ function signIn(name) {
     $('#mapform').removeClass('hide')
     $('#curSegments').removeClass('hide')
     $('#signOut').removeClass('hide')
+    $('#deleteSeg').removeClass('hide');
 }
 
 function signOut() {
@@ -239,6 +238,7 @@ function signOut() {
     $('#mapform').addClass('hide')
     $('#curSegments').addClass('hide')
     $('#signOut').addClass('hide')
+    $('#deleteSeg').removeClass('hide');
 }
 $('#signIn').submit(function(event) {
     event.preventDefault()
@@ -257,35 +257,60 @@ socket.on("signInReturn", function(msg) {
         Materialize.toast("Account is not registered", 4000);
     }
 })
+var activeItems = new Set();
+var mySegments = [];
 socket.on("segmentsAcc", function(segments) {
+    activeItems.clear();
     $("#selectedStreets").empty();
+    mySegments = segments;
     for (var i in segments) {
-        $("#selectedStreets").append("<a href=\"#!\" onclick=\"changeActive(this)\" class=\"collection-item\">" + feature_description(segments[i]) + "</a>");
+        $("#selectedStreets").append("<a href=\"#!\" id=\"collection-item-"+i+"\" onclick=\"changeActive(this)\" class=\"collection-item\">" + feature_description(segments[i]) + "</a>");
+    }
+    if(segments.length == 0){
+        $("#selectedStreets").html("You have not claimed any streets yet")
+        $("#deleteSeg").addClass("disabled");
+    }
+    else{
+        $("deleteSeg").removeClass('disabled');
     }
 })
 $('#signOut').click(function(event) {
+    clearSegments();
     signOut();
     // exit user session
 })
-$("#curSegTab").on('click', function(event) {
-    console.log("click")
+$("#deleteSeg").on('click', function(event){
+    var itemsArr = [...activeItems];
+    var toSend = [];
+    for(var i in itemsArr){
+        console.log(itemsArr+" "+i)
+        console.log(mySegments)
+        toSend.push(mySegments[itemsArr[i]]);
+    }
+    console.log(toSend)
+    socket.emit('deleteSeg', toSend);
+})
+function refreshCurrent(){
     var emailAddress = $('#emailAddressInput #icon_prefix').val();
     $("#selectedStreets").html("loading...");
     socket.emit("reqSegAcc", emailAddress);
-})
+}
 
+$("#curSegTab").on('click', ()=> refreshCurrent());
+socket.on("updateCurSeg", ()=>refreshCurrent())
 function changeActive(element) {
-    console.log($(element))
+    var index = parseInt($(element).attr('id').substring(16));
     if ($(element).hasClass('active')) {
+        activeItems.delete(index);
         $(element).removeClass('active')
     } else {
+        activeItems.add(index);
         $(element).addClass('active');
     }
 }
-$(".collection .collection-item").on("click", function() {
-    console.log('click')
-    changeActive(this)
-})
+// $(".collection .collection-item").on("click", function() {
+//     changeActive(this)
+// })
 $('#mapform').submit(function(event) {
     event.preventDefault();
     var emailInput = $('#icon_prefix').val();
