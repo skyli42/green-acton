@@ -3,6 +3,7 @@ var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 mongoose.Promise = require("bluebird");
+var Promise = require('bluebird')
 var AWS = require('aws-sdk');
 var MapboxClient = require('mapbox');
 var express = require('express');
@@ -12,10 +13,8 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var fs = require('fs');
 var temp = require('temp');
-
 //matched message info for server & clients
 var messages = require(__dirname + '/assets/js/messages.js'); // for server use
-
 //global variables
 var url = "mongodb://greenacton:350PPMofCO2@ds157549.mlab.com:57549/green-acton";
 var dataset_id = 'cj15w86wx00w02xovd0koqddm'; //parsed MASS GIS data.
@@ -32,7 +31,6 @@ var port = process.env.PORT || 3000;
 var skey = process.env.MAPBOX_SK;
 // console.log('Need MAPBOX_SK in environment: ' + skey);
 var client = new MapboxClient(skey);
-
 //serves webpage
 app.use(express.static("./assets"));
 app.get('/', function(req, res) {
@@ -45,11 +43,9 @@ app.get('/map', function(req, res) {
     res.sendFile(__dirname + '/assets/map.html')
 })
 app.get('/info', function(req, res) {
-    res.sendFile(__dirname + '/assets/info.html')
-})
-
-
-//Mongoose Schemas
+        res.sendFile(__dirname + '/assets/info.html')
+    })
+    //Mongoose Schemas
 var idSchema = new Schema({
     name: String,
     id: String,
@@ -64,8 +60,23 @@ var accSchema = new Schema({
 })
 var ID = mongoose.model('id', idSchema);
 var Account = mongoose.model('account', accSchema);
-
 //connecting to database and listening to client
+
+var promiseWhile = function(condition, action) { //helpful function for promises
+    var resolver = Promise.defer();
+
+    var loop = function() {
+        if (!condition()) return resolver.resolve();
+        return Promise.cast(action())
+            .then(loop)
+            .catch(resolver.reject);
+    };
+
+    process.nextTick(loop);
+
+    return resolver.promise;
+};
+
 mongoose.connect(url).then(function() {
     console.log("connected to mongo database");
     io.on('connection', function(socket) {
@@ -97,12 +108,11 @@ mongoose.connect(url).then(function() {
                     } else {
                         // console.log('email already registered')
                         socket.emit('message', messages.myMessages.REG_ALREADY);
-
                     }
                 }
             })
         });
-        socket.on('signin', function(email){
+        socket.on('signin', function(email) {
             Account.find({ //check if email is registered already
                 emailAdd: email
             }).select('name email').then(function(row, err) {
@@ -112,96 +122,122 @@ mongoose.connect(url).then(function() {
                 } else {
                     if (row.length == 0) {
                         registered = false;
-                    }
-                    else{
+                    } else {
                         registered = true;
                     }
                 }
                 var out = {}
                 out.valid = registered;
-                if(registered){
+                if (registered) {
                     out.name = row[0].name;
-                }
-                else{
+                } else {
                     out.name = null;
                 }
                 return Promise.resolve(out);
-            }).then(function(out){
+            }).then(function(out) {
                 socket.emit('signInReturn', out);
+            })
+        })
+        socket.on('reqSegAcc', function(email) {
+            console.log("request")
+            ID.find({
+                claimedby: [email]
+            }).then(function(row, err) {
+                if (err) console.log(err)
+                else {
+                    var rows = [];
+                    var count = 0;
+                    promiseWhile(function() {
+                        return count<row.length;
+                    }, function() {
+                        return new Promise(function(resolve, reject) {
+                            client.readFeature(row[count].id, dataset_id, function(err, feature) {
+                                if (err) console.log(err);
+                                // console.log(feature)
+                                count++;
+                                rows.push(feature);
+                                resolve();
+                            })
+                        });
+                    }).then(function() {
+                        socket.emit("segmentsAcc", rows);
+                    });
+                }
             })
         })
         socket.on('sendInfo', function(data) {
             Account.find({ //check if email is registered already
-                emailAdd: data.emailAddress
-            }).select('name email').then(function(row, err) {
-                var registered = true;
-                if (err) {
-                    console.log("err: " + err)
-                } else {
-                    console.log('row length ' + row.length);
-                    console.log(row);
-                    if (row.length == 0) {
-                        socket.emit('message', messages.myMessages.NEW_EMAIL);
-                        registered = false;
+                    emailAdd: data.emailAddress
+                }).select('name email').then(function(row, err) {
+                    var registered = true;
+                    if (err) {
+                        console.log("err: " + err)
+                    } else {
+                        if (row.length == 0) {
+                            socket.emit('message', messages.myMessages.NEW_EMAIL);
+                            registered = false;
+                        } else {
+                            socket.emit('message', messages.myMessages.SUBMIT_OK)
+                        }
                     }
-                    else{
-                        socket.emit('message', messages.myMessages.SUBMIT_OK)
-                    }
-                }
-                return Promise.resolve(registered);
-            })
-            .then(function(registered) { //if email is registered, update selected segments
-                if (registered) {
-                    for (var i in data.featureIds) {
-                        ID.find({
-                                name: data.featureIds[i]
-                            })
-                            .select('id name claimedby').then(function(row, err) {
-                                if (err) console.log("err" + err);
-
-                                var claimed = false;
-                                if (row[0].claimedby.length != 0) { //check if segment is already claimed by someone else
-                                    claimed = true;
-                                }
-                                if (!claimed) {
-                                    var newClaimed = [].push(data.emailAddress)
-                                    ID.update({id:row[0].id}, {claimedby:newClaimed})
-                                    client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                                        if (err) console.log(err);
-                                        console.log(feature)
-                                        feature.properties.state = parseInt(data.newState);
-                                        feature.properties.claimedby = data.emailAddress;
-                                        client.insertFeature(feature, dataset_id, function(err, feature) {
-                                            if (err) {
-                                                console.log(err);
-                                            } else {
-                                                console.log('update dataset OK WE ARE HERE');
-                                                TileSetNeedsUpdating = true;
+                    return Promise.resolve(registered);
+                })
+                .then(function(registered) { //if email is registered, update selected segments
+                    if (registered) {
+                        var state = parseInt(data.newState);
+                        for (var i in data.featureIds) {
+                            ID.find({
+                                    name: data.featureIds[i]
+                                })
+                                .select('id name claimedby').then(function(row, err) {
+                                    if (err) console.log("err" + err);
+                                    var claimed = false;
+                                    console.log("claimed?")
+                                    console.log(row)
+                                    if (row[0].claimedby.length != 0) { //check if segment is already claimed by someone else
+                                        console.log('claimed')
+                                        claimed = true;
+                                    }
+                                    if (!claimed) {
+                                        var newClaimed = [data.emailAddress]
+                                        ID.update({
+                                            id: row[0].id
+                                        }, {
+                                            claimedby: newClaimed
+                                        }).then(function() {})
+                                        client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                                            if (err) console.log(err);
+                                            console.log(feature)
+                                            feature.properties.state = state;
+                                            if (state == 1) {
+                                                feature.properties.claimedby = data.emailAddress;
                                             }
+                                            client.insertFeature(feature, dataset_id, function(err, feature) {
+                                                if (err) {
+                                                    console.log(err);
+                                                } else {
+                                                    console.log('update dataset OK WE ARE HERE');
+                                                    TileSetNeedsUpdating = true;
+                                                }
+                                            })
                                         })
-                                    })
-                                } else {
-                                    socket.emit("message", "Sorry, you have selected segments that are already claimed."); //probably change later
-                                }
-                            })
+                                    } else {
+                                        socket.emit("message", messages.myMessages.ALREADY_CLAIMED);
+                                    }
+                                })
+                        }
+                    } else {
+                        console.log("Email is not registered, no database work done")
                     }
-                }
-                else{
-                    console.log("Email is not registered, no database work done")
-                }
-            })
+                })
         });
-
     });
 })
-
 server.listen(app.listen(port, function() {
     var host = server.address().address;
     var port = server.address().port;
 }));
 console.log("Listening on port " + port);
-
-
 //updating dataset
 const Readable = require('stream').Readable;
 var datasetProperties;
@@ -290,7 +326,6 @@ class ReadableDataset extends Readable {
             }); // end listFeatures callback
         } // end _read
 } // end class
-
 var s3 = null; // will hold Amazon s3 info for updating.
 var credentials = null; // bucket access info
 var updateTask = function() { //update tileset after modifications

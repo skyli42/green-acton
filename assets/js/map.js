@@ -18,10 +18,16 @@ map.dragRotate.disable();
 // disable map rotation using touch rotation gesture
 map.touchZoomRotate.disableRotation();
 //a scale
-map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }));
+map.addControl(new mapboxgl.ScaleControl({
+    unit: 'imperial'
+}));
 
 // Create a popup, but don't add it to the map yet.
-var popup = new mapboxgl.Popup({ closeButton: false, offset: 25, closeOnClick: true });
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    offset: 25,
+    closeOnClick: true
+});
 
 var curFeatureIds = [];
 var curFeatures = [];
@@ -84,25 +90,26 @@ map.on('mousemove', function(e) {
     }
 });
 
-var colorMap = [{ rgb: 'rgb(238,23,23)' }, { rgb: 'rgb(22,87,218)' }, { rgb: 'rgb(0,255,43)' }];
+var colorMap = [{
+    rgb: 'rgb(238,23,23)'
+}, {
+    rgb: 'rgb(22,87,218)'
+}, {
+    rgb: 'rgb(0,255,43)'
+}];
+
 
 map.on('click', function(e) {
-    // set bbox as 8px rectangle area around clicked point
+    // set bbox as 5px rectangle area around clicked point
     var bbox = [
-        [e.point.x - 8, e.point.y - 8],
-        [e.point.x + 8, e.point.y + 8]
+        [e.point.x - 5, e.point.y - 5],
+        [e.point.x + 5, e.point.y + 5]
     ];
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-
-    if (features.length == 0) {
-        for (var i = 0; i < curFeatureIds.length; i++) {
-            map.removeLayer(curFeatureIds[i]);
-            map.removeSource(curFeatureIds[i]);
-        }
-        clearSegmentList();
-    }
+    var selectedFeature;
+    if (features.length == 0) clearSegments();
 
     for (var i = 0; i < features.length; i++) {
         console.log(features[i])
@@ -136,6 +143,7 @@ map.on('click', function(e) {
             map.removeSource(idToSend);
         }
     }
+
     $('#selected').empty();
     if (curFeatures.length != 0) {
         $('#clear').removeClass('disabled')
@@ -169,6 +177,16 @@ map.on('dragend', function(event) {
     }
 })
 
+function isValidEmail(emailAddress) {
+    var regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return regEx.test(emailAddress);
+}
+
+function hasMaxedSegments() {
+    var divHeight = $('#segments').innerHeight()
+    return divHeight >= BODY_HEIGHT / 4
+}
+
 function HandleStateChange() {
     var stateInput = parseInt($("input:checked").val());
     var newColor = colorMap[stateInput].rgb;
@@ -181,18 +199,27 @@ function HandleStateChange() {
     });
 }
 
-$('#stateInput0').change(function(event) { HandleStateChange(); });
-$('#stateInput1').change(function(event) { HandleStateChange(); });
-$('#stateInput2').change(function(event) { HandleStateChange(); });
+$('#stateInput0').change(function(event) {
+    HandleStateChange();
+});
+$('#stateInput1').change(function(event) {
+    HandleStateChange();
+});
+$('#stateInput2').change(function(event) {
+    HandleStateChange();
+});
 
-$('#clear').click(function(event) {
+function clearSegments() {
     for (var i = 0; i < curFeatureIds.length; i++) {
         map.removeLayer(curFeatureIds[i]);
         map.removeSource(curFeatureIds[i]);
     }
     clearSegmentList();
+}
 
-})
+$('#clear').click(function() {
+    clearSegments()
+});
 
 function signIn(name) {
     $('#signIn').addClass('hide')
@@ -230,12 +257,35 @@ socket.on("signInReturn", function(msg) {
         Materialize.toast("Account is not registered", 4000);
     }
 })
-
+socket.on("segmentsAcc", function(segments) {
+    $("#selectedStreets").empty();
+    for (var i in segments) {
+        $("#selectedStreets").append("<a href=\"#!\" onclick=\"changeActive(this)\" class=\"collection-item\">" + feature_description(segments[i]) + "</a>");
+    }
+})
 $('#signOut').click(function(event) {
     signOut();
     // exit user session
 })
+$("#curSegTab").on('click', function(event) {
+    console.log("click")
+    var emailAddress = $('#emailAddressInput #icon_prefix').val();
+    $("#selectedStreets").html("loading...");
+    socket.emit("reqSegAcc", emailAddress);
+})
 
+function changeActive(element) {
+    console.log($(element))
+    if ($(element).hasClass('active')) {
+        $(element).removeClass('active')
+    } else {
+        $(element).addClass('active');
+    }
+}
+$(".collection .collection-item").on("click", function() {
+    console.log('click')
+    changeActive(this)
+})
 $('#mapform').submit(function(event) {
     event.preventDefault();
     var emailInput = $('#icon_prefix').val();
@@ -270,13 +320,3 @@ $('#mapform').submit(function(event) {
     }
     return false;
 });
-
-function isValidEmail(emailAddress) {
-    var regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return regEx.test(emailAddress);
-}
-
-function hasMaxedSegments() {
-    var divHeight = $('#segments').innerHeight()
-    return divHeight >= BODY_HEIGHT / 4
-}

@@ -57,8 +57,8 @@
 			</form>
 			<h5 id="welcome" class="green-text hide col s12 m12 l4 push-l1" style="text-align:center">Welcome <span id = "name"></span></h5>
 			<ul id="tabs" class="hide tabs tabs-fixed-width col s12 m12 l4 push-l1">
-				<li class="tab col s6 m6 l5"><a class="active" href="#mapform">New Segments</a></li>
-				<li class="tab col s6 m6 l5"><a href="#curSegments">Current Segments</a></li>
+				<li class="tab col s6 m6 l5" id = "newSegTab"><a class="active" href="#mapform">New Segments</a></li>
+				<li class="tab col s6 m6 l5" id = "curSegTab"><a href="#curSegments">Current Segments</a></li>
 			</ul>
 			<form id="mapform" class="hide col s12 m12 l4 push-l1" style="padding-left:2%;padding-right:2%">
 				<h6>Street Segments to Change</h6>
@@ -78,7 +78,7 @@
 				<div id="submitted" style="color:green"></div>
 			</form>
 			<div class="hide col s12 m12 l4 push-l1" id="curSegments" style="padding-left:5%;padding-right:5%">
-				<div class="collection">
+				<div class="collection" id="selectedStreets">
 					loading...
 				</div>
 			</div>
