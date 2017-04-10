@@ -219,7 +219,9 @@ function clearSegments() {
     clearSegmentList();
 }
 
-$('#clear').click(()=>clearSegments());
+$('#clear').click(function(event) {
+    clearSegments();
+});
 
 function signIn(name) {
     $('#signIn').addClass('hide')
@@ -285,7 +287,7 @@ $('#signOut').click(function(event) {
     // exit user session
 })
 $("#deleteSeg").on('click', function(event){
-    var itemsArr = [...activeItems];
+    var itemsArr = Array.from(activeItems);
     var toSend = [];
     for(var i in itemsArr){
         console.log(itemsArr+" "+i)
@@ -301,8 +303,10 @@ function refreshCurrent(){
     socket.emit("reqSegAcc", emailAddress);
 }
 
-$("#curSegTab").on('click', ()=> refreshCurrent());
-socket.on("updateCurSeg", ()=>refreshCurrent())
+$("#curSegTab").on('click', function() { refreshCurrent()});
+
+socket.on("updateCurSeg", function() { refreshCurrent()})
+
 function changeActive(element) {
     var index = parseInt($(element).attr('id').substring(16));
     if ($(element).hasClass('active')) {
