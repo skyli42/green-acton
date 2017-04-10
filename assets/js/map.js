@@ -287,7 +287,7 @@ $('#signOut').click(function(event) {
     // exit user session
 })
 $("#deleteSeg").on('click', function(event){
-    var itemsArr = [...activeItems];
+    var itemsArr = Array.from(activeItems);
     var toSend = [];
     for(var i in itemsArr){
         console.log(itemsArr+" "+i)
