@@ -290,11 +290,11 @@ $("#deleteSeg").on('click', function(event){
     var itemsArr = Array.from(activeItems);
     var toSend = [];
     for(var i in itemsArr){
-        console.log(itemsArr+" "+i)
-        console.log(mySegments)
+        // console.log(itemsArr+" "+i)
+        // console.log(mySegments)
         toSend.push(mySegments[itemsArr[i]]);
     }
-    console.log(toSend)
+    // console.log(toSend)
     socket.emit('deleteSeg', toSend);
 })
 function refreshCurrent(){
@@ -306,7 +306,10 @@ function refreshCurrent(){
 $("#curSegTab").on('click', function() { refreshCurrent()});
 
 socket.on("updateCurSeg", function() { refreshCurrent()})
-
+socket.on("deleteSegSuccess", function(){
+    Materialize.toast("Successfully removed segment");
+    refreshCurrent();
+})
 function changeActive(element) {
     var index = parseInt($(element).attr('id').substring(16));
     if ($(element).hasClass('active')) {
