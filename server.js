@@ -17,7 +17,8 @@ var temp = require('temp');
 var messages = require(__dirname + '/assets/js/messages.js'); // for server use
 //global variables
 var url = "mongodb://greenacton:350PPMofCO2@ds157549.mlab.com:57549/green-acton";
-var dataset_id = 'cj15w86wx00w02xovd0koqddm'; //parsed MASS GIS data.
+var dataset_id = 'cj1bf08bs09ba33o7o2smznff'; //new MASS GIS set
+// var dataset_id = 'cj15w86wx00w02xovd0koqddm'; //parsed MASS GIS data.
 // var dataset_id = 'cj05n0i9p0ma631qltnyigi85'; // id for segments
 // var dataset_id = 'cj0tk7a6n04ca2qrx1xaizc6r'; // smaller dataset for testing
 // var tileset_name = 'acton-segments';
@@ -193,7 +194,7 @@ mongoose.connect(url).then(function() {
                     })
                 });
             }).then(function() {
-                socket.emit('updateCurSeg');
+                socket.emit('deleteSegSuccess');
             });
         })
         socket.on('sendInfo', function(data) {
