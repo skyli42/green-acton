@@ -262,7 +262,7 @@ socket.on("signInReturn", function(msg) {
     }
 })
 var activeItems = new Set();
-var mySegments = [];
+var mySegments = null;
 socket.on("segmentsAcc", function(segments) {
     activeItems.clear();
     $("#selectedStreets").empty();
@@ -307,7 +307,7 @@ $("#curSegTab").on('click', function() { refreshCurrent()});
 
 socket.on("updateCurSeg", function() { refreshCurrent()})
 socket.on("deleteSegSuccess", function(){
-    Materialize.toast("Successfully removed segment");
+    Materialize.toast("Successfully removed segment", 4000);
     refreshCurrent();
 })
 function changeActive(element) {
