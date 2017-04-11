@@ -58,6 +58,8 @@ function clearSegmentList() {
     curFeatures = [];
 }
 
+var justSentSome = [];
+
 function localMessageHandler(msg) {
     switch (msg) {
         case messages.myMessages.NEW_EMAIL:
@@ -66,6 +68,7 @@ function localMessageHandler(msg) {
         case messages.myMessages.SUBMIT_OK:
             for (var i = 0; i < curFeatureIds.length; i++) {
                 map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
+                justSentSome.push(curFeatures[i]);
             }
             clearSegmentList();
             break;
@@ -100,6 +103,10 @@ var colorMap = [{
     rgb: 'rgb(0,255,43)'
 }];
 
+function buildSegKey(feature)
+{
+    return feature.properties.street + "" + feature.properties.id;
+}
 
 map.on('click', function(e) {
     // set bbox as 5px rectangle area around clicked point
@@ -115,7 +122,7 @@ map.on('click', function(e) {
 
     for (var i = 0; i < features.length; i++) {
         console.log(features[i])
-        var idToSend = features[i].properties.street + "" + features[i].properties.id;
+        var idToSend = buildSegKey(features[i]);
         var alreadySelected = curFeatureIds.indexOf(idToSend);
         console.log("selected index is " + alreadySelected);
         if (alreadySelected == -1) {
@@ -263,12 +270,40 @@ socket.on("signInReturn", function(msg) {
 })
 var activeItems = new Set();
 var mySegments = null;
-socket.on("segmentsAcc", function(segments) {
+
+function processClaimedSegmentsList(segments)
+{
     activeItems.clear();
     $("#selectedStreets").empty();
+    if (justSentSome.length)
+    {
+        Array.prototype.push.apply(segments, justSentSome);
+        justSentSome = [];
+    }
+
     mySegments = segments;
     for (var i in segments) {
         $("#selectedStreets").append("<a href=\"#!\" id=\"collection-item-"+i+"\" onclick=\"changeActive(this)\" class=\"collection-item\">" + feature_description(segments[i]) + "</a>");
+        var idToSend = buildSegKey(segments[i]);
+        if (map.getLayer(idToSend)){
+            map.setPaintProperty(idToSend, 'line-width', LINE_WIDTH_WIDE);
+        } else{
+            map.addLayer({
+                'id': idToSend,
+                'type': 'line',
+                'source': {
+                    'type': 'geojson',
+                    'data': segments[i]
+                },
+                'layout': {},
+                'paint': {
+                    'line-color': colorMap[segments[i].properties.state].rgb,
+                    'line-opacity': 0.65,
+                    'line-width': LINE_WIDTH_WIDE
+                }
+            });
+        }
+            
     }
     if(segments.length == 0){
         $("#selectedStreets").html("You have not claimed any streets yet")
@@ -280,7 +315,12 @@ socket.on("segmentsAcc", function(segments) {
     if($('#selectedStreets').html() == "") {
         $('#selectedStreets').append('no current street segments to clean')
     }
+}
+
+socket.on("segmentsAcc", function(segments) {
+  processClaimedSegmentsList(segments);  
 })
+
 $('#signOut').click(function(event) {
     clearSegments();
     signOut();
@@ -292,18 +332,45 @@ $("#deleteSeg").on('click', function(event){
     for(var i in itemsArr){
         // console.log(itemsArr+" "+i)
         // console.log(mySegments)
-        toSend.push(mySegments[itemsArr[i]]);
+        var featureToBeDeleted = mySegments[itemsArr[i]]; 
+        toSend.push(featureToBeDeleted);
+        map.setPaintProperty(buildSegKey(featureToBeDeleted), 'line-width', LINE_WIDTH_THIN);
+        mySegments.splice(featureToBeDeleted, 1);
     }
     // console.log(toSend)
     socket.emit('deleteSeg', toSend);
+    processClaimedSegmentsList(mySegments)
 })
 function refreshCurrent(){
-    var emailAddress = $('#emailAddressInput #icon_prefix').val();
-    $("#selectedStreets").html("loading...");
-    socket.emit("reqSegAcc", emailAddress);
+    if (mySegments == null){
+        var emailAddress = $('#emailAddressInput #icon_prefix').val();
+        $("#selectedStreets").html("loading...");
+        socket.emit("reqSegAcc", emailAddress);
+    } else{
+        processClaimedSegmentsList(mySegments)  
+    }
 }
 
-$("#curSegTab").on('click', function() { refreshCurrent()});
+function hideNew() {
+    for (var i = 0; i < curFeatureIds.length; i++) {
+             map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
+    }
+}
+function showNew() {
+    for (var i = 0; i < curFeatureIds.length; i++) {
+             map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_WIDE);
+    }
+}
+
+function hideCurrent() {
+    for (var i = 0; i < mySegments.length; i++) {
+             map.setPaintProperty(buildSegKey(mySegments[i]), 'line-width', LINE_WIDTH_THIN);
+    }
+}
+
+$("#curSegTab").on('click', function() { hideNew(); refreshCurrent()});
+
+$("#newSegTab").on('click', function() { hideCurrent(); showNew(); });
 
 socket.on("updateCurSeg", function() { refreshCurrent()})
 socket.on("deleteSegSuccess", function(){
