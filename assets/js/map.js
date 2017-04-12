@@ -41,7 +41,9 @@ $(function() {
 const BODY_HEIGHT = $('body').height()
 
 const LINE_WIDTH_THIN = 7.24
-const LINE_WIDTH_WIDE = 12
+const LINE_WIDTH_WIDE = 12.5
+const LINE_WIDTH_VERYWIDE = 20
+
 
 var hoverLayer = {'id': 'hoverLayer',
                 'type': 'line',
@@ -103,7 +105,7 @@ function localMessageHandler(msg) {
         case messages.myMessages.SUBMIT_OK:
             for (var i = 0; i < curFeatureIds.length; i++) {
                 map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
-                if (CurFeatures[i].properties.state == 1){
+                if (curFeatures[i].properties.state == 1){
                     justSentSome.push(curFeatures[i]);                    
                 }
             }
@@ -127,6 +129,7 @@ map.on('mousemove', function(e) {
         feature = features[0];
         hoverFeatureShow(feature)
         var location = feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)];
+        // console.log(location)
         popup.setLngLat(location)
             .setText(feature_description(feature))
             .addTo(map);
@@ -139,11 +142,13 @@ map.on('mousemove', function(e) {
 });
 
 var colorMap = [{
-    rgb: 'rgb(238,23,23)'
+    rgb: 'rgb(238,23,23)'  // needs cleaning - red
 }, {
-    rgb: 'rgb(22,87,218)'
+    rgb: 'rgb(22,87,218)'   // claimed - blue
 }, {
-    rgb: 'rgb(0,255,43)'
+    rgb: 'rgb(0,255,43)'    // clean - green
+}, {
+    rgb: 'rgb(0,0,0)'       // unknown - black
 }];
 
 function buildSegKey(feature)
@@ -425,12 +430,25 @@ socket.on("deleteSegSuccess", function(){
 })
 function changeActive(element) {
     var index = parseInt($(element).attr('id').substring(16));
+    var feature = mySegments[index]; 
+    var idToUse = buildSegKey(feature);
     if ($(element).hasClass('active')) {
         activeItems.delete(index);
         $(element).removeClass('active')
+        map.setPaintProperty(idToUse, 'line-width', LINE_WIDTH_WIDE);
     } else {
         activeItems.add(index);
         $(element).addClass('active');
+        map.setPaintProperty(idToUse, 'line-width', LINE_WIDTH_VERYWIDE);
+        // zoom to new active element
+        var coordinates = feature.geometry.coordinates;
+        var bounds = coordinates.reduce(function(bounds, coord) {
+            return bounds.extend(coord);
+        }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+
+        map.fitBounds(bounds, {
+            padding: 60
+        });
     }
 }
 // $(".collection .collection-item").on("click", function() {
