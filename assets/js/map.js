@@ -33,7 +33,6 @@ var curFeatureIds = [];
 var curFeatures = [];
 
 var noSegmentsMessage;
-
 $(function() {
     noSegmentsMessage = $('#selected').html();
     noCurSegmentsMsg = $('#selectedStreets').html();
@@ -43,6 +42,42 @@ const BODY_HEIGHT = $('body').height()
 
 const LINE_WIDTH_THIN = 7.24
 const LINE_WIDTH_WIDE = 12
+
+var hoverLayer = {'id': 'hoverLayer',
+                'type': 'line',
+                'source': 'hoverLayer',
+                'layout': { 
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'line-opacity': 0.35,
+                    'line-width': LINE_WIDTH_WIDE
+                }
+}
+
+
+var hoverFeature = null;
+                  
+function hoverFeatureShow(feature)
+{  
+                 if (hoverFeature==null)
+                 {
+                    hoverFeature = feature; 
+                    map.addSource('hoverLayer', { type: 'geojson', data: feature });
+                    map.addLayer(hoverLayer);
+                 }
+                 else{
+                     map.getSource('hoverLayer').setData(feature);
+                     map.setLayoutProperty('hoverLayer', 'visibility', 'visible');
+                 }
+}
+function hoverFeatureHide()
+{
+    if (hoverFeature){
+        map.setLayoutProperty('hoverLayer', 'visibility', 'none');
+    }
+        
+}
 
 function feature_description(feature) {
     return feature.properties.street == "" ? "UNNAMED STREET" : feature.properties.street + ' between ' + ((feature.properties.start == null) ? 'end of the road' : feature.properties.start == "" ? "UNNAMED STREET" : feature.properties.start) + ' and ' + ((feature.properties.end == null) ? 'end of the road' : feature.properties.end == "" ? "UNNAMED STREET" : feature.properties.end);
@@ -83,11 +118,12 @@ map.on('mousemove', function(e) {
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-
+    
     // Change the cursor style as a UI indicator.
     map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-    if (features.length) {
-        var feature = features[0];
+    if (features.length) { 
+        feature = features[0];
+        hoverFeatureShow(feature)
         var location = feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)];
         popup.setLngLat(location)
             .setText(feature_description(feature))
@@ -95,6 +131,7 @@ map.on('mousemove', function(e) {
     }
     else {
         popup.remove();
+        hoverFeatureHide();
     }
 });
 

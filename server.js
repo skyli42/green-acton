@@ -248,7 +248,7 @@ mongoose.connect(url).then(function() {
                                         }
                                         client.readFeature(row[0].id, dataset_id, function(err, feature) {
                                             if (err) console.log(err);
-                                            console.log(feature)
+                                            
                                             feature.properties.state = state;
                                             if (state == 1) {
                                                 feature.properties.claimedby = data.emailAddress;
@@ -260,6 +260,7 @@ mongoose.connect(url).then(function() {
                                                     console.log(err);
                                                 } else {
                                                     console.log('update dataset OK WE ARE HERE');
+                                                    console.log(feature)
                                                     TileSetNeedsUpdating = true;
                                                 }
                                             })
