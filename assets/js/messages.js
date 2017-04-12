@@ -6,7 +6,7 @@
   SUBMIT_OK: 4,
   ALREADY_CLAIMED: 5,
   properties: {
-    1: {msg_string: 'Email address isn\'t registered. Please register your email.'},
+    1: {msg_string: 'Account is not registered'},
     2: {msg_string: 'Registered!'},
     3: {msg_string: 'Email is already registered'},
     4: {msg_string: "Thanks for updating these streets!"},

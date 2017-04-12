@@ -63,7 +63,7 @@ var justSentSome = [];
 function localMessageHandler(msg) {
     switch (msg) {
         case messages.myMessages.NEW_EMAIL:
-            $('#submitted').html('Unrecognized Email. Correct it or <a href="register">register this email here</a>');
+            $('#loginMessages').html('Unrecognized Email. Correct it or <a href="/register">register this email here</a>');
             break;
         case messages.myMessages.SUBMIT_OK:
             for (var i = 0; i < curFeatureIds.length; i++) {
@@ -265,7 +265,8 @@ socket.on("signInReturn", function(msg) {
     if (msg.valid) {
         signIn(msg.name)
     } else {
-        Materialize.toast("Account is not registered", 4000);
+        Materialize.toast(messages.myMessages.NEW_EMAIL, 4000);
+        localMessageHandler(messages.myMessages.NEW_EMAIL);
     }
 })
 var activeItems = new Set();
@@ -397,16 +398,6 @@ $('#mapform').submit(function(event) {
 
     if (!isValidEmail(emailInput)) {
         console.log('bad email address');
-        // $('#submitted').empty();
-        // $('#segments').html('<br>');
-        // $('#invalidEmail').html("invalid email address");
-        // for (var i = 0; i < curFeatureIds.length; i++)
-        // {
-        //     map.removeLayer(curFeatureIds[i]);  
-        //     map.removeSource(curFeatureIds[i]);
-        // }
-        // curFeatureIds = [];
-        // curFeatures = [];
         Materialize.toast("invalid email address<br>", 4000)
     } else {
         console.log('about to socket.emit sendInfo');
@@ -418,8 +409,6 @@ $('#mapform').submit(function(event) {
         console.log('socket.emit sendInfo');
 
         $('#invalidEmail').empty();
-        // $('#submitted').html("Thanks for updating these streets");
-        // Materialize.toast("Thanks for updating these streets<br>", 4000)
         return false;
     }
     return false;
