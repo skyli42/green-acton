@@ -93,6 +93,9 @@ map.on('mousemove', function(e) {
             .setText(feature_description(feature))
             .addTo(map);
     }
+    else {
+        popup.remove();
+    }
 });
 
 var colorMap = [{
