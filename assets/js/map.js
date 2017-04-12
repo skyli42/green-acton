@@ -100,7 +100,7 @@ var justSentSome = [];
 function localMessageHandler(msg) {
     switch (msg) {
         case messages.myMessages.NEW_EMAIL:
-            $('#loginMessages').html('Unrecognized Email. Correct it or <a href="/register">register this email here</a>');
+            $('#loginMessages').html('Unrecognized Email. Correct it or <a href="/register">register this email here.</a>');
             break;
         case messages.myMessages.SUBMIT_OK:
             for (var i = 0; i < curFeatureIds.length; i++) {
