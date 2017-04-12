@@ -131,6 +131,7 @@ map.on('mousemove', function(e) {
     }
     else {
         popup.remove();
+
         hoverFeatureHide();
     }
 });
