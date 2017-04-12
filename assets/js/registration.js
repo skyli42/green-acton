@@ -11,6 +11,15 @@ function isValidPhoneNumber(phoneNumber) {
 function isNotNumber(string) {
     return isNaN(string) || string == "";
 }
+
+function localMessageHandler(msg) {
+    switch (msg) {
+        case messages.myMessages.REG_OK:
+            $('#errMessages').html('Registered OK. Update the map now with <a href="/map">this link</a>');
+            break;
+    }
+}
+
 $('#registration').on("submit", function(event) {
     var nameInput = $('#nameInput #icon_prefix').val();
     var emailAddressInput = $('#emailAddressInput #icon_prefix').val();
