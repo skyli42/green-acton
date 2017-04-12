@@ -103,7 +103,9 @@ function localMessageHandler(msg) {
         case messages.myMessages.SUBMIT_OK:
             for (var i = 0; i < curFeatureIds.length; i++) {
                 map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
-                justSentSome.push(curFeatures[i]);
+                if (CurFeatures[i].properties.state == 1){
+                    justSentSome.push(curFeatures[i]);                    
+                }
             }
             clearSegmentList();
             break;
@@ -291,6 +293,7 @@ function signOut() {
     $('#curSegments').addClass('hide')
     $('#signOut').addClass('hide')
     $('#deleteSeg').removeClass('hide');
+    
 }
 $('#signIn').submit(function(event) {
     event.preventDefault()
@@ -366,6 +369,7 @@ socket.on("segmentsAcc", function(segments) {
 $('#signOut').click(function(event) {
     clearSegments();
     signOut();
+    hideCurrent();
     // exit user session
 })
 $("#deleteSeg").on('click', function(event){
