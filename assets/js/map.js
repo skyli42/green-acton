@@ -265,7 +265,7 @@ socket.on("signInReturn", function(msg) {
     if (msg.valid) {
         signIn(msg.name)
     } else {
-        Materialize.toast(messages.myMessages.NEW_EMAIL, 4000);
+        Materialize.toast(messages.myMessages.properties[messages.myMessages.NEW_EMAIL].msg_string, 4000);
         localMessageHandler(messages.myMessages.NEW_EMAIL);
     }
 })
