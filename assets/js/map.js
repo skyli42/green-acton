@@ -4,6 +4,7 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/greenacton/ciyhnkn57002n2ro46orppg16',
     center: [-71.432, 42.482],
     zoom: 12,
+    maxzoom: 22,
     maxBounds: [
         [-71.5, 42.429],
         [-71.375, 42.54]
