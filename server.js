@@ -182,14 +182,15 @@ mongoose.connect(url).then(function() {
 
                     client.readFeature(curSeg.id, dataset_id, function(err, feature) {
                         if (err) console.log(err);
-                        console.log(feature)
                         feature.properties.state = 0;
                         feature.properties.claimedby = null;
                         client.insertFeature(feature, dataset_id, function(err, feature) {
                             if (err) {
                                 console.log(err);
                             } else {
-                                console.log('update dataset OK WE ARE HERE');
+                                console.log('update dataset - unclaimed segment');
+                                console.log("changed feature: ");
+                                console.log(feature.properties);
                                 TileSetNeedsUpdating = true;
                             }
                         })
@@ -263,7 +264,7 @@ mongoose.connect(url).then(function() {
                                                 if (err) {
                                                     console.log(err);
                                                 } else {
-                                                    console.log('update dataset OK WE ARE HERE');
+                                                    console.log('update dataset because we asked for state to be changed.');
                                                     
                                                     TileSetNeedsUpdating = true;
                                                 }

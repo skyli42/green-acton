@@ -53,7 +53,7 @@ var hoverLayer = {'id': 'hoverLayer',
                     'visibility': 'visible'
                 },
                 'paint': {
-                    'line-opacity': 0.35,
+                    'line-opacity': 0.28,
                     'line-width': LINE_WIDTH_WIDE
                 }
 }
@@ -189,7 +189,7 @@ map.on('click', function(e) {
                 'layout': {},
                 'paint': {
                     'line-color': colorMap[parseInt($("input:checked").val())].rgb,
-                    'line-opacity': 0.35,
+                    'line-opacity': 0.28,
                     'line-width': LINE_WIDTH_WIDE
                 }
             });
@@ -325,6 +325,7 @@ var mySegments = null;
 function processClaimedSegmentsList(segments)
 {
     activeItems.clear();
+    $("#deleteSeg").addClass("disabled");
     $("#selectedStreets").empty();
     if (justSentSome.length)
     {
@@ -348,8 +349,8 @@ function processClaimedSegmentsList(segments)
                 },
                 'layout': {},
                 'paint': {
-                    'line-color': colorMap[segments[i].properties.state].rgb,
-                    'line-opacity': 0.65,
+                    'line-color': colorMap[1].rgb,
+                    'line-opacity': 0.28,
                     'line-width': LINE_WIDTH_WIDE
                 }
             });
@@ -358,13 +359,6 @@ function processClaimedSegmentsList(segments)
     }
     if(segments.length == 0){
         $("#selectedStreets").html("You have not claimed any streets yet")
-        $("#deleteSeg").addClass("disabled");
-    }
-    else{
-        $("deleteSeg").removeClass('disabled');
-    }
-    if($('#selectedStreets').html() == "") {
-        $('#selectedStreets').append('no current street segments to clean')
     }
 }
 
@@ -386,8 +380,13 @@ $("#deleteSeg").on('click', function(event){
         // console.log(mySegments)
         var featureToBeDeleted = mySegments[itemsArr[i]]; 
         toSend.push(featureToBeDeleted);
-        map.setPaintProperty(buildSegKey(featureToBeDeleted), 'line-width', LINE_WIDTH_THIN);
-        mySegments.splice(featureToBeDeleted, 1);
+        id = buildSegKey(featureToBeDeleted);
+        // stop it from appearing selected
+        map.setPaintProperty(id, 'line-width', LINE_WIDTH_THIN);
+        // make it red (needscleaning)
+        map.setPaintProperty(id, 'line-color', colorMap[0].rgb);
+        map.setPaintProperty(id, 'line-opacity', 0.6)
+        mySegments.splice(itemsArr[i], 1);
     }
     // console.log(toSend)
     socket.emit('deleteSeg', toSend);
@@ -451,7 +450,14 @@ function changeActive(element) {
             padding: 60
         });
     }
+    
+    if (activeItems.size == 0){
+        $("#deleteSeg").addClass("disabled");
+    } else if (activeItems.size == 1){
+        $("#deleteSeg").removeClass("disabled");
+    }
 }
+    
 // $(".collection .collection-item").on("click", function() {
 //     changeActive(this)
 // })
