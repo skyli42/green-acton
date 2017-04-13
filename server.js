@@ -151,7 +151,11 @@ mongoose.connect(url).then(function() {
                                 if (err) console.log(err);
                                 // console.log(feature)
                                 count++;
-                                rows.push(feature);
+                                // a few snuck in with owners for other states. filter those out 
+                                if (feature.properties.state == 1){
+                                    rows.push(feature);
+                                    console.log(feature.properties);
+                                }
                                 resolve();
                             })
                         });
@@ -260,7 +264,7 @@ mongoose.connect(url).then(function() {
                                                     console.log(err);
                                                 } else {
                                                     console.log('update dataset OK WE ARE HERE');
-                                                    console.log(feature)
+                                                    
                                                     TileSetNeedsUpdating = true;
                                                 }
                                             })
@@ -288,8 +292,10 @@ var datasetProperties;
 var datasetReader = null; // readable stream of dataset features
 // for building our geoJSON files
 const JSONprolog = '{"type":"FeatureCollection","features":[';
-const JSONsep = ',';
+const JSONsep = ',\n';
 const JSONepilog = ']}';
+
+
 const EnoughExtraChars = 1000; // yes, this is a hack.
 class ReadableDataset extends Readable {
     constructor(opt) {
@@ -440,6 +446,7 @@ var updateTask = function() { //update tileset after modifications
             console.log('ended call to stream to tempfile');
         } // end if we need to do anything
         setTimeout(updateTask, 30000); //Sky: for future reference, setInterval() calls repeatedly a function every X amount of time
+                                        // Jim: I did it this way to avoid risk that task would still be running when next task was started.  
     }
     // kick off update task
 updateTask();
