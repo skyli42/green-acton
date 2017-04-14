@@ -213,8 +213,6 @@ mongoose.connect(url).then(function() {
                         if (row.length == 0) {
                             socket.emit('message', messages.myMessages.NEW_EMAIL);
                             registered = false;
-                        } else {
-                            socket.emit('message', messages.myMessages.SUBMIT_OK)
                         }
                     }
                     return Promise.resolve(registered);
@@ -231,12 +229,18 @@ mongoose.connect(url).then(function() {
                                     var claimed = false;
                                     console.log("claimed?")
                                     console.log(row)
-                                    if (row[0].claimedby.length != 0) { //check if segment is already claimed by someone else
+                                    client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                                        if (err) console.log(err);
+                                        
+                                    //only error state is if the claimer is not the current user & if the new & old states are 'claimed' 
+                                    if (state == 1 && feature.properties.state == 1 && row[0].claimedby.length != 0 && row[0].claimedby != data.emailAddress) { 
                                         console.log('claimed')
                                         claimed = true;
-                                    }
+                                    }    
                                     if (!claimed) {
+                                        feature.properties.state = state;
                                         if (state == 1) {
+                                            feature.properties.claimedby = data.emailAddress;
                                             var newClaimed = [data.emailAddress]
                                             ID.update({
                                                 id: row[0].id
@@ -244,44 +248,38 @@ mongoose.connect(url).then(function() {
                                                 claimedby: newClaimed
                                             }).then(function() {})
                                         } else {
+                                            feature.properties.claimedby = null;
                                             var newClaimed = []
                                             ID.update({
                                                 id: row[0].id
                                             }, {
                                                 claimedby: newClaimed
                                             }).then(function() {})
-                                        }
-                                        client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                                            if (err) console.log(err);
-                                            
-                                            feature.properties.state = state;
-                                            if (state == 1) {
-                                                feature.properties.claimedby = data.emailAddress;
+                                        }  
+                                        client.insertFeature(feature, dataset_id, function(err, feature) {
+                                            if (err) {
+                                                console.log(err);
                                             } else {
-                                                feature.properties.claimedby = null;
+                                                console.log('update dataset because we asked for state to be changed.');
+                                                console.log(feature.properties);
+                                                TileSetNeedsUpdating = true;
                                             }
-                                            client.insertFeature(feature, dataset_id, function(err, feature) {
-                                                if (err) {
-                                                    console.log(err);
-                                                } else {
-                                                    console.log('update dataset because we asked for state to be changed.');
-                                                    
-                                                    TileSetNeedsUpdating = true;
-                                                }
-                                            })
                                         })
+                                        socket.emit('message', messages.myMessages.SUBMIT_OK)
                                     } else {
                                         socket.emit("message", messages.myMessages.ALREADY_CLAIMED);
                                     }
-                                })
+                                });
+                            });
                         }
                     } else {
                         console.log("Email is not registered, no database work done")
                     }
-                })
+
+            });
         });
     });
-})
+});
 server.listen(app.listen(port, function() {
     var host = server.address().address;
     var port = server.address().port;
@@ -334,6 +332,7 @@ class ReadableDataset extends Readable {
                 // Pause the stream to avoid race conditions while pushing in the new objects.
                 // Without this, _read() would be called again from inside each push(),
                 // resulting in multiple parallel calls to listFeatures
+                if (err) console.log(err)
                 const wasPaused = datasetReader.isPaused();
                 datasetReader.pause();
                 console.log('was paused? ' + wasPaused);

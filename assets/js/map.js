@@ -98,22 +98,6 @@ function clearSegmentList() {
 
 var justSentSome = [];
 
-function localMessageHandler(msg) {
-    switch (msg) {
-        case messages.myMessages.NEW_EMAIL:
-            $('#loginMessages').html('Unrecognized Email. Correct it or <a href="/register">register this email here.</a>');
-            break;
-        case messages.myMessages.SUBMIT_OK:
-            for (var i = 0; i < curFeatureIds.length; i++) {
-                map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
-                if (curFeatures[i].properties.state == 1){
-                    justSentSome.push(curFeatures[i]);                    
-                }
-            }
-            clearSegmentList();
-            break;
-    }
-}
 
 map.on('mousemove', function(e) {
     var bbox = [
@@ -129,8 +113,9 @@ map.on('mousemove', function(e) {
     if (features.length) { 
         feature = features[0];
         hoverFeatureShow(feature)
-        var location = feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)];
-        // console.log(location)
+        index = Math.floor(feature.geometry.coordinates.length / 2);
+        var location = feature.geometry.coordinates[index];
+        // console.log("H:" + index + ":" + location)
         popup.setLngLat(location)
             .setText(feature_description(feature))
             .addTo(map);
@@ -157,6 +142,7 @@ function buildSegKey(feature)
     return feature.properties.street + "" + feature.properties.id;
 }
 
+
 map.on('click', function(e) {
     // set bbox as 5px rectangle area around clicked point
     var bbox = [
@@ -176,29 +162,35 @@ map.on('click', function(e) {
         console.log("selected index is " + alreadySelected);
         if (alreadySelected == -1) {
             // not already selected - select it
+            newState = parseInt($("input:checked").val());
+            features[i].properties.state = newState;
             curFeatureIds.push(idToSend);
             curFeatures.push(features[i]);
             console.log("will select" + idToSend);
-            map.addLayer({
-                'id': idToSend,
-                'type': 'line',
-                'source': {
+            if (map.getLayer(idToSend)){
+                map.setPaintProperty(idToSend, 'line-width', LINE_WIDTH_WIDE);
+                map.setPaintProperty(idToSend, 'line-color', colorMap[newState].rgb);
+            } else{
+                map.addLayer({
+                    'id': idToSend,
+                    'type': 'line',
+                    'source': {
                     'type': 'geojson',
                     'data': features[i]
                 },
                 'layout': {},
                 'paint': {
-                    'line-color': colorMap[parseInt($("input:checked").val())].rgb,
+                    'line-color': colorMap[newState].rgb,
                     'line-opacity': 0.28,
                     'line-width': LINE_WIDTH_WIDE
                 }
-            });
+                });
+            }
         } else {
             console.log("will deselect " + idToSend);
             curFeatureIds.splice(alreadySelected, 1);
             curFeatures.splice(alreadySelected, 1);
-            map.removeLayer(idToSend);
-            map.removeSource(idToSend);
+            map.setPaintProperty(alreadySelected, 'line-width', 0);
         }
     }
 
@@ -250,11 +242,12 @@ function HandleStateChange() {
     var newColor = colorMap[stateInput].rgb;
 
     // console.log('new state/color ' + stateInput + '/' + newColor);  
-
-    curFeatureIds.forEach(function(element) {
-        // console.log(element);
-        map.setPaintProperty(element, 'line-color', newColor);
-    });
+    for (var i = 0; i < curFeatureIds.length; i++) {
+        curFeatures[i].properties.state = stateInput;
+        console.log("Changed feature state: ")
+        console.log(curFeatures[i].properties)
+        map.setPaintProperty(curFeatureIds[i], 'line-color', newColor);
+    }
 }
 
 $('#stateInput0').change(function(event) {
@@ -269,8 +262,7 @@ $('#stateInput2').change(function(event) {
 
 function clearSegments() {
     for (var i = 0; i < curFeatureIds.length; i++) {
-        map.removeLayer(curFeatureIds[i]);
-        map.removeSource(curFeatureIds[i]);
+        map.setPaintProperty(curFeatureIds[i], 'line-width', 0);
     }
     clearSegmentList();
 }
@@ -299,7 +291,9 @@ function signOut() {
     $('#curSegments').addClass('hide')
     $('#signOut').addClass('hide')
     $('#deleteSeg').removeClass('hide');
-    
+    processClaimedSegmentsList([]);
+    mySegments=null;
+    activeItems.clear();
 }
 $('#signIn').submit(function(event) {
     event.preventDefault()
@@ -329,6 +323,8 @@ function processClaimedSegmentsList(segments)
     $("#selectedStreets").empty();
     if (justSentSome.length)
     {
+        console.log("processing JustSentSome")
+        console.log(justSentSome)
         Array.prototype.push.apply(segments, justSentSome);
         justSentSome = [];
     }
@@ -367,11 +363,10 @@ socket.on("segmentsAcc", function(segments) {
 })
 
 $('#signOut').click(function(event) {
-    clearSegments();
     signOut();
-    hideCurrent();
     // exit user session
 })
+
 $("#deleteSeg").on('click', function(event){
     var itemsArr = Array.from(activeItems);
     var toSend = [];
@@ -414,6 +409,7 @@ function showNew() {
 }
 
 function hideCurrent() {
+    if (mySegments == null) return;
     for (var i = 0; i < mySegments.length; i++) {
              map.setPaintProperty(buildSegKey(mySegments[i]), 'line-width', LINE_WIDTH_THIN);
     }
@@ -483,3 +479,30 @@ $('#mapform').submit(function(event) {
     }
     return false;
 });
+
+function localMessageHandler(msg) {
+    switch (msg) {
+        case messages.myMessages.NEW_EMAIL:
+            $('#loginMessages').html('Unrecognized Email. Correct it or <a href="/register">register this email here.</a>');
+            break;
+        case messages.myMessages.SUBMIT_OK:
+            console.log("submit OK received for..")
+            for (var i = 0; i < curFeatureIds.length; i++) {
+                submittedFeature = curFeatures[i];
+                submittedKey = buildSegKey(submittedFeature) 
+                console.log(submittedFeature.properties)
+                
+                map.setPaintProperty(submittedKey, 'line-width', LINE_WIDTH_THIN);
+                // push to the claimed segment list if it's a transition to 'claimed' not there already
+                if (submittedFeature.properties.state == 1 && mySegments && mySegments.reduce(function(NotFound, feature, i, a) {
+                    NotFound && (submittedKey != buildSegKey(feature))}, true)){
+                        justSentSome.push(submittedFeature);                    
+                }
+                else { //possibly remove this from local claimed segment list 
+                    mySegments && (mySegments = mySegments.filter(function(feature) { return submittedKey !== buildSegKey(feature)}))
+                }
+            }
+            clearSegmentList();
+            break;
+    }
+}
