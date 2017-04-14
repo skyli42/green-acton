@@ -15,7 +15,7 @@ function isNotNumber(string) {
 function localMessageHandler(msg) {
     switch (msg) {
         case messages.myMessages.REG_OK:
-            $('#errMessages').html('Registered OK. Update the map now with <a href="/map">this link</a>');
+            $('#errMessages').html('Registered OK. Update the map now with <a href="/map">this link</a>.');
             break;
     }
 }
@@ -31,12 +31,6 @@ $('#registration').on("submit", function(event) {
         $("#errMessages").html("Please enter your name");
         Materialize.toast("Please enter your name<br>", 4000)
         $("#nameInput #icon_prefix").select();
-        event.preventDefault();
-
-    } else if (addressInput == "") {
-        $("#errMessages").html("Please enter your address");
-        Materialize.toast("Please enter your address", 4000)
-        $("#streetAddressInput #icon_prefix").select();
         event.preventDefault();
     } else if (!isValidEmailAddress(emailAddressInput)) {
         $('#errMessages').html("Invalid email address<br>");
