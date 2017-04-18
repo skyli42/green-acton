@@ -7,12 +7,13 @@
     "test": "test"
   },
   "dependencies": {
+    "@mapbox/corslite": "0.0.7",
+    "@mapbox/sanitize-caja": "^0.1.4",
     "aws-sdk": "^2.32.0",
     "bluebird": "^3.5.0",
     "express": "4.15.2",
     "http": "0.0.0",
     "mapbox": "^1.0.0-beta6",
-    "mapbox.js": "^3.0.1",
     "mongodb": "^2.2.25",
     "mongoose": "^4.9.2",
     "socket.io": "^1.7.3",
