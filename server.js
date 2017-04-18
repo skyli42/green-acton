@@ -13,6 +13,7 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var fs = require('fs');
 var temp = require('temp');
+var moment = require('moment');
 //matched message info for server & clients
 var messages = require(__dirname + '/assets/js/messages.js'); // for server use
 //global variables
@@ -238,6 +239,13 @@ mongoose.connect(url).then(function() {
                                         claimed = true;
                                     }    
                                     if (!claimed) {
+                                        var history = "";
+                                        if (typeof feature.properties.history == "undefined" || feature.properties.history == null ||feature.properties.length == 0)
+                                        {// play catch up synthesize earlier history
+                                               history = moment(4, "MM").format() + "," + feature.properties.claimedby +  "," + feature.properties.state + ","
+                                               console.log("recreated history: " + history)
+                                               feature.properties.history = history;        
+                                        }
                                         feature.properties.state = state;
                                         feature.properties.claimedby = data.emailAddress;
                                         var newClaimed = [data.emailAddress]
@@ -246,6 +254,10 @@ mongoose.connect(url).then(function() {
                                         }, {
                                             claimedby: newClaimed
                                         }).then(function() {})
+                                        history = history = moment().format() + "," + feature.properties.claimedby +  "," + feature.properties.state + ","
+                                        console.log("new history: " + history)
+                                        feature.properties.history += history; 
+                                        console.log("combined history: " + feature.properties.history)
                                         client.insertFeature(feature, dataset_id, function(err, feature) {
                                             if (err) {
                                                 console.log(err);
