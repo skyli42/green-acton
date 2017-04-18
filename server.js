@@ -239,23 +239,13 @@ mongoose.connect(url).then(function() {
                                     }    
                                     if (!claimed) {
                                         feature.properties.state = state;
-                                        if (state == 1) {
-                                            feature.properties.claimedby = data.emailAddress;
-                                            var newClaimed = [data.emailAddress]
-                                            ID.update({
-                                                id: row[0].id
-                                            }, {
-                                                claimedby: newClaimed
-                                            }).then(function() {})
-                                        } else {
-                                            feature.properties.claimedby = null;
-                                            var newClaimed = []
-                                            ID.update({
-                                                id: row[0].id
-                                            }, {
-                                                claimedby: newClaimed
-                                            }).then(function() {})
-                                        }  
+                                        feature.properties.claimedby = data.emailAddress;
+                                        var newClaimed = [data.emailAddress]
+                                        ID.update({
+                                            id: row[0].id
+                                        }, {
+                                            claimedby: newClaimed
+                                        }).then(function() {})
                                         client.insertFeature(feature, dataset_id, function(err, feature) {
                                             if (err) {
                                                 console.log(err);
@@ -269,7 +259,7 @@ mongoose.connect(url).then(function() {
                                     } else {
                                         socket.emit("message", messages.myMessages.ALREADY_CLAIMED);
                                     }
-                                });
+                                }); // end readFeature
                             });
                         }
                     } else {
