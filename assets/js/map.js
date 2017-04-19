@@ -115,6 +115,11 @@ map.on('mousemove', function(e) {
         hoverFeatureShow(feature)
         index = Math.floor(feature.geometry.coordinates.length / 2);
         var location = feature.geometry.coordinates[index];
+        if (location.length >2)
+        {// it's a multifeature because of tileset splitting
+            index = Math.floor(location.length / 2);
+            location = location[index];
+        }
         // console.log("H:" + index + ":" + location)
         popup.setLngLat(location)
             .setText(feature_description(feature))
@@ -146,52 +151,51 @@ function buildSegKey(feature)
 map.on('click', function(e) {
     // set bbox as 5px rectangle area around clicked point
     var bbox = [
-        [e.point.x - 5, e.point.y - 5],
-        [e.point.x + 5, e.point.y + 5]
+        [e.point.x - 8, e.point.y - 8],
+        [e.point.x + 8, e.point.y + 8]
     ];
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-    var selectedFeature;
+    
     if (features.length == 0) clearSegments();
-
-    for (var i = 0; i < features.length; i++) {
-        console.log(features[i])
-        var idToSend = buildSegKey(features[i]);
-        var alreadySelected = curFeatureIds.indexOf(idToSend);
-        console.log("selected index is " + alreadySelected);
-        if (alreadySelected == -1) {
-            // not already selected - select it
-            newState = parseInt($("input:checked").val());
-            features[i].properties.state = newState;
-            curFeatureIds.push(idToSend);
-            curFeatures.push(features[i]);
-            console.log("will select" + idToSend);
-            if (map.getLayer(idToSend)){
-                map.setPaintProperty(idToSend, 'line-width', LINE_WIDTH_WIDE);
-                map.setPaintProperty(idToSend, 'line-color', colorMap[newState].rgb);
-            } else{
-                map.addLayer({
-                    'id': idToSend,
-                    'type': 'line',
-                    'source': {
-                    'type': 'geojson',
-                    'data': features[i]
-                },
-                'layout': {},
-                'paint': {
-                    'line-color': colorMap[newState].rgb,
-                    'line-opacity': 0.28,
-                    'line-width': LINE_WIDTH_WIDE
-                }
-                });
+    feature = features[0];
+    
+    console.log(feature)
+    var idToSend = buildSegKey(feature);
+    var alreadySelected = curFeatureIds.indexOf(idToSend);
+    console.log("selected index is " + alreadySelected);
+    if (alreadySelected == -1) {
+        // not already selected - select it
+        newState = parseInt($("input:checked").val());
+        feature.properties.state = newState;
+        curFeatureIds.push(idToSend);
+        curFeatures.push(feature);
+        console.log("will select" + idToSend);
+        if (map.getLayer(idToSend)){
+            map.setPaintProperty(idToSend, 'line-width', LINE_WIDTH_WIDE);
+            map.setPaintProperty(idToSend, 'line-color', colorMap[newState].rgb);
+        } else{
+            map.addLayer({
+                'id': idToSend,
+                'type': 'line',
+                'source': {
+                'type': 'geojson',
+                'data': feature
+            },
+            'layout': {},
+            'paint': {
+                'line-color': colorMap[newState].rgb,
+                'line-opacity': 0.28,
+                'line-width': LINE_WIDTH_WIDE
             }
-        } else {
-            console.log("will deselect " + idToSend);
-            curFeatureIds.splice(alreadySelected, 1);
-            curFeatures.splice(alreadySelected, 1);
-            map.setPaintProperty(alreadySelected, 'line-width', 0);
-        }
+            });
+            }
+    } else {
+        console.log("will deselect " + idToSend);
+        curFeatureIds.splice(alreadySelected, 1);
+        curFeatures.splice(alreadySelected, 1);
+        map.setPaintProperty(alreadySelected, 'line-width', 0);
     }
 
     $('#selected').empty();
