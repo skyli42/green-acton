@@ -78,6 +78,17 @@ mongoose.connect(url).then(function() {
     console.log("connected to mongo database");
     io.on('connection', function(socket) {
         console.log("a user connected!")
+        socket.on('segmentRequest', function(properties){
+            key = properties.street + "" + properties.id
+        //  console.log("requested key: " + key)
+            ID.find({name: key}).select('id').then(function(row, err) {
+                if (err) console.log("err" + err);
+                client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                    if (err) console.log(err);
+                    socket.emit('segmentRequestReturn', feature);
+                });     
+            });
+        });
         socket.on('registration', function(data) { //client tries to register
             // console.log('registration init on server')
             var gSize = data.groupSize == '' ? 1 : data.groupSize;

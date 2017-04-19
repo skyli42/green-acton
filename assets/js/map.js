@@ -46,6 +46,11 @@ const LINE_WIDTH_WIDE = 12.5
 const LINE_WIDTH_VERYWIDE = 20
 
 
+function buildSegKey(feature)
+{
+    return feature.properties.street + "" + feature.properties.id;
+}
+
 var hoverLayer = {'id': 'hoverLayer',
                 'type': 'line',
                 'source': 'hoverLayer',
@@ -63,16 +68,17 @@ var hoverFeature = null;
                   
 function hoverFeatureShow(feature)
 {  
-                 if (hoverFeature==null)
-                 {
-                    hoverFeature = feature; 
-                    map.addSource('hoverLayer', { type: 'geojson', data: feature });
-                    map.addLayer(hoverLayer);
-                 }
-                 else{
-                     map.getSource('hoverLayer').setData(feature);
-                     map.setLayoutProperty('hoverLayer', 'visibility', 'visible');
-                 }
+    if (hoverFeature==null)
+    {
+        map.addSource('hoverLayer', { type: 'geojson', data: feature });
+        map.addLayer(hoverLayer);
+    }else{
+         map.getSource('hoverLayer').setData(feature);
+         map.setLayoutProperty('hoverLayer', 'visibility', 'visible');
+     }
+    hoverFeature = feature; 
+    //make sure we have the whole feature
+    socket.emit('segmentRequest', hoverFeature.properties) 
 }
 function hoverFeatureHide()
 {
@@ -81,6 +87,22 @@ function hoverFeatureHide()
     }
         
 }
+
+socket.on("segmentRequestReturn", function(feature) {
+ //   console.log("updated feature")
+ //   console.log(feature)
+    key = buildSegKey(feature)
+//    hoverKey = buildSegKey(hoverFeature)
+//    console.log("key hoverKey: " + key + hoverKey)
+    if (hoverFeature && buildSegKey(hoverFeature) == key){
+        map.getSource('hoverLayer').setData(feature);
+    }
+    source = map.getSource(key)
+    if (typeof source !== 'undefined'){
+        source.setData(feature)
+    }
+})
+
 
 function feature_description(feature) {
     return feature.properties.street == "" ? "UNNAMED STREET" : feature.properties.street + ' between ' + ((feature.properties.start == null) ? 'end of the road' : feature.properties.start == "" ? "UNNAMED STREET" : feature.properties.start) + ' and ' + ((feature.properties.end == null) ? 'end of the road' : feature.properties.end == "" ? "UNNAMED STREET" : feature.properties.end);
@@ -142,11 +164,6 @@ var colorMap = [{
     rgb: 'rgb(0,0,0)'       // unknown - black
 }];
 
-function buildSegKey(feature)
-{
-    return feature.properties.street + "" + feature.properties.id;
-}
-
 
 map.on('click', function(e) {
     // set bbox as 5px rectangle area around clicked point
@@ -191,6 +208,8 @@ map.on('click', function(e) {
             }
             });
             }
+        // make sure we've got the full extent(TileSet can be subset of dataset)
+        socket.emit('segmentRequest', feature.properties) 
     } else {
         console.log("will deselect " + idToSend);
         curFeatureIds.splice(alreadySelected, 1);
