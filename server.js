@@ -35,6 +35,11 @@ var skey = process.env.MAPBOX_SK;
 var client = new MapboxClient(skey);
 //serves webpage
 app.use(express.static("./assets"));
+
+app.get('/robots.txt', function (req, res) {
+    res.type('text/plain');
+    res.send("User-agent: *\nDisallow: /");
+});
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
