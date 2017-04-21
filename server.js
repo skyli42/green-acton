@@ -31,6 +31,7 @@ var TileSetNeedsUpdating = false;
 var TileSetInProcess = false;
 var port = process.env.PORT || 3000;
 var skey = process.env.MAPBOX_SK;
+var magic = process.env.MAGIC_CLEANUP_ID
 // console.log('Need MAPBOX_SK in environment: ' + skey);
 var client = new MapboxClient(skey);
 //serves webpage
@@ -141,6 +142,7 @@ mongoose.connect(url).then(function() {
                 }
                 var out = {}
                 out.valid = registered;
+                out.magic = false;
                 if (registered) {
                     out.name = row[0].name;
                 } else {
@@ -148,6 +150,9 @@ mongoose.connect(url).then(function() {
                 }
                 return Promise.resolve(out);
             }).then(function(out) {
+                if (email == magic) {
+                    out.magic = true; 
+                }
                 socket.emit('signInReturn', out);
             })
         })

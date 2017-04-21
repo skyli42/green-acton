@@ -32,6 +32,7 @@ var popup = new mapboxgl.Popup({
 
 var curFeatureIds = [];
 var curFeatures = [];
+var showOwners = false;
 
 var noSegmentsMessage;
 $(function() {
@@ -105,7 +106,16 @@ socket.on("segmentRequestReturn", function(feature) {
 
 
 function feature_description(feature) {
-    return feature.properties.street == "" ? "UNNAMED STREET" : feature.properties.street + ' between ' + ((feature.properties.start == null) ? 'end of the road' : feature.properties.start == "" ? "UNNAMED STREET" : feature.properties.start) + ' and ' + ((feature.properties.end == null) ? 'end of the road' : feature.properties.end == "" ? "UNNAMED STREET" : feature.properties.end);
+    description = 
+        (feature.properties.street == "" ? "UNNAMED STREET" : feature.properties.street) 
+        + ' between ' 
+        + ((feature.properties.start == null) ? 'end of the road' : feature.properties.start == "" ? "UNNAMED STREET" : feature.properties.start) 
+        + ' and ' 
+        + ((feature.properties.end == null) ? 'end of the road' : feature.properties.end == "" ? "UNNAMED STREET" : feature.properties.end);
+        if (showOwners) {
+            description += (feature.properties.claimedby != null) ? ' owner ' + feature.properties.claimedby : " (unclaimed)";
+        }
+    return description;
 }
 
 function clearSegmentList() {
@@ -317,6 +327,7 @@ function signOut() {
     processClaimedSegmentsList([]);
     mySegments=null;
     activeItems.clear();
+    showOwners = false;
 }
 $('#signIn').submit(function(event) {
     event.preventDefault()
@@ -329,6 +340,9 @@ $('#signIn').submit(function(event) {
 })
 
 socket.on("signInReturn", function(msg) {
+    if (msg.magic){
+        showOwners = true;        
+    }
     if (msg.valid) {
         signIn(msg.name)
     } else {
