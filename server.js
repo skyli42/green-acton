@@ -24,7 +24,8 @@ var dataset_id = 'cj1bf08bs09ba33o7o2smznff'; //new MASS GIS set
 // var tileset_name = 'acton-segments';
 // var tileset_name = 'acton-segments';
 var tileset_name = 'ParsedMassGIS';
-var tileset_id = 'cj15w86wx00w02xovd0koqddm-3gm2c'; //parsedMassGIS
+var tileset_id = "cj1bf08bs09ba33o7o2smznff-7ee8e";
+// var tileset_id = 'cj15w86wx00w02xovd0koqddm-3gm2c'; //parsedMassGIS
 var username = "greenacton"
 var TileSetNeedsUpdating = false;
 var TileSetInProcess = false;
@@ -218,6 +219,7 @@ mongoose.connect(url).then(function() {
                     if (registered) {
                         var state = parseInt(data.newState);
                         for (var i in data.featureIds) {
+                            console.log(data.featureIds[i])
                             ID.find({
                                     name: data.featureIds[i]
                                 })
@@ -246,6 +248,7 @@ mongoose.connect(url).then(function() {
                                                 claimedby: newClaimed
                                             }).then(function() {})
                                         }
+                                        console.log(typeof row[0].id)
                                         client.readFeature(row[0].id, dataset_id, function(err, feature) {
                                             if (err) console.log(err);
                                             console.log(feature)

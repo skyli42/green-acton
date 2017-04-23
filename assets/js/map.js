@@ -274,6 +274,9 @@ socket.on("segmentsAcc", function(segments) {
         $("#selectedStreets").html("You have not claimed any streets yet")
         $("#deleteSeg").addClass("disabled");
     }
+    else if(activeItems.size == 0){
+        $("#deleteSeg").addClass("disabled");
+    }
     else{
         $("deleteSeg").removeClass('disabled');
     }
@@ -318,6 +321,12 @@ function changeActive(element) {
     } else {
         activeItems.add(index);
         $(element).addClass('active');
+    }
+    if(activeItems.size == 0){
+        $("#deleteSeg").addClass("disabled");
+    }
+    else{
+        $("#deleteSeg").removeClass("disabled")
     }
 }
 // $(".collection .collection-item").on("click", function() {
