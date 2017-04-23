@@ -4,6 +4,7 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/greenacton/ciyhnkn57002n2ro46orppg16',
     center: [-71.432, 42.482],
     zoom: 12,
+    maxzoom: 22,
     maxBounds: [
         [-71.5, 42.429],
         [-71.375, 42.54]
@@ -31,9 +32,9 @@ var popup = new mapboxgl.Popup({
 
 var curFeatureIds = [];
 var curFeatures = [];
+var showOwners = false;
 
 var noSegmentsMessage;
-
 $(function() {
     noSegmentsMessage = $('#selected').html();
     noCurSegmentsMsg = $('#selectedStreets').html();
@@ -42,10 +43,79 @@ $(function() {
 const BODY_HEIGHT = $('body').height()
 
 const LINE_WIDTH_THIN = 7.24
-const LINE_WIDTH_WIDE = 12
+const LINE_WIDTH_WIDE = 12.5
+const LINE_WIDTH_VERYWIDE = 20
+
+
+function buildSegKey(feature)
+{
+    return feature.properties.street + "" + feature.properties.id;
+}
+
+var hoverLayer = {'id': 'hoverLayer',
+                'type': 'line',
+                'source': 'hoverLayer',
+                'layout': { 
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'line-opacity': 0.28,
+                    'line-width': LINE_WIDTH_WIDE
+                }
+}
+
+
+var hoverFeature = null;
+                  
+function hoverFeatureShow(feature)
+{  
+    if (hoverFeature==null)
+    {
+        map.addSource('hoverLayer', { type: 'geojson', data: feature });
+        map.addLayer(hoverLayer);
+    }else{
+         map.getSource('hoverLayer').setData(feature);
+         map.setLayoutProperty('hoverLayer', 'visibility', 'visible');
+     }
+    hoverFeature = feature; 
+    //make sure we have the whole feature
+    socket.emit('segmentRequest', hoverFeature.properties) 
+}
+function hoverFeatureHide()
+{
+    if (hoverFeature){
+        map.setLayoutProperty('hoverLayer', 'visibility', 'none');
+    }
+        
+}
+
+socket.on("segmentRequestReturn", function(feature) {
+ //   console.log("updated feature")
+ //   console.log(feature)
+    key = buildSegKey(feature)
+//    hoverKey = buildSegKey(hoverFeature)
+//    console.log("key hoverKey: " + key + hoverKey)
+    if (hoverFeature && buildSegKey(hoverFeature) == key){
+        map.getSource('hoverLayer').setData(feature);
+    }
+    source = map.getSource(key)
+    if (typeof source !== 'undefined'){
+        source.setData(feature)
+    }
+})
+
 
 function feature_description(feature) {
-    return feature.properties.street == "" ? "UNNAMED STREET" : feature.properties.street + ' between ' + ((feature.properties.start == null) ? 'end of the road' : feature.properties.start == "" ? "UNNAMED STREET" : feature.properties.start) + ' and ' + ((feature.properties.end == null) ? 'end of the road' : feature.properties.end == "" ? "UNNAMED STREET" : feature.properties.end);
+    description = 
+        (feature.properties.street == "" ? "UNNAMED STREET" : feature.properties.street) 
+        + ' between ' 
+        + ((feature.properties.start == null) ? 'end of the road' : feature.properties.start == "" ? "UNNAMED STREET" : feature.properties.start) 
+        + ' and ' 
+        + ((feature.properties.end == null) ? 'end of the road' : feature.properties.end == "" ? "UNNAMED STREET" : feature.properties.end);
+        if (showOwners) {
+            description += (feature.properties.claimedby != null) ? ' owner ' + feature.properties.claimedby : " (unclaimed)";
+        }
+    return description;
 }
 
 function clearSegmentList() {
@@ -58,19 +128,8 @@ function clearSegmentList() {
     curFeatures = [];
 }
 
-function localMessageHandler(msg) {
-    switch (msg) {
-        case messages.myMessages.NEW_EMAIL:
-            $('#submitted').html('Unrecognized Email. Correct it or <a href="register">register this email here</a>');
-            break;
-        case messages.myMessages.SUBMIT_OK:
-            for (var i = 0; i < curFeatureIds.length; i++) {
-                map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
-            }
-            clearSegmentList();
-            break;
-    }
-}
+var justSentSome = [];
+
 
 map.on('mousemove', function(e) {
     var bbox = [
@@ -80,70 +139,92 @@ map.on('mousemove', function(e) {
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-
+    
     // Change the cursor style as a UI indicator.
     map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-    if (features.length) {
-        var feature = features[0];
-        var location = feature.geometry.coordinates[Math.floor(feature.geometry.coordinates.length / 2)];
+    if (features.length) { 
+        feature = features[0];
+        hoverFeatureShow(feature)
+        index = Math.floor(feature.geometry.coordinates.length / 2);
+        var location = feature.geometry.coordinates[index];
+        if (location.length >2)
+        {// it's a multifeature because of tileset splitting
+            index = Math.floor(location.length / 2);
+            location = location[index];
+        }
+        // console.log("H:" + index + ":" + location)
         popup.setLngLat(location)
             .setText(feature_description(feature))
             .addTo(map);
     }
+    else {
+        popup.remove();
+
+        hoverFeatureHide();
+    }
 });
 
 var colorMap = [{
-    rgb: 'rgb(238,23,23)'
+    rgb: 'rgb(238,23,23)'  // needs cleaning - red
 }, {
-    rgb: 'rgb(22,87,218)'
+    rgb: 'rgb(22,87,218)'   // claimed - blue
 }, {
-    rgb: 'rgb(0,255,43)'
+    rgb: 'rgb(0,255,43)'    // clean - green
+}, {
+    rgb: 'rgb(0,0,0)'       // unknown - black
 }];
 
 
 map.on('click', function(e) {
     // set bbox as 5px rectangle area around clicked point
     var bbox = [
-        [e.point.x - 5, e.point.y - 5],
-        [e.point.x + 5, e.point.y + 5]
+        [e.point.x - 8, e.point.y - 8],
+        [e.point.x + 8, e.point.y + 8]
     ];
     var features = map.queryRenderedFeatures(bbox, {
         layers: ['acton-segments']
     });
-    var selectedFeature;
+    
     if (features.length == 0) clearSegments();
-
-    for (var i = 0; i < features.length; i++) {
-        console.log(features[i])
-        var idToSend = features[i].properties.street + "" + features[i].properties.id;
-        var alreadySelected = curFeatureIds.indexOf(idToSend);
-        console.log("selected index is " + alreadySelected);
-        if (alreadySelected == -1) {
-            // not already selected - select it
-            curFeatureIds.push(idToSend);
-            curFeatures.push(features[i]);
-            console.log("will select" + idToSend);
+    feature = features[0];
+    
+    console.log(feature)
+    var idToSend = buildSegKey(feature);
+    var alreadySelected = curFeatureIds.indexOf(idToSend);
+    console.log("selected index is " + alreadySelected);
+    if (alreadySelected == -1) {
+        // not already selected - select it
+        newState = parseInt($("input:checked").val());
+        feature.properties.state = newState;
+        curFeatureIds.push(idToSend);
+        curFeatures.push(feature);
+        console.log("will select" + idToSend);
+        if (map.getLayer(idToSend)){
+            map.setPaintProperty(idToSend, 'line-width', LINE_WIDTH_WIDE);
+            map.setPaintProperty(idToSend, 'line-color', colorMap[newState].rgb);
+        } else{
             map.addLayer({
                 'id': idToSend,
                 'type': 'line',
                 'source': {
-                    'type': 'geojson',
-                    'data': features[i]
-                },
-                'layout': {},
-                'paint': {
-                    'line-color': colorMap[parseInt($("input:checked").val())].rgb,
-                    'line-opacity': 0.35,
-                    'line-width': LINE_WIDTH_WIDE
-                }
+                'type': 'geojson',
+                'data': feature
+            },
+            'layout': {},
+            'paint': {
+                'line-color': colorMap[newState].rgb,
+                'line-opacity': 0.28,
+                'line-width': LINE_WIDTH_WIDE
+            }
             });
-        } else {
-            console.log("will deselect " + idToSend);
-            curFeatureIds.splice(alreadySelected, 1);
-            curFeatures.splice(alreadySelected, 1);
-            map.removeLayer(idToSend);
-            map.removeSource(idToSend);
-        }
+            }
+        // make sure we've got the full extent(TileSet can be subset of dataset)
+        socket.emit('segmentRequest', feature.properties) 
+    } else {
+        console.log("will deselect " + idToSend);
+        curFeatureIds.splice(alreadySelected, 1);
+        curFeatures.splice(alreadySelected, 1);
+        map.setPaintProperty(alreadySelected, 'line-width', 0);
     }
 
     $('#selected').empty();
@@ -194,11 +275,12 @@ function HandleStateChange() {
     var newColor = colorMap[stateInput].rgb;
 
     // console.log('new state/color ' + stateInput + '/' + newColor);  
-
-    curFeatureIds.forEach(function(element) {
-        // console.log(element);
-        map.setPaintProperty(element, 'line-color', newColor);
-    });
+    for (var i = 0; i < curFeatureIds.length; i++) {
+        curFeatures[i].properties.state = stateInput;
+        console.log("Changed feature state: ")
+        console.log(curFeatures[i].properties)
+        map.setPaintProperty(curFeatureIds[i], 'line-color', newColor);
+    }
 }
 
 $('#stateInput0').change(function(event) {
@@ -213,8 +295,7 @@ $('#stateInput2').change(function(event) {
 
 function clearSegments() {
     for (var i = 0; i < curFeatureIds.length; i++) {
-        map.removeLayer(curFeatureIds[i]);
-        map.removeSource(curFeatureIds[i]);
+        map.setPaintProperty(curFeatureIds[i], 'line-width', 0);
     }
     clearSegmentList();
 }
@@ -243,6 +324,10 @@ function signOut() {
     $('#curSegments').addClass('hide')
     $('#signOut').addClass('hide')
     $('#deleteSeg').removeClass('hide');
+    processClaimedSegmentsList([]);
+    mySegments=null;
+    activeItems.clear();
+    showOwners = false;
 }
 $('#signIn').submit(function(event) {
     event.preventDefault()
@@ -255,72 +340,154 @@ $('#signIn').submit(function(event) {
 })
 
 socket.on("signInReturn", function(msg) {
+    if (msg.magic){
+        showOwners = true;        
+    }
     if (msg.valid) {
         signIn(msg.name)
     } else {
-        Materialize.toast("Account is not registered", 4000);
+        Materialize.toast(messages.myMessages.properties[messages.myMessages.NEW_EMAIL].msg_string, 4000);
+        localMessageHandler(messages.myMessages.NEW_EMAIL);
     }
 })
 var activeItems = new Set();
-var mySegments = [];
-socket.on("segmentsAcc", function(segments) {
+var mySegments = null;
+
+function processClaimedSegmentsList(segments)
+{
     activeItems.clear();
+    $("#deleteSeg").addClass("disabled");
     $("#selectedStreets").empty();
+    if (justSentSome.length)
+    {
+        console.log("processing JustSentSome")
+        console.log(justSentSome)
+        Array.prototype.push.apply(segments, justSentSome);
+        justSentSome = [];
+    }
+
     mySegments = segments;
     for (var i in segments) {
         $("#selectedStreets").append("<a href=\"#!\" id=\"collection-item-"+i+"\" onclick=\"changeActive(this)\" class=\"collection-item\">" + feature_description(segments[i]) + "</a>");
+        var idToSend = buildSegKey(segments[i]);
+        if (map.getLayer(idToSend)){
+            map.setPaintProperty(idToSend, 'line-width', LINE_WIDTH_WIDE);
+        } else{
+            map.addLayer({
+                'id': idToSend,
+                'type': 'line',
+                'source': {
+                    'type': 'geojson',
+                    'data': segments[i]
+                },
+                'layout': {},
+                'paint': {
+                    'line-color': colorMap[1].rgb,
+                    'line-opacity': 0.28,
+                    'line-width': LINE_WIDTH_WIDE
+                }
+            });
+        }
+            
     }
     if(segments.length == 0){
         $("#selectedStreets").html("You have not claimed any streets yet")
-        $("#deleteSeg").addClass("disabled");
     }
-    else if(activeItems.size == 0){
-        $("#deleteSeg").addClass("disabled");
-    }
-    else{
-        $("deleteSeg").removeClass('disabled');
-    }
-    if($('#selectedStreets').html() == "") {
-        $('#selectedStreets').append('no current street segments to clean')
-    }
+}
+
+socket.on("segmentsAcc", function(segments) {
+  processClaimedSegmentsList(segments);  
 })
+
 $('#signOut').click(function(event) {
-    clearSegments();
     signOut();
     // exit user session
 })
+
 $("#deleteSeg").on('click', function(event){
     var itemsArr = Array.from(activeItems);
     var toSend = [];
     for(var i in itemsArr){
         // console.log(itemsArr+" "+i)
         // console.log(mySegments)
-        toSend.push(mySegments[itemsArr[i]]);
+        var featureToBeDeleted = mySegments[itemsArr[i]]; 
+        toSend.push(featureToBeDeleted);
+        id = buildSegKey(featureToBeDeleted);
+        // stop it from appearing selected
+        map.setPaintProperty(id, 'line-width', LINE_WIDTH_THIN);
+        // make it red (needscleaning)
+        map.setPaintProperty(id, 'line-color', colorMap[0].rgb);
+        map.setPaintProperty(id, 'line-opacity', 0.6)
+        mySegments.splice(itemsArr[i], 1);
     }
     // console.log(toSend)
     socket.emit('deleteSeg', toSend);
+    processClaimedSegmentsList(mySegments)
 })
 function refreshCurrent(){
-    var emailAddress = $('#emailAddressInput #icon_prefix').val();
-    $("#selectedStreets").html("loading...");
-    socket.emit("reqSegAcc", emailAddress);
+    if (mySegments == null){
+        var emailAddress = $('#emailAddressInput #icon_prefix').val();
+        $("#selectedStreets").html("loading...");
+        socket.emit("reqSegAcc", emailAddress);
+    } else{
+        processClaimedSegmentsList(mySegments)  
+    }
 }
 
-$("#curSegTab").on('click', function() { refreshCurrent()});
+function hideNew() {
+    for (var i = 0; i < curFeatureIds.length; i++) {
+             map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_THIN);
+    }
+}
+function showNew() {
+    for (var i = 0; i < curFeatureIds.length; i++) {
+             map.setPaintProperty(curFeatureIds[i], 'line-width', LINE_WIDTH_WIDE);
+    }
+}
+
+function hideCurrent() {
+    if (mySegments == null) return;
+    for (var i = 0; i < mySegments.length; i++) {
+             map.setPaintProperty(buildSegKey(mySegments[i]), 'line-width', LINE_WIDTH_THIN);
+    }
+}
+
+$("#curSegTab").on('click', function() { hideNew(); refreshCurrent()});
+
+$("#newSegTab").on('click', function() { hideCurrent(); showNew(); });
 
 socket.on("updateCurSeg", function() { refreshCurrent()})
 socket.on("deleteSegSuccess", function(){
-    Materialize.toast("Successfully removed segment");
+    Materialize.toast("Successfully removed segment", 4000);
     refreshCurrent();
 })
 function changeActive(element) {
     var index = parseInt($(element).attr('id').substring(16));
+    var feature = mySegments[index]; 
+    var idToUse = buildSegKey(feature);
     if ($(element).hasClass('active')) {
         activeItems.delete(index);
         $(element).removeClass('active')
+        map.setPaintProperty(idToUse, 'line-width', LINE_WIDTH_WIDE);
     } else {
         activeItems.add(index);
         $(element).addClass('active');
+        map.setPaintProperty(idToUse, 'line-width', LINE_WIDTH_VERYWIDE);
+        // zoom to new active element
+        var coordinates = feature.geometry.coordinates;
+        var bounds = coordinates.reduce(function(bounds, coord) {
+            return bounds.extend(coord);
+        }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+
+        map.fitBounds(bounds, {
+            padding: 60
+        });
+    }
+    
+    if (activeItems.size == 0){
+        $("#deleteSeg").addClass("disabled");
+    } else if (activeItems.size == 1){
+        $("#deleteSeg").removeClass("disabled");
     }
     if(activeItems.size == 0){
         $("#deleteSeg").addClass("disabled");
@@ -329,6 +496,7 @@ function changeActive(element) {
         $("#deleteSeg").removeClass("disabled")
     }
 }
+    
 // $(".collection .collection-item").on("click", function() {
 //     changeActive(this)
 // })
@@ -339,16 +507,6 @@ $('#mapform').submit(function(event) {
 
     if (!isValidEmail(emailInput)) {
         console.log('bad email address');
-        // $('#submitted').empty();
-        // $('#segments').html('<br>');
-        // $('#invalidEmail').html("invalid email address");
-        // for (var i = 0; i < curFeatureIds.length; i++)
-        // {
-        //     map.removeLayer(curFeatureIds[i]);  
-        //     map.removeSource(curFeatureIds[i]);
-        // }
-        // curFeatureIds = [];
-        // curFeatures = [];
         Materialize.toast("invalid email address<br>", 4000)
     } else {
         console.log('about to socket.emit sendInfo');
@@ -360,9 +518,34 @@ $('#mapform').submit(function(event) {
         console.log('socket.emit sendInfo');
 
         $('#invalidEmail').empty();
-        // $('#submitted').html("Thanks for updating these streets");
-        // Materialize.toast("Thanks for updating these streets<br>", 4000)
         return false;
     }
     return false;
 });
+
+function localMessageHandler(msg) {
+    switch (msg) {
+        case messages.myMessages.NEW_EMAIL:
+            $('#loginMessages').html('Unrecognized Email. Correct it or <a href="/register">register this email here.</a>');
+            break;
+        case messages.myMessages.SUBMIT_OK:
+            console.log("submit OK received for..")
+            for (var i = 0; i < curFeatureIds.length; i++) {
+                submittedFeature = curFeatures[i];
+                submittedKey = buildSegKey(submittedFeature) 
+                console.log(submittedFeature.properties)
+                
+                map.setPaintProperty(submittedKey, 'line-width', LINE_WIDTH_THIN);
+                // push to the claimed segment list if it's a transition to 'claimed' not there already
+                if (submittedFeature.properties.state == 1 && mySegments && mySegments.reduce(function(NotFound, feature, i, a) {
+                    NotFound && (submittedKey != buildSegKey(feature))}, true)){
+                        justSentSome.push(submittedFeature);                    
+                }
+                else { //possibly remove this from local claimed segment list 
+                    mySegments && (mySegments = mySegments.filter(function(feature) { return submittedKey !== buildSegKey(feature)}))
+                }
+            }
+            clearSegmentList();
+            break;
+    }
+}

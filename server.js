@@ -13,6 +13,7 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var fs = require('fs');
 var temp = require('temp');
+var moment = require('moment');
 //matched message info for server & clients
 var messages = require(__dirname + '/assets/js/messages.js'); // for server use
 //global variables
@@ -31,10 +32,16 @@ var TileSetNeedsUpdating = false;
 var TileSetInProcess = false;
 var port = process.env.PORT || 3000;
 var skey = process.env.MAPBOX_SK;
+var magic = process.env.MAGIC_CLEANUP_ID
 // console.log('Need MAPBOX_SK in environment: ' + skey);
 var client = new MapboxClient(skey);
 //serves webpage
 app.use(express.static("./assets"));
+
+app.get('/robots.txt', function (req, res) {
+    res.type('text/plain');
+    res.send("User-agent: *\nDisallow: /");
+});
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
@@ -78,6 +85,17 @@ mongoose.connect(url).then(function() {
     console.log("connected to mongo database");
     io.on('connection', function(socket) {
         console.log("a user connected!")
+        socket.on('segmentRequest', function(properties){
+            key = properties.street + "" + properties.id
+        //  console.log("requested key: " + key)
+            ID.find({name: key}).select('id').then(function(row, err) {
+                if (err) console.log("err" + err);
+                client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                    if (err) console.log(err);
+                    socket.emit('segmentRequestReturn', feature);
+                });     
+            });
+        });
         socket.on('registration', function(data) { //client tries to register
             // console.log('registration init on server')
             var gSize = data.groupSize == '' ? 1 : data.groupSize;
@@ -125,6 +143,7 @@ mongoose.connect(url).then(function() {
                 }
                 var out = {}
                 out.valid = registered;
+                out.magic = false;
                 if (registered) {
                     out.name = row[0].name;
                 } else {
@@ -132,6 +151,9 @@ mongoose.connect(url).then(function() {
                 }
                 return Promise.resolve(out);
             }).then(function(out) {
+                if (email == magic) {
+                    out.magic = true; 
+                }
                 socket.emit('signInReturn', out);
             })
         })
@@ -152,7 +174,11 @@ mongoose.connect(url).then(function() {
                                 if (err) console.log(err);
                                 // console.log(feature)
                                 count++;
-                                rows.push(feature);
+                                // a few snuck in with owners for other states. filter those out 
+                                if (feature.properties.state == 1){
+                                    rows.push(feature);
+                                    console.log(feature.properties);
+                                }
                                 resolve();
                             })
                         });
@@ -179,14 +205,15 @@ mongoose.connect(url).then(function() {
 
                     client.readFeature(curSeg.id, dataset_id, function(err, feature) {
                         if (err) console.log(err);
-                        console.log(feature)
                         feature.properties.state = 0;
                         feature.properties.claimedby = null;
                         client.insertFeature(feature, dataset_id, function(err, feature) {
                             if (err) {
                                 console.log(err);
                             } else {
-                                console.log('update dataset OK WE ARE HERE');
+                                console.log('update dataset - unclaimed segment');
+                                console.log("changed feature: ");
+                                console.log(feature.properties);
                                 TileSetNeedsUpdating = true;
                             }
                         })
@@ -209,8 +236,6 @@ mongoose.connect(url).then(function() {
                         if (row.length == 0) {
                             socket.emit('message', messages.myMessages.NEW_EMAIL);
                             registered = false;
-                        } else {
-                            socket.emit('message', messages.myMessages.SUBMIT_OK)
                         }
                     }
                     return Promise.resolve(registered);
@@ -228,57 +253,59 @@ mongoose.connect(url).then(function() {
                                     var claimed = false;
                                     console.log("claimed?")
                                     console.log(row)
-                                    if (row[0].claimedby.length != 0) { //check if segment is already claimed by someone else
+                                    client.readFeature(row[0].id, dataset_id, function(err, feature) {
+                                        if (err) console.log(err);
+                                        
+                                    //only error state is if the claimer is not the current user & if the new & old states are 'claimed' 
+                                    if (state == 1 && feature.properties.state == 1 && row[0].claimedby.length != 0 && row[0].claimedby != data.emailAddress) { 
                                         console.log('claimed')
                                         claimed = true;
-                                    }
+                                    }    
                                     if (!claimed) {
-                                        if (state == 1) {
-                                            var newClaimed = [data.emailAddress]
-                                            ID.update({
-                                                id: row[0].id
-                                            }, {
-                                                claimedby: newClaimed
-                                            }).then(function() {})
-                                        } else {
-                                            var newClaimed = []
-                                            ID.update({
-                                                id: row[0].id
-                                            }, {
-                                                claimedby: newClaimed
-                                            }).then(function() {})
+                                        var history = "";
+                                        if (typeof feature.properties.history == "undefined" || feature.properties.history == null ||feature.properties.length == 0)
+                                        {// play catch up synthesize earlier history
+                                               history = moment(4, "MM").format() + "," + feature.properties.claimedby +  "," + feature.properties.state + ","
+                                               console.log("recreated history: " + history)
+                                               feature.properties.history = history;        
                                         }
-                                        console.log(typeof row[0].id)
-                                        client.readFeature(row[0].id, dataset_id, function(err, feature) {
-                                            if (err) console.log(err);
-                                            console.log(feature)
-                                            feature.properties.state = state;
-                                            if (state == 1) {
-                                                feature.properties.claimedby = data.emailAddress;
+
+                                        feature.properties.state = state;
+                                        feature.properties.claimedby = data.emailAddress;
+                                        var newClaimed = [data.emailAddress]
+                                        ID.update({
+                                            id: row[0].id
+                                        }, {
+                                            claimedby: newClaimed
+                                        }).then(function() {})
+                                        history = history = moment().format() + "," + feature.properties.claimedby +  "," + feature.properties.state + ","
+                                        console.log("new history: " + history)
+                                        feature.properties.history += history; 
+                                        console.log("combined history: " + feature.properties.history)
+                                        client.insertFeature(feature, dataset_id, function(err, feature) {
+                                            if (err) {
+                                                console.log(err);
                                             } else {
-                                                feature.properties.claimedby = null;
+                                                console.log('update dataset because we asked for state to be changed.');
+                                                console.log(feature.properties);
+                                                TileSetNeedsUpdating = true;
                                             }
-                                            client.insertFeature(feature, dataset_id, function(err, feature) {
-                                                if (err) {
-                                                    console.log(err);
-                                                } else {
-                                                    console.log('update dataset OK WE ARE HERE');
-                                                    TileSetNeedsUpdating = true;
-                                                }
-                                            })
                                         })
+                                        socket.emit('message', messages.myMessages.SUBMIT_OK)
                                     } else {
                                         socket.emit("message", messages.myMessages.ALREADY_CLAIMED);
                                     }
-                                })
+                                }); // end readFeature
+                            });
                         }
                     } else {
                         console.log("Email is not registered, no database work done")
                     }
-                })
+
+            });
         });
     });
-})
+});
 server.listen(app.listen(port, function() {
     var host = server.address().address;
     var port = server.address().port;
@@ -290,8 +317,10 @@ var datasetProperties;
 var datasetReader = null; // readable stream of dataset features
 // for building our geoJSON files
 const JSONprolog = '{"type":"FeatureCollection","features":[';
-const JSONsep = ',';
+const JSONsep = ',\n';
 const JSONepilog = ']}';
+
+
 const EnoughExtraChars = 1000; // yes, this is a hack.
 class ReadableDataset extends Readable {
     constructor(opt) {
@@ -329,6 +358,7 @@ class ReadableDataset extends Readable {
                 // Pause the stream to avoid race conditions while pushing in the new objects.
                 // Without this, _read() would be called again from inside each push(),
                 // resulting in multiple parallel calls to listFeatures
+                if (err) console.log(err)
                 const wasPaused = datasetReader.isPaused();
                 datasetReader.pause();
                 console.log('was paused? ' + wasPaused);
@@ -442,6 +472,7 @@ var updateTask = function() { //update tileset after modifications
             console.log('ended call to stream to tempfile');
         } // end if we need to do anything
         setTimeout(updateTask, 30000); //Sky: for future reference, setInterval() calls repeatedly a function every X amount of time
+                                        // Jim: I did it this way to avoid risk that task would still be running when next task was started.  
     }
     // kick off update task
 updateTask();
