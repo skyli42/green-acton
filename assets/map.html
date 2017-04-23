@@ -47,7 +47,7 @@
 			<div class="col s12 m7 l6 push-l1">
 				<div id='map'></div>
 			</div>
-			<form id="signIn" class="col s12 m12 l4 push-l1" style="padding-left:3%;padding-right:3%">
+			<form id="signIn" class="col s12 m12 l4 push-l1" style="padding-left:3%;padding-right:3%;">
 				<div id="emailAddressInput" class="input-field">
 					<i class="material-icons prefix">email</i>
 					<input id="icon_prefix" type="email" class="validate">
@@ -65,7 +65,7 @@
 			<form id="mapform" class="hide col s12 m12 l4 push-l1" style="padding-left:2%;padding-right:2%">
 				<h6>Street Segments to Change</h6>
 				<div class="collection" id="segments">
-					<div id="selected" style="font-size:80%;padding-left:2%"><li>(click on map to select street segments to update)</li></div>
+					<div id="selected" style="font-size:80%;padding-left:2%">Click on map to select street segments to update.</div>
 				</div>
 				<button id="clear" class="disabled green btn waves-effect waves-light" type="button">Clear<i class="small material-icons right">delete</i></button><br><br>
 				<input class="with-gap" id="stateInput0" type="radio" name="Status" value="0">
@@ -78,18 +78,19 @@
 				<label for="stateInput2" style="color:#4caf50">These are clean.</label><br><br>
 				<button id="submit" class="disabled green btn waves-effect waves-light" type="submit" name="action">Submit<i style="font-size:15px" class="material-icons right">send</i></button>
 			</form>
-			<div class="hide col s12 m12 l4 push-l1" id="curSegments" style="padding-left:5%;padding-right:5%">
-				<div class="collection" style="font-size:80%;padding-right:2%" id="selectedStreets"></div>
-				<div class="col s12 m12 l4 offset-s9">
-					<button id = "deleteSeg" class = "hide red btn waves-effect waves-light" type = "button">Remove<i class="small material-icons right">delete</i></button>
-				</div>
+			<div class="hide col s12 m12 l4 push-l1" id="curSegments" style="padding-left:2%;padding-right:2%">
+				<h6>Your Current Street Segments</h6>
+				<div class="collection" style="font-size:80%;padding-left:2%" id="selectedStreets"></div>
+				<!-- <div class="col s12 m12 l4"> -->
+				<button id = "deleteSeg" class = "hide red btn waves-effect waves-light" type = "button">Remove<i class="small material-icons right">delete</i></button>
+				<!-- </div> -->
+				<br><br><br>
 			</div>
 			<div class="col s12 m12 l4 push-l1">
 				<button id="signOut" class="hide green btn waves-effect waves-light" type="button">Sign Out<i class="material-icons right">exit_to_app</i></button>
 			</div>
-			
 			<div id="tutorial" class="col s12 m12 l4 push-l1" style="margin-left:2%">
-				<i class="material-icons left">help</i><a href="https://docs.google.com/document/d/1zeWDWCLpmhyNrybjKJbNY0B2najGXdCNw1_qCjQ017s/edit" target="_blank">Click here</a> for help.
+				<a href="https://docs.google.com/document/d/1zeWDWCLpmhyNrybjKJbNY0B2najGXdCNw1_qCjQ017s/edit" target="_blank">Click here</a> for help.
 			</div>
 		</div>
 		<script src = "/js/messages.js"></script>

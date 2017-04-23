@@ -313,6 +313,7 @@ function signIn(name) {
     $('#curSegments').removeClass('hide')
     $('#signOut').removeClass('hide')
     $('#deleteSeg').removeClass('hide');
+    $('#tutorial').addClass('hide');
 }
 
 function signOut() {
@@ -328,6 +329,7 @@ function signOut() {
     mySegments=null;
     activeItems.clear();
     showOwners = false;
+    $('#tutorial').removeClass('hide');
 }
 $('#signIn').submit(function(event) {
     event.preventDefault()
@@ -391,7 +393,7 @@ function processClaimedSegmentsList(segments)
             
     }
     if(segments.length == 0){
-        $("#selectedStreets").html("You have not claimed any streets yet")
+        $("#selectedStreets").html("You have not claimed any streets yet.")
     }
 }
 
