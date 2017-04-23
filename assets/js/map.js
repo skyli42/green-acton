@@ -489,12 +489,6 @@ function changeActive(element) {
     } else if (activeItems.size == 1){
         $("#deleteSeg").removeClass("disabled");
     }
-    if(activeItems.size == 0){
-        $("#deleteSeg").addClass("disabled");
-    }
-    else{
-        $("#deleteSeg").removeClass("disabled")
-    }
 }
     
 // $(".collection .collection-item").on("click", function() {
