@@ -1,0 +1,84 @@
+<html>
+	<head>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link href='//fonts.googleapis.com/css?family=Scada' rel='stylesheet'>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+		<link type="text/css" rel="stylesheet" href="/css/style.css"  media="screen,projection"/>
+		<meta name="theme-color" content="green"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+		<link rel="icon" href="/img/logo.png" sizes="192x192">
+		<title>Reports</title>
+	</head>
+	<body>
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+            }
+            #main {margin: 2px 5px auto 5px}    
+        </style>
+		<nav class="green">
+			<div class="nav-wrapper">
+				<div class="container hide-on-med-and-down">
+					<a href="/" class="brand-logo">
+						<img id = "logo" class="hide-on-med-and-down" src ="/img/logo.png" height = "65px">
+						&nbsp;
+						<span style="font-size:80%" class="hide-on-med-and-down">Acton Cleanup Week April 22-29</span>
+					</a>
+					<ul class="right hide-on-med-and-down">
+						<li><a style="font-size:120%" href="/register"><i class="material-icons left">assignment_ind</i>Register</a></li>
+						<li><a style="font-size:120%" href="/map"><i class="material-icons left">map</i>Map</a></li>
+						<li><a style="font-size:120%" href="/info"><i class="material-icons left">info</i>Info</a></li>
+					</ul>
+				</div>
+				<a style="margin-left:0%;margin-bottom:0%;" href="#" data-activates="slide-out" class="button-collapse"><i class=" material-icons"></i></a>
+				<a href="/" class="brand-logo">
+					<span style="font-size:80%" class="hide-on-med-and-up">Acton Cleanup</span>
+				</a>
+				<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+				<ul class="side-nav" id="mobile-demo">
+					<br>
+					<li><a class="green-text waves-effect waves-green" style="font-size:120%;" href="/register"><i class="material-icons">assignment_ind</i>Register</a></li>
+					<li><a class="green-text waves-effect waves-green" style="font-size:120%" href="/map"><i class="material-icons">map</i>Map</a></li>
+					<li><a class="green-text waves-effect waves-green" style="font-size:120%" href="/info"><i class="material-icons">info</i>Info</a></li>
+				</ul>
+			</div>
+		</nav>
+		<br>
+		<center><span id="welcome" class="green-text flow-text">Welcome to Acton Cleanup Week</span></center>
+		  <div id="main">
+			<form id="reportLogin" >
+				
+                <div id="emailAddressInput" class="input-field">
+					<i class="material-icons prefix">email</i>
+					<input id="icon_prefix" type="email" class="validate">
+					<label for="icon_prefix">Login ID</label>
+				</div>
+				<button type="submit" name="action">login</button>
+			</form>
+
+			<div id = "reportShow" class="hide">
+                
+                <p id="registrationSummary"></p>    
+            <table id="registrationTable"  border="1" cellpadding="2">
+                <tr>
+                    <td><b>Name</b></td>
+                    <td><b>Address</b></td>
+                    <td><b>Email</b></td>
+                    <td><b>Phone</b></td>
+                    <td><b>Size</b></td> 
+                    <td><b>Needs</b></td>
+                    <td><b>Claimed </b></td>
+                    <td><b>Cleaned</b></td>
+                </tr>
+            </table>
+		</div>
+		
+        <script src = "/js/messages.js"></script>
+		<script src = "/js/main.js"></script>
+		<script src = "/js/reports.js"></script>
+		<script src="/js/navbar.js"></script>
+	</body>
+</html>

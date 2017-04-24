@@ -47,6 +47,9 @@ app.get('/', function(req, res) {
 app.get('/register', function(req, res) {
     res.sendFile(__dirname + '/assets/registration.html');
 })
+app.get('/reports', function(req, res) {
+    res.sendFile(__dirname + '/assets/reports.html');
+})
 app.get('/map', function(req, res) {
     res.sendFile(__dirname + '/assets/map.html')
 })
@@ -125,6 +128,33 @@ mongoose.connect(url).then(function() {
                     }
                 }
             })
+        });
+        socket.on('reportSignin', function(email) {
+            details = {};
+            details.valid = (email == magic)
+            if (details.valid)
+            {
+                Account.find({}).select('name address emailAdd phone groupSize').then(function(users, err) {
+                    if(err){
+                        console.log(err);
+                        details.valid = false;
+                    }else{
+                        details.users = users
+                    }
+                    client.listFeatures(dataset_id, {}, function(err, featureCollection) {
+                        details.segmentSummary = featureCollection.features.reduce(function (segmentSummary,feature,i,a) {
+                            owner = (feature.properties.claimedby != null) ? feature.properties.claimedby : "unclaimed";
+                            if (! segmentSummary[owner])
+                            {
+                                  segmentSummary[owner] = new Array(0,0,0,0)
+                            }
+                            segmentSummary[owner][feature.properties.state] = 1 + segmentSummary[owner][feature.properties.state];
+                            return segmentSummary;
+                        },{});
+                        socket.emit('reportSigninReturn',details);          
+                    }); 
+                });
+            }
         });
         socket.on('signin', function(email) {
             Account.find({ //check if email is registered already
@@ -351,7 +381,7 @@ class ReadableDataset extends Readable {
                 options.start = datasetReader.pagination;
             }
             console.log(JSON.stringify(options));
-            client.listFeatures(dataset_id, options, function(err, featureObject) {
+            client.listFeatures(dataset_id, options, function(err, featureCollection) {
                 // Pause the stream to avoid race conditions while pushing in the new objects.
                 // Without this, _read() would be called again from inside each push(),
                 // resulting in multiple parallel calls to listFeatures
@@ -365,13 +395,13 @@ class ReadableDataset extends Readable {
                     datasetReader.push(JSONprolog); // datasetReader.debugbuffer += JSONprolog;
                     newChars += JSONprolog.length;
                 }
-                var featureCount = featureObject.features.length;
-                var featureString = JSON.stringify(featureObject.features).slice(1, -1); //remove square brackets
+                var featureCount = featureCollection.features.length;
+                var featureString = JSON.stringify(featureCollection.features).slice(1, -1); //remove square brackets
                 //       console.log('feature count: '+ featureCount + ' feature data: ' + featureString);
                 if (featureCount != 0) {
                     newChars += featureString.length;
                     datasetReader.CharsSent += newChars;
-                    datasetReader.pagination = featureObject.features[featureCount - 1].id;
+                    datasetReader.pagination = featureCollection.features[featureCount - 1].id;
                     datasetReader.length = datasetReader.CharsSent + EnoughExtraChars; // there's some more - keep calling me back, please
                     datasetReader.push(featureString); // datasetReader.debugbuffer += featureString;
                     datasetReader.featuresRead += featureCount;
