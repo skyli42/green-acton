@@ -1,12 +1,3 @@
-// validate email 
-// populate tables:
-// 1. registration table, entirely from mongo.
-// 2. segment summary: 1st row: name email needs (span 2) claimed (span 2) cleaned (span 2), totals (span 2)
-//                     2nd row             count distance X 4.
-//                      3+      name email form mongo, collect features & count them (and distances, using turf)
-// 2nd to last row - no name
-// last row totals
-// Once we collect data, fill div with table data & push into csv, and reveal button to download as csv
 
 function isValidEmail(emailAddress) {
     var regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
