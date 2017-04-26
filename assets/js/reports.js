@@ -30,7 +30,7 @@ socket.on("reportSigninReturn", function(details) {
        $('#reportShow').removeClass('hide')
        $('#reportLogin').addClass('hide')
        
-       table = document.getElementById("registrationTable");
+       table = document.getElementById("tableBody");
        
        Totals = [0,0,0];
        
