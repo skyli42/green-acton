@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href='//fonts.googleapis.com/css?family=Scada' rel='stylesheet'>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
@@ -7,8 +8,6 @@
 		<meta name="theme-color" content="green"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 		<link rel="icon" href="/img/logo.png" sizes="192x192">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-		<link rel="stylesheet" href="/css/style.css">
 		<title>Reports</title>
 	</head>
 	<body>
@@ -17,9 +16,9 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
 		<style>
-		table, th, td {
+		/*table, th, td {
 		border: 1px solid black;
-		}
+		}*/
 		#main {margin: 2px 5px auto 5px}
 		</style>
 		<nav class="green">
@@ -59,7 +58,7 @@
 					<input id="icon_prefix" type="email" class="validate">
 					<label for="icon_prefix">Login ID</label>
 				</div>
-				<button type="submit" name="action">login</button>
+				<button class="green btn waves-effect waves-light" type="submit" name="action">login</button>
 			</form>
 			<div id = "reportShow" class="hide">
 				
