@@ -7,18 +7,21 @@
 		<meta name="theme-color" content="green"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
 		<link rel="icon" href="/img/logo.png" sizes="192x192">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+		<link rel="stylesheet" href="/css/style.css">
 		<title>Reports</title>
 	</head>
 	<body>
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
-        <style>
-            table, th, td {
-                border: 1px solid black;
-            }
-            #main {margin: 2px 5px auto 5px}    
-        </style>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+		<style>
+		table, th, td {
+		border: 1px solid black;
+		}
+		#main {margin: 2px 5px auto 5px}
+		</style>
 		<nav class="green">
 			<div class="nav-wrapper">
 				<div class="container hide-on-med-and-down">
@@ -48,37 +51,36 @@
 		</nav>
 		<br>
 		<center><span id="welcome" class="green-text flow-text">Welcome to Acton Cleanup Week</span></center>
-		  <div id="main">
+		<div id="main">
 			<form id="reportLogin" >
 				
-                <div id="emailAddressInput" class="input-field">
+				<div id="emailAddressInput" class="input-field">
 					<i class="material-icons prefix">email</i>
 					<input id="icon_prefix" type="email" class="validate">
 					<label for="icon_prefix">Login ID</label>
 				</div>
 				<button type="submit" name="action">login</button>
 			</form>
-
 			<div id = "reportShow" class="hide">
-                
-                <p id="registrationSummary"></p>    
-            <table id="registrationTable"  border="1" cellpadding="2">
-                <tr>
-                    <td><b>Name</b></td>
-                    <td><b>Address</b></td>
-                    <td><b>Email</b></td>
-                    <td><b>Phone</b></td>
-                    <td><b>Size</b></td> 
-                    <td><b>Needs</b></td>
-                    <td><b>Claimed </b></td>
-                    <td><b>Cleaned</b></td>
-                </tr>
-            </table>
-		</div>
-		
-        <script src = "/js/messages.js"></script>
-		<script src = "/js/main.js"></script>
-		<script src = "/js/reports.js"></script>
-		<script src="/js/navbar.js"></script>
-	</body>
-</html>
+				
+				<p id="registrationSummary"></p>
+				<table id="registrationTable"  border="1" cellpadding="2">
+					<tr>
+						<td><b>Name</b></td>
+						<td><b>Address</b></td>
+						<td><b>Email</b></td>
+						<td><b>Phone</b></td>
+						<td><b>Size</b></td>
+						<td><b>Needs</b></td>
+						<td><b>Claimed </b></td>
+						<td><b>Cleaned</b></td>
+					</tr>
+				</table>
+			</div>
+			
+			<script src = "/js/messages.js"></script>
+			<script src = "/js/main.js"></script>
+			<script src = "/js/reports.js"></script>
+			<script src="/js/navbar.js"></script>
+		</body>
+	</html>
